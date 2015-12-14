@@ -79,7 +79,7 @@ public class NotificationAdapterActivity extends
                 intro = "This just in! ";
                 middle = " has posted a news post ";
                 group_name = "" + ci.getGroup_name();            //To be gotten from server
-                subject = ci.getEventName();      ////To be gotten from server
+                subject = ci.getPostName();      ////To be gotten from server
 
                 g_name = new SpannableStringBuilder(intro + group_name + middle + subject + ".");
                 g_name.setSpan(robotoRegularSpan_for_group_name, intro.length(), intro.length() + group_name.length(), 0);

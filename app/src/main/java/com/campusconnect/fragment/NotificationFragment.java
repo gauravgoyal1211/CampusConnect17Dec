@@ -192,6 +192,7 @@ public class NotificationFragment extends Fragment {
                                             String eventName = obj.optString("eventName");
                                             String eventid = obj.optString("eventId");
                                             String photoUrl = obj.optString("clubphotoUrl");
+                                            String postName= obj.optString("postName");
 
                                             NotificationBean bean = new NotificationBean();
                                             bean.setGroup_name(gropname);
@@ -200,6 +201,7 @@ public class NotificationFragment extends Fragment {
                                             bean.setEventName(eventName);
                                             bean.setTimestamp(timestamp);
                                             bean.setPhotoUrl(photoUrl);
+                                            bean.setPostName(postName);
 
                                             mNotifiList.add(bean);
                                         }

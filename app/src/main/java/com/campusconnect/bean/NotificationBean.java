@@ -10,6 +10,15 @@ public class NotificationBean {
     private String eventName;
     private String timestamp;
     private String photoUrl;
+    private String postName;
+
+    public String getPostName() {
+        return postName;
+    }
+
+    public void setPostName(String postName) {
+        this.postName = postName;
+    }
 
     public String getPhotoUrl() {
         return photoUrl;
