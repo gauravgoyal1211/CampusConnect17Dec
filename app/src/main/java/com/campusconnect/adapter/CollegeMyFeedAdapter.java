@@ -47,14 +47,16 @@ public class CollegeMyFeedAdapter extends
     public static Typeface r_med, r_reg;
     private List<CampusFeedBean> myFeedList;
     int posi = 0;
-    boolean[] flag_news;
+    ArrayList<Boolean> flag_news = new ArrayList<Boolean>();
+
+    // boolean[] flag_news;
     boolean[] flag_attending_clicked, flag_share_clicked;
     Context context;
 
     public CollegeMyFeedAdapter(List<CampusFeedBean> myFeedList, Context contect) {
         this.myFeedList = myFeedList;
         this.context = contect;
-        flag_news = new boolean[getItemCount()];
+        //  flag_news = new boolean[getItemCount()];
         flag_attending_clicked = new boolean[getItemCount()];
         flag_share_clicked = new boolean[getItemCount()];
     }
@@ -74,21 +76,21 @@ public class CollegeMyFeedAdapter extends
         college_feedViewHolder.group_name.setText(cf.getClubid());
         String url = "http://admin.bookieboost.com/admin/images/2015-02-0116-17-50.jpg";
         try {
-
-            String urll = cf.getClubphoto();
+            String urll = cf.getPhoto();
             Log.e("url campusfeed", "" + urll);
-            if (cf.getClubphoto().equalsIgnoreCase("none")) {
-                Picasso.with(context).load(R.mipmap.spark_session).into(college_feedViewHolder.event_photo);
-            } else {
-                Picasso.with(context).load(cf.getClubphoto()).into(college_feedViewHolder.event_photo);
-            }
-
+            Picasso.with(context).load(cf.getPhoto()).into(college_feedViewHolder.event_photo);
         } catch (Exception e) {
             e.printStackTrace();
             Picasso.with(context).load(R.mipmap.spark_session).into(college_feedViewHolder.event_photo);
         }
-        Picasso.with(context).load(url).into(college_feedViewHolder.group_icon);
-
+        try {
+            String urll = cf.getClubphoto();
+            Log.e("url campusfeed", "" + urll);
+            Picasso.with(context).load(cf.getClubphoto()).into(college_feedViewHolder.group_icon);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Picasso.with(context).load(R.mipmap.spark_session).into(college_feedViewHolder.group_icon);
+        }
 
         //news
         if (cf.getAttendees() == null || cf.getAttendees().size() == 0) {
@@ -97,14 +99,14 @@ public class CollegeMyFeedAdapter extends
             college_feedViewHolder.time.setVisibility(View.GONE);
             college_feedViewHolder.news_icon.setVisibility(View.VISIBLE);
 
-          //  flag_news[i] = true;
+            flag_news.add(i, true);
             college_feedViewHolder.going.setImageResource(R.mipmap.heart);
         } else {
-           // flag_news[i] = false;
-
+            flag_news.add(i, false);
             college_feedViewHolder.day.setVisibility(View.VISIBLE);
             college_feedViewHolder.date_month.setVisibility(View.VISIBLE);
             college_feedViewHolder.time.setVisibility(View.VISIBLE);
+
 
             SimpleDateFormat inFormat = new SimpleDateFormat("dd-MM-yyyy");
             Date date = null;
@@ -136,9 +138,10 @@ public class CollegeMyFeedAdapter extends
 
             if (month.length() > 0) {
                 month = month.substring(0, 3);
-            } else {
-                month = month.substring(0, 3);
             }
+
+            college_feedViewHolder.date_month.setText("" + day + "" + month);
+            college_feedViewHolder.time.setText("" + cf.getStart_time());
             // college_feedViewHolder.date_month.setText(Date_Month[i]);
             //college_feedViewHolder.time.setText(Time_[i]);
             college_feedViewHolder.news_icon.setVisibility(View.GONE);
@@ -194,7 +197,7 @@ public class CollegeMyFeedAdapter extends
                         CampusFeedBean bean = myFeedList.get(posi);
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("BEAN", bean);
-                        bundle.putBoolean("FLAG_NEWS", flag_news[posi]);
+                        bundle.putBoolean("FLAG_NEWS", flag_news.get(posi));
                         bundle.putBoolean("FLAG_SELECTED_SHARE", flag_share_clicked[posi]);
                         bundle.putBoolean("FLAG_SELECTED_ATTEND/LIKE", flag_attending_clicked[posi]);
                         intent_temp.putExtras(bundle);
@@ -211,36 +214,61 @@ public class CollegeMyFeedAdapter extends
             going.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    try {
-                        String persoPid = SharedpreferenceUtility.getInstance(context).getString(AppConstants.PERSON_PID);
-                        String pid = myFeedList.get(posi).getPid();
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("eventId", pid);
-                        jsonObject.put("from_pid", persoPid);
-                        WebApiAttending(jsonObject);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+
                     int pos_for_going = getAdapterPosition();
                     if (flag_attending_clicked[pos_for_going]) {
-                        if (flag_news[pos_for_going])
+                        if (flag_news.get(pos_for_going)) {
                             going.setImageResource(R.mipmap.heart);
-                        else
+                            Toast.makeText(context,"coming soon",Toast.LENGTH_SHORT).show();
+                        } else {
                             going.setImageResource(R.mipmap.going);
+                            try {
+                                String persoPid = SharedpreferenceUtility.getInstance(context).getString(AppConstants.PERSON_PID);
+                                String pid = myFeedList.get(posi).getPid();
+                                JSONObject jsonObject = new JSONObject();
+                                jsonObject.put("eventId", pid);
+                                jsonObject.put("from_pid", persoPid);
+                                WebApiAttending(jsonObject);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                        }
                         flag_attending_clicked[pos_for_going] = false;
                     } else {
-                        if (flag_news[pos_for_going])
+                        if (flag_news.get(pos_for_going)) {
+                            Toast.makeText(context,"coming soon",Toast.LENGTH_SHORT).show();
                             going.setImageResource(R.mipmap.heart_selected);
-                        else
+                        } else {
                             going.setImageResource(R.mipmap.going_selected);
+                            try {
+                                String persoPid = SharedpreferenceUtility.getInstance(context).getString(AppConstants.PERSON_PID);
+                                String pid = myFeedList.get(posi).getPid();
+                                JSONObject jsonObject = new JSONObject();
+                                jsonObject.put("eventId", pid);
+                                jsonObject.put("from_pid", persoPid);
+                                WebApiAttending(jsonObject);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                        }
                         flag_attending_clicked[pos_for_going] = true;
                     }
+
+
                 }
             });
             share.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int pos_for_share = getAdapterPosition();
+                    Intent i = new Intent(android.content.Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    String shareBody = myFeedList.get(pos_for_share).getTitle() + "/n" + myFeedList.get(posi).getDescription();
+                    i.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                    v.getContext().startActivity(Intent.createChooser(i, "Share via"));
+
                     if (flag_share_clicked[pos_for_share]) {
                         share.setAlpha((float) 0.5);
                         flag_share_clicked[pos_for_share] = false;
@@ -250,7 +278,6 @@ public class CollegeMyFeedAdapter extends
                     }
                 }
             });
-
         }
 
         public void WebApiAttending(JSONObject jsonObject) {
@@ -263,8 +290,6 @@ public class CollegeMyFeedAdapter extends
                 e.printStackTrace();
             }
         }
-
-
     }
 
 

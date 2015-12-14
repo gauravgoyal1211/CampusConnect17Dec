@@ -41,9 +41,6 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.appspot.campus_connect_2015.clubs.Clubs;
-import com.appspot.campus_connect_2015.clubs.model.ModelsEventMiniForm;
-import com.appspot.campus_connect_2015.clubs.model.ModelsMessageResponse;
 import com.campusconnect.R;
 import com.campusconnect.bean.GroupBean;
 import com.campusconnect.communicator.WebRequestTask;
@@ -55,7 +52,6 @@ import com.campusconnect.utility.SharedpreferenceUtility;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.common.base.Strings;
 
 import org.apache.http.HttpResponse;
@@ -74,7 +70,6 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -153,6 +148,7 @@ public class CreatePostActivity extends AppCompatActivity {
             }
         });
     }
+
     //TODO DONE getGroup in createpostActivity
     public void webApiGetGroups() {
         try {
@@ -171,87 +167,6 @@ public class CreatePostActivity extends AppCompatActivity {
         }
     }
 
-/*
-
-    public void getGroups() {
-        //TODO network check
-        if (NetworkAvailablity.hasInternetConnection(CreatePostActivity.this)) {
-            if (!isSignedIn()) {
-                Toast.makeText(CreatePostActivity.this, "You must sign in for this action.", Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            AsyncTask<Void, Void, ModelsClubListResponse> getClubsAndPopulate =
-                    new AsyncTask<Void, Void, ModelsClubListResponse>() {
-                        @Override
-                        protected ModelsClubListResponse doInBackground(Void... unused) {
-                            if (!isSignedIn()) {
-                                return null;
-                            }
-                            ;
-
-                            if (!AppConstants.checkGooglePlayServicesAvailable(CreatePostActivity.this)) {
-                                return null;
-                            }
-
-                            // Create a Google credential since this is an authenticated request to the API.
-                            GoogleAccountCredential credential = GoogleAccountCredential.usingAudience(
-                                    CreatePostActivity.this, AppConstants.AUDIENCE);
-                            credential.setSelectedAccountName(mEmailAccount);
-
-                            // Retrieve service handle using credential since this is an authenticated call.
-                            Clubs apiServiceHandle = AppConstants.getApiServiceHandle(credential);
-
-                            try {
-                                ModelsClubRetrievalMiniForm clubRetrievalMiniForm = new ModelsClubRetrievalMiniForm();
-                                clubRetrievalMiniForm.setCollegeId(sharedPreferences.getString(AppConstants.COLLEGE_ID, "null"));
-                                Clubs.GetClubList gcl = apiServiceHandle.getClubList(clubRetrievalMiniForm);
-                                ModelsClubListResponse clubListResponse = gcl.execute();
-                                Log.e(LOG_TAG, "SUCCESS");
-                                Log.e(LOG_TAG, clubListResponse.toPrettyString());
-                                return clubListResponse;
-                            } catch (IOException e) {
-                                Log.e(LOG_TAG, "Exception during API call", e);
-                            }
-                            return null;
-                        }
-
-                        @Override
-                        protected void onPostExecute(ModelsClubListResponse cList) {
-                            if (cList != null) {
-                                try {
-                                    Log.e(LOG_TAG, cList.toPrettyString());
-                                    groupList = displayClubs(cList);
-                                    Log.e(LOG_TAG, modelsClubMiniForms.toString());
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            } else {
-                                Log.e(LOG_TAG, "No clubs were returned by the API.");
-                            }
-                        }
-                    };
-
-            getClubsAndPopulate.execute((Void) null);
-        } else {
-            Toast.makeText(CreatePostActivity.this, "Network is not available.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-*/
-
-    /*  private List<ModelsClubMiniForm> displayClubs(ModelsClubListResponse... response) {
-          Log.e(LOG_TAG, response.toString());
-
-          if (response == null || response.length < 1) {
-              return null;
-          } else {
-              Log.d(LOG_TAG, "Displaying " + response.length + " colleges.");
-              List<ModelsClubListResponse> clubList = Arrays.asList(response);
-              return clubList.get(0).getList();
-          }
-      }
-  */
     private boolean isSignedIn() {
         if (!Strings.isNullOrEmpty(mEmailAccount)) {
             return true;
@@ -263,16 +178,6 @@ public class CreatePostActivity extends AppCompatActivity {
 
     public void webApiCreatePost(JSONObject jsonObject) {
         try {
-/*
-            "date" -> "2015-11-28"
-            "description" ->
-
-            "from_pid" -> "5702666986455040"
-            "photo" ->
-            "time" -> "04:29:51"
-            "title" ->*/
-          /*  from_pid,club_id,title,description,likers(not compulsory),date(eg 2012-02-12),time(11:12:12)*/
-
             List<NameValuePair> param = new ArrayList<NameValuePair>();
             String url = WebServiceDetails.DEFAULT_BASE_URL + "postEntry";
             Log.e("post Enrty url", "" + url);
@@ -288,54 +193,6 @@ public class CreatePostActivity extends AppCompatActivity {
     }
 
 
-  /*  public void createPost(ModelsPostMiniForm postMiniForm) {
-        if (!isSignedIn()) {
-            Toast.makeText(CreatePostActivity.this, "You must sign in for this action.", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        AsyncTask<ModelsPostMiniForm, Void, ModelsMessageResponse> createFeed =
-                new AsyncTask<ModelsPostMiniForm, Void, ModelsMessageResponse>() {
-
-
-                    @Override
-                    protected ModelsMessageResponse doInBackground(ModelsPostMiniForm... params) {
-                        if (!isSignedIn()) {
-                            return null;
-                        }
-                        ;
-
-                        if (!AppConstants.checkGooglePlayServicesAvailable(CreatePostActivity.this)) {
-                            return null;
-                        }
-
-                        // Create a Google credential since this is an authenticated request to the API.
-                        GoogleAccountCredential credential = GoogleAccountCredential.usingAudience(
-                                CreatePostActivity.this, AppConstants.AUDIENCE);
-                        credential.setSelectedAccountName(mEmailAccount);
-                      //   createpost methode
-                        // Retrieve service handle using credential since this is an authenticated call.
-                        try {
-                            Clubs apiServiceHandle = AppConstants.getApiServiceHandle(credential);
-                            Clubs.PostEntry postEntry = apiServiceHandle.postEntry(params[0]);
-                            //Log.e(LOG_TAG+"123",params[0].toPrettyString());
-                            ModelsMessageResponse res = postEntry.execute();
-                            Log.e(LOG_TAG, "SUCCESS");
-                            return res;
-//                            Log.e(LOG_TAG, res.toString());
-                        } catch (IOException e) {
-                            Log.e(LOG_TAG, "Exception during API call", e);
-                        }
-                        return null;
-
-                    }
-
-
-                };
-        createFeed.execute((ModelsPostMiniForm) postMiniForm);
-    }
-*/
-
     public void webApiCreateEvent(JSONObject jsonObject) {
 
 
@@ -345,68 +202,12 @@ public class CreatePostActivity extends AppCompatActivity {
         Log.e("request", "" + jsonObject.toString());
         new WebRequestTask(CreatePostActivity.this, param, _handler, WebRequestTask.POST, jsonObject, WebServiceDetails.PID_CREATE_EVENT,
                 true, url).execute();
-
-
-    }
-
-
-    public void createEvent(ModelsEventMiniForm eventMiniForm) {
-        if (!isSignedIn()) {
-            Toast.makeText(CreatePostActivity.this, "You must sign in for this action.", Toast.LENGTH_LONG).show();
-            return;
-        }
-        //set network
-        AsyncTask<ModelsEventMiniForm, Void, Void> createEvent =
-                new AsyncTask<ModelsEventMiniForm, Void, Void>() {
-
-
-                    @Override
-                    protected Void doInBackground(ModelsEventMiniForm... params) {
-                        if (!isSignedIn()) {
-                            return null;
-                        }
-                        ;
-
-                        if (!AppConstants.checkGooglePlayServicesAvailable(CreatePostActivity.this)) {
-                            return null;
-                        }
-
-                        // Create a Google credential since this is an authenticated request to the API.
-                        GoogleAccountCredential credential = GoogleAccountCredential.usingAudience(
-                                CreatePostActivity.this, AppConstants.AUDIENCE);
-                        credential.setSelectedAccountName(mEmailAccount);
-
-                        // Retrieve service handle using credential since this is an authenticated call.
-                        try {
-                            //create event calling
-
-                            Clubs apiServiceHandle = AppConstants.getApiServiceHandle(credential);
-                            Clubs.EventEntry eventEntry = apiServiceHandle.eventEntry(params[0]);
-                            //Log.e(LOG_TAG+"123",params[0].toPrettyString());
-                            ModelsMessageResponse res = eventEntry.execute();
-                            Log.e(LOG_TAG, "SUCCESS");
-                            //Toast.makeText(CreatePostActivity.this, "SUCCESS", Toast.LENGTH_LONG).show();
-
-                            Log.e(LOG_TAG, res.toString());
-                        } catch (IOException e) {
-                            Log.e(LOG_TAG, "Exception during API call", e);
-                        }
-                        return null;
-                    }
-
-
-                };
-
-        createEvent.execute((ModelsEventMiniForm) eventMiniForm);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-
         try {
-
-
             // ATTENTION: This was auto-generated to implement the App Indexing API.
             // See https://g.co/AppIndexing/AndroidStudio for more information.
             client.connect();
@@ -546,8 +347,10 @@ public class CreatePostActivity extends AppCompatActivity {
         int position;
         String encodedImageStr = "";
         String Clubid = "";
+
         public FragmentPostNews() {
         }
+
         private static final String LOG_TAG = "CreatePostActivity";
 
 
@@ -657,7 +460,7 @@ public class CreatePostActivity extends AppCompatActivity {
                             jsonObject.put("date", date);
                             jsonObject.put("title", et_title.getText().toString());
                             jsonObject.put("description", et_description.getText().toString());
-                            jsonObject.put("photo", "" + imageUrlForUpload);
+                            jsonObject.put("photoUrl", "" + imageUrlForUpload);
                             jsonObject.put("from_pid", pid);
                             jsonObject.put("club_id", Clubid);
                            /* jsonObject.put("clud_id", groupList.get(position).getClubId());*/
@@ -1096,7 +899,6 @@ public class CreatePostActivity extends AppCompatActivity {
                             /* calling webserivice here*/
                             webApiCreateEvent(jsonObject);
                         } catch (Exception e) {
-
                         }
                         //  CreatePostActivity.this.createEvent(eventMiniForm);
                     } else {
@@ -1143,7 +945,7 @@ public class CreatePostActivity extends AppCompatActivity {
                             .get(Calendar.YEAR), myCalendar_s_date.get(Calendar.MONTH),
                             myCalendar_s_date.get(Calendar.DAY_OF_MONTH));
 
-                    start_date_picker.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+//                    start_date_picker.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
                     start_date_picker.show();
                 }
             });
@@ -1156,7 +958,7 @@ public class CreatePostActivity extends AppCompatActivity {
                     DatePickerDialog end_date_picker = new DatePickerDialog(context, end_date, myCalendar_e_date
                             .get(Calendar.YEAR), myCalendar_e_date.get(Calendar.MONTH),
                             myCalendar_e_date.get(Calendar.DAY_OF_MONTH));
-                    end_date_picker.getDatePicker().setMinDate(System.currentTimeMillis() - 2000);
+//                    end_date_picker.getDatePicker().setMinDate(System.currentTimeMillis() - 2000);
                     end_date_picker.show();
                 }
             });
@@ -1181,14 +983,13 @@ public class CreatePostActivity extends AppCompatActivity {
                             calendar.set(Calendar.MINUTE, selectedMinute);
                             calendar.set(Calendar.SECOND, 0);
                             SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-
-
-                            if (selectedHour > hour)
-                               s_time.setText("" + selectedHour + ":" + selectedMinute + ":00");
-                              //  s_time.setText(dateFormat.format(calendar.getTime()));
+                            s_time.setText("" + selectedHour + ":" + selectedMinute + ":00");
+                            /*if (selectedHour > hour)
+                                s_time.setText("" + selectedHour + ":" + selectedMinute + ":00");
+                                //  s_time.setText(dateFormat.format(calendar.getTime()));
                             else if (selectedHour == hour) {
                                 if (selectedMinute > minute)
-                                   // s_time.setText(dateFormat.format(calendar.getTime()));
+                                    // s_time.setText(dateFormat.format(calendar.getTime()));
                                     s_time.setText("" + selectedHour + ":" + selectedMinute + ":00");
                                 else
                                     Toast.makeText(getActivity().getApplicationContext(), "The start time you entered occurred before the current time.",
@@ -1196,7 +997,7 @@ public class CreatePostActivity extends AppCompatActivity {
                             } else
                                 Toast.makeText(getActivity().getApplicationContext(), "The start time you entered occurred before the current time.",
                                         Toast.LENGTH_SHORT).show();
-
+*/
                         }
                     }, hour, minute, true);
                     mTimePicker.setTitle("Select Time");
@@ -1224,12 +1025,12 @@ public class CreatePostActivity extends AppCompatActivity {
                             SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
                             if (selectedHour > start_hour)
-                               e_time.setText("" + selectedHour + ":" + selectedMinute + ":00");
-                             //  e_time.setText(dateFormat.format(calendar.getTime()));
+                                e_time.setText("" + selectedHour + ":" + selectedMinute + ":00");
+                                //  e_time.setText(dateFormat.format(calendar.getTime()));
                             else if (selectedHour == start_hour) {
                                 if (selectedMinute > start_min)
-                                     e_time.setText("" + selectedHour + ":" + selectedMinute + ":00");
-                                   // e_time.setText(dateFormat.format(calendar.getTime()));
+                                    e_time.setText("" + selectedHour + ":" + selectedMinute + ":00");
+                                    // e_time.setText(dateFormat.format(calendar.getTime()));
                                 else
                                     Toast.makeText(getActivity().getApplicationContext(), "The end time you entered occurred before the start time.",
                                             Toast.LENGTH_SHORT).show();
@@ -1367,14 +1168,16 @@ public class CreatePostActivity extends AppCompatActivity {
             String myFormat = "yy/mm/dd"; //In which you need put here*/
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
             sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-            if (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) > myCalendar_s_date.get(Calendar.DAY_OF_MONTH)) {
+
+            s_date.setText(sdf.format(myCalendar_s_date.getTime()));
+           /* if (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) > myCalendar_s_date.get(Calendar.DAY_OF_MONTH)) {
                 s_date.setText("");
                 Toast.makeText(getActivity().getApplicationContext(), "The start date you entered occurred before the current date.",
                         Toast.LENGTH_SHORT).show();
 
             } else {
                 s_date.setText(sdf.format(myCalendar_s_date.getTime()));
-            }
+            }*/
         }
 
         void showAlertDialog(final File imageFile) {
@@ -1405,15 +1208,26 @@ public class CreatePostActivity extends AppCompatActivity {
             SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
             sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 
+            if (myCalendar_s_date.get(Calendar.MONTH) <= myCalendar_e_date.get(Calendar.MONTH)) {
 
-            if (myCalendar_s_date.get(Calendar.DAY_OF_MONTH) > myCalendar_e_date.get(Calendar.DAY_OF_MONTH)) {
-                e_date.setText("");
+               if (myCalendar_s_date.get(Calendar.MONTH) == myCalendar_e_date.get(Calendar.MONTH)) {
+                    if (myCalendar_s_date.get(Calendar.DAY_OF_MONTH) > myCalendar_e_date.get(Calendar.DAY_OF_MONTH))
+                    {
+                        e_date.setText("");
+                        Toast.makeText(getActivity().getApplicationContext(), "The end date you entered occurred before the start date.",
+                                Toast.LENGTH_SHORT).show();
+                    }else {
+                        e_date.setText(sdf.format(myCalendar_e_date.getTime()));
+                    }
+                }else {
+                    e_date.setText(sdf.format(myCalendar_e_date.getTime()));
+                }
+            } else {
                 Toast.makeText(getActivity().getApplicationContext(), "The end date you entered occurred before the start date.",
                         Toast.LENGTH_SHORT).show();
-            } else
-                e_date.setText(sdf.format(myCalendar_e_date.getTime()));
-        }
+            }
 
+        }
     }
 
 
@@ -1431,7 +1245,7 @@ public class CreatePostActivity extends AppCompatActivity {
                                 groupList.clear();
                                 JSONObject grpJson = new JSONObject(strResponse);
                                 if (grpJson.has("list")) {
-                                    JSONArray grpArray = grpJson.getJSONArray("list");
+                                     JSONArray grpArray = grpJson.getJSONArray("list");
                                     for (int i = 0; i < grpArray.length(); i++) {
 
                                         JSONObject innerGrpObj = grpArray.getJSONObject(i);
@@ -1450,7 +1264,6 @@ public class CreatePostActivity extends AppCompatActivity {
                                         groupList.add(bean);
                                     }
                                 }
-
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -1485,9 +1298,7 @@ public class CreatePostActivity extends AppCompatActivity {
                                     "kind": "clubs#resourcesItem",
                                     "etag": "\"JLMOwqwHg7-XCgdx_V36F7oMtu8/4_4CPmnvJ9H91631TVAP57KBGqA\""*/
                             try {
-
                                 JSONObject grpJson = new JSONObject(strResponse);
-
                                 String status = grpJson.optString("status");
                                 String text = grpJson.optString("text");
                                 //  Toast.makeText(CreatePostActivity.this, "" + text, Toast.LENGTH_SHORT).show();
@@ -1505,10 +1316,12 @@ public class CreatePostActivity extends AppCompatActivity {
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                       }
+                        }
                         break;
                         default:
                             break;
+
+
                     }
                 } else {
                     Toast.makeText(CreatePostActivity.this, "SERVER_ERROR", Toast.LENGTH_LONG).show();
@@ -1516,6 +1329,7 @@ public class CreatePostActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(CreatePostActivity.this, "SERVER_ERROR", Toast.LENGTH_LONG).show();
             }
+            imageUrlForUpload = "";
         }
     };
 
@@ -1566,7 +1380,7 @@ public class CreatePostActivity extends AppCompatActivity {
 
                 imageUrlForUpload = result;
 
-             //   Toast.makeText(context, "" + result, Toast.LENGTH_SHORT).show();
+                //   Toast.makeText(context, "" + result, Toast.LENGTH_SHORT).show();
 
             } catch (Exception ex) {
                 ex.printStackTrace();

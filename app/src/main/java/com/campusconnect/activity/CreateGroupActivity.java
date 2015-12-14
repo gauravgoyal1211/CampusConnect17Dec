@@ -62,7 +62,6 @@ import java.util.List;
 public class CreateGroupActivity extends AppCompatActivity {
 
     static String imageUrlForUpload = "";
-
     ImageView upload;
     Button createGroup;
     EditText groupAbbreviation, groupName, groupDescription, groupType;
@@ -187,8 +186,6 @@ public class CreateGroupActivity extends AppCompatActivity {
             jsonObject.put("college_id", "" + collegeId);
             jsonObject.put("photoUrl", "" + imageUrlForUpload);
             Log.e("Json String", jsonObject.toString());
-
-
 /*
 
             {
@@ -206,7 +203,6 @@ public class CreateGroupActivity extends AppCompatActivity {
             String url = WebServiceDetails.DEFAULT_BASE_URL + "club";
             new WebRequestTask(CreateGroupActivity.this, param, _handler, WebRequestTask.POST, jsonObject, WebServiceDetails.PID_CREATE_GROUP,
                     true, url).execute();
-
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -229,6 +225,8 @@ public class CreateGroupActivity extends AppCompatActivity {
         alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
+                upload.setImageResource(R.mipmap.upload);
+
             }
         });
         alertDialog.show();
@@ -291,10 +289,10 @@ public class CreateGroupActivity extends AppCompatActivity {
                     upload.setImageBitmap(bitmap);
                     upload.setScaleType(ImageView.ScaleType.FIT_XY);
 
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                   /* ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
                     byte[] _byteArray = baos.toByteArray();
-                    encodedImageStr = Base64.encodeToString(_byteArray, Base64.DEFAULT);
+                    encodedImageStr = Base64.encodeToString(_byteArray, Base64.DEFAULT);*/
 
 
                     Uri selectedImageUri = getImageUri(CreateGroupActivity.this, bitmap);
@@ -320,6 +318,7 @@ public class CreateGroupActivity extends AppCompatActivity {
                     BitmapFactory.Options btmapOptions = new BitmapFactory.Options();
                     bm = BitmapFactory.decodeFile(tempPath, btmapOptions);
                     upload.setImageBitmap(bm);
+                    upload.setScaleType(ImageView.ScaleType.FIT_XY);
                     encodedImageStr = Base64.encodeToString(getBytesFromBitmap(bm), Base64.NO_WRAP);
 
                 } catch (OutOfMemoryError e) {

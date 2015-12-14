@@ -1,5 +1,6 @@
 package com.campusconnect.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -30,6 +31,11 @@ public class FlashActivity extends AppCompatActivity {
                 try {
                     sleep(1500);
                     Boolean loggedIn = SharedpreferenceUtility.getInstance(FlashActivity.this).getBoolean(AppConstants.LOG_IN_STATUS);
+                    SharedPreferences prefs = FlashActivity.this.getSharedPreferences("AllPersonalFeeds", Context.MODE_PRIVATE);
+//save the user list to preference
+                    SharedPreferences.Editor editor = prefs.edit();
+
+                    prefs.edit().remove(AppConstants.PERSONAL_FEED_ARRAYLIST).commit();
                     if (loggedIn) {
                         Intent next = new Intent(FlashActivity.this, MainActivity.class);
                         startActivity(next);

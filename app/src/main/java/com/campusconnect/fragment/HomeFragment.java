@@ -60,6 +60,7 @@ import com.campusconnect.gcm.PubSubHelper;
 import com.campusconnect.slidingtab.SlidingTabLayout_home;
 import com.campusconnect.utility.DividerItemDecoration;
 import com.campusconnect.utility.NetworkAvailablity;
+import com.campusconnect.utility.ObjectSerializer;
 import com.campusconnect.utility.SharedpreferenceUtility;
 import com.google.common.base.Strings;
 
@@ -68,20 +69,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 
@@ -129,6 +119,8 @@ public class HomeFragment extends Fragment {
     private PubSubHelper mPubSubHelper;
     String gcm_token;
 
+    private static boolean isLaunch = true;
+
     public HomeFragment() {
     }
 
@@ -147,6 +139,8 @@ public class HomeFragment extends Fragment {
 
                             //  myFeedList.clear();
                             try {
+                                Log.e("response personal", strResponse);
+
                                 JSONObject jsonObject = new JSONObject(strResponse);
                                 personalCompleted = jsonObject.optString("completed");
                                 if (jsonObject.has("items")) {
@@ -159,7 +153,7 @@ public class HomeFragment extends Fragment {
                                             String eventCreator = innerObj.optString("event_creator");
                                             String description = innerObj.optString("description");
                                             String views = innerObj.optString("views");
-                                            String photo = innerObj.optString("photo");
+                                            String photo = innerObj.optString("photoUrl");
                                             String clubid = innerObj.optString("club_id");
                                             String pid = innerObj.optString("pid");
                                             String timeStamp = innerObj.optString("timestamp");
@@ -197,7 +191,7 @@ public class HomeFragment extends Fragment {
                                             String startTime = innerObj.optString("start_time");
                                             String endTime = innerObj.optString("end_time");
                                             String venue = innerObj.optString("venue");
-                                            String clubphoto = innerObj.optString("photoUrl");
+                                            String clubphoto = innerObj.optString("clubphotoUrl");
                                             String liker = innerObj.optString("");
                                             String complete = innerObj.optString("completed");
 
@@ -237,9 +231,24 @@ public class HomeFragment extends Fragment {
 
                                       /*  tn = new CollegeMyFeedAdapter(myFeedList
                                                 , getActivity());*/
-
-                                       adapter.notifyDataSetChanged();
                                         tn.notifyDataSetChanged();
+
+                                        if (indexMyfeed == 1) {
+                                            SharedPreferences prefs = getActivity().getSharedPreferences("AllPersonalFeeds", Context.MODE_PRIVATE);
+//save the user list to preference
+                                            SharedPreferences.Editor editor = prefs.edit();
+                                            try {
+                                                editor.putString(AppConstants.PERSONAL_FEED_ARRAYLIST, ObjectSerializer.serialize(myFeedList));
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+                                            editor.commit();
+                                        }
+
+                                        if (isLaunch) {
+                                            WebApiGetGroups();
+                                            isLaunch = false;
+                                        }
                                     }
 
                                 } else {
@@ -262,6 +271,7 @@ public class HomeFragment extends Fragment {
                         break;
                         case WebServiceDetails.PID_GET_CAMPUS_FEED: {
                             try {
+                                Log.e("response college", strResponse);
                                 JSONObject campusFeedObj = new JSONObject(strResponse);
                                 Log.v("campus feed", "" + strResponse);
                                 campusCompleted = campusFeedObj.optString("completed");
@@ -276,7 +286,7 @@ public class HomeFragment extends Fragment {
                                             String eventCreator = innerObj.optString("event_creator");
                                             String description = innerObj.optString("description");
                                             String views = innerObj.optString("views");
-                                            String photo = innerObj.optString("photo");
+                                            String photo = innerObj.optString("photoUrl");
                                             String clubid = innerObj.optString("club_id");
                                             String pid = innerObj.optString("pid");
                                             String timeStamp = innerObj.optString("timestamp");
@@ -314,7 +324,7 @@ public class HomeFragment extends Fragment {
                                             String startTime = innerObj.optString("start_time");
                                             String endTime = innerObj.optString("end_time");
                                             String venue = innerObj.optString("venue");
-                                            String clubphoto = innerObj.optString("photoUrl");
+                                            String clubphoto = innerObj.optString("clubphotoUrl");
                                             String liker = innerObj.optString("");
                                             String complete = innerObj.optString("completed");
 
@@ -355,6 +365,10 @@ public class HomeFragment extends Fragment {
                                         college_feed.setAdapter(cf);*/
                                         adapter.notifyDataSetChanged();
                                         cf.notifyDataSetChanged();
+
+                                        if (isLaunch) {
+                                            WebApiGetPersonalFeed(indexMyfeed);
+                                        }
                                     }
                                 } else {
                                     Toast.makeText(getActivity(), "Create posts to create your campus feed!", Toast.LENGTH_SHORT).show();
@@ -369,7 +383,7 @@ public class HomeFragment extends Fragment {
                         case WebServiceDetails.PID_GET_GROUPS: {
                             try {
                                 groupList.clear();
-                                Log.d("group response",strResponse);
+                                Log.d("group response", strResponse);
                                 JSONObject grpJson = new JSONObject(strResponse);
                                 String kind = grpJson.optString("kind");
                                 String etag = grpJson.optString("etag");
@@ -402,7 +416,6 @@ public class HomeFragment extends Fragment {
                                         }
                                         groupList = db.getAllClubData();
 
-                                        adapter.notifyDataSetChanged();
                                         gl = new GroupListAdapterActivity(groupList);
                                         group_list.setAdapter(gl);
                                     }
@@ -465,10 +478,8 @@ public class HomeFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+        isLaunch = true;
         setRetainInstance(true);
-
-
     }
 
 
@@ -589,7 +600,6 @@ public class HomeFragment extends Fragment {
     }
 
 
-
     private PopupWindow popupWindowsort() {
 
         // initialize a pop up window type
@@ -697,21 +707,11 @@ public class HomeFragment extends Fragment {
                 /*jsonObject.put("collegeId", "" + collegeId);*/
                 jsonObject.put("pageNumber", "" + indexCollegeFeed);
                 jsonObject.toString();
-/*
-            "collegeId": "5644309118320640",
-                    "pageNumber": "1"*/
 
-/*
-            jsonObject.put("collegeId", collegeId);
-            // jsonObject.put("pid", pid);*/
                 String url = WebServiceDetails.DEFAULT_BASE_URL + "mainFeed";
                 Log.e("url", url);
                 Log.e("JSOn String", jsonObject.toString());
-
                 List<NameValuePair> param = new ArrayList<NameValuePair>();
-         /* // param.add(new BasicNameValuePair("collegeId", collegeId));
-          // param.add(new BasicNameValuePair("pid", pid));*/
-
                 checkWebApi = 2;
                 new WebRequestTask(getActivity(), param, _handler, WebRequestTask.POST, jsonObject, WebServiceDetails.PID_GET_CAMPUS_FEED,
                         true, url).execute();
@@ -754,13 +754,12 @@ public class HomeFragment extends Fragment {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("club_id", "" + bean.getClubId());
             jsonObject.put("from_pid", "" + personPid);
-        /*    jsonObject.put("club_id", "5197870353350656");*/
-           /* jsonObject.put("from_pid", "5688424874901504");*/
+
 
             List<NameValuePair> param = new ArrayList<NameValuePair>();
             String url = WebServiceDetails.DEFAULT_BASE_URL + "followClub";
             Log.e("follow", "" + jsonObject.toString());
-            Log.e("unfollow", url);
+            Log.e("follow", url);
             checkWebApi = 4;
             new WebRequestTask(getActivity(), param, _handler, WebRequestTask.POST, jsonObject, WebServiceDetails.PID_FOLLOW_UP,
                     true, url).execute();
@@ -768,6 +767,7 @@ public class HomeFragment extends Fragment {
             e.printStackTrace();
         }
     }
+
     public void webApiUnFollow(GroupBean bean) {
         try {
             String personPid = SharedpreferenceUtility.getInstance(getActivity()).getString(AppConstants.PERSON_PID);
@@ -827,13 +827,11 @@ public class HomeFragment extends Fragment {
     }
 
     public class FragmentGroups extends Fragment {
-
         private static final String LOG_TAG = "FragmentGroups";
         RelativeLayout create_group;
         TextView create_group_text;
         private String mEmailAccount = "";
         SharedPreferences sharedPreferences;
-
 
         /*@Override
         public void onResume() {
@@ -866,13 +864,27 @@ public class HomeFragment extends Fragment {
             if (gl == null) {
                 try {
                     gl = new GroupListAdapterActivity(createList_gl(1));
+
+                    if (NetworkAvailablity.hasInternetConnection(getActivity())) {
+                    } else {
+                        try {
+                            groupList = db.getAllClubData();
+                            if (!groupList.isEmpty()) {
+                                gl = new GroupListAdapterActivity(groupList);
+                                group_list.setAdapter(gl);
+                            }
+                        } catch (Exception x) {
+                            x.printStackTrace();
+                        }
+                    }
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
             group_list.setAdapter(gl);
 
-           // WebApiGetGroups();
+            // WebApiGetGroups();
             //TODO comment to remove crash .Remove comment
             // gl.notifyDataSetChanged();
 
@@ -947,7 +959,7 @@ public class HomeFragment extends Fragment {
                     startActivity(intent_temp);
                 }
             });*/
-      //      webApiCampusFeed(indexCollegeFeed);
+            //      webApiCampusFeed(indexCollegeFeed);
             swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
@@ -1015,6 +1027,27 @@ public class HomeFragment extends Fragment {
         public int pos = 0;
         String tag = "FragmentMyFeed";
 
+
+        @Override
+        public void onResume() {
+            super.onResume();
+
+// WebApiGetPersonalFeed(indexMyfeed);
+
+            SharedPreferences prefs1 = getActivity().getSharedPreferences("AllPersonalFeeds", Context.MODE_PRIVATE);
+            try {
+                myFeedList.clear();
+                myFeedList = (ArrayList) ObjectSerializer.deserialize(prefs1.getString(AppConstants.PERSONAL_FEED_ARRAYLIST, ObjectSerializer.serialize(new ArrayList())));
+                tn = new CollegeMyFeedAdapter(
+                        myFeedList, getActivity());
+                personal_feed.setAdapter(tn);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+
+
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             View v = inflater.inflate(R.layout.fragment_top_news, null, false);
@@ -1044,7 +1077,7 @@ public class HomeFragment extends Fragment {
             }
             tn.notifyDataSetChanged();
             myFeedList.clear();
-          //  WebApiGetPersonalFeed(indexMyfeed);
+            //  WebApiGetPersonalFeed(indexMyfeed);
             personal_feed.setOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -1126,13 +1159,13 @@ public class HomeFragment extends Fragment {
             Fragment fragment = null;
 
             if (position == 0) {
-                WebApiGetPersonalFeed(indexMyfeed);
+//                WebApiGetPersonalFeed(indexMyfeed);
                 fragment = new FragmentMyFeed();
             } else if (position == 1) {
                 webApiCampusFeed(indexCollegeFeed);
                 fragment = new FragmentCampusFeed();
             } else if (position == 2) {
-                WebApiGetGroups();
+//                WebApiGetGroups();
                 fragment = new FragmentGroups();
             }
             return fragment;
@@ -1202,7 +1235,6 @@ public class HomeFragment extends Fragment {
 
     public class GroupListAdapterActivity extends
             RecyclerView.Adapter<GroupListAdapterActivity.GroupListViewHolder> {
-
         private List<GroupBean> GroupList;
         private List<String> itemsName;
         int posi = 0;
@@ -1238,6 +1270,8 @@ public class HomeFragment extends Fragment {
             //ModelsClubMiniForm ci = GroupList.get(i);
 
             GroupBean bean = GroupList.get(posi);
+
+
             group_listViewHolder.group_title.setText(GroupList.get(i).getAbb());
         /*    if (followingFlag != null) {
                 if (followingFlag.get(i)) {
@@ -1293,10 +1327,9 @@ public class HomeFragment extends Fragment {
                         GroupBean bean = GroupList.get(posi);
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("BEAN", bean);
+                        bundle.putString("follow", GroupList.get(posi).getFollow());
                         intent_temp.putExtras(bundle);
-
                         v.getContext().startActivity(intent_temp);
-
                     }
                 });
 

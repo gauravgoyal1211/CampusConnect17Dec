@@ -61,13 +61,10 @@ public class NewsPostsByGroupActivity extends ActionBarActivity {
         news_posts_by_group.setLayoutManager(llm);
         news_posts_by_group.setItemAnimator(new DefaultItemAnimator());
 
-
         close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 finish();
-
             }
         });
 
@@ -106,10 +103,8 @@ public class NewsPostsByGroupActivity extends ActionBarActivity {
                     switch (response_code) {
                         case WebServiceDetails.PID_GET_Events: {
                             try {
-
                                 JSONObject jsonObject = new JSONObject(strResponse);
                                 if (jsonObject.has("items")) {
-
                                     JSONArray array = jsonObject.getJSONArray("items");
                                     if (array.length() > 0) {
                                         for (int i = 0; i < array.length(); i++) {
@@ -132,25 +127,22 @@ public class NewsPostsByGroupActivity extends ActionBarActivity {
                                             "https://lh3.googleusercontent.com/qe9m1joR-j7LRwyWUPcGN1sFwJU6-xzpMACHULIphKrCr1sj9tLBIQxBfXz_6EZNOGywbXxi-WRJqbsSGOm0ad-9kQBhgplkrw",
                                                     "kind":"clubs#resourcesItem"
 */
-
-
                                             String description = innerObj.optString("description");
                                             String pid = innerObj.optString("from_pid");
                                             String photo = innerObj.optString("photoUrl");
 
                                             //TODO remvpe comment here
 
-                                            // String clubid = innerObj.optString("club_id");
+                                            String clubname = innerObj.optString("clubname");
                                             String likes = innerObj.optString("likes");
                                             String views = innerObj.optString("views");
                                             String title = innerObj.optString("title");
-
                                             String time = innerObj.optString("time");
                                             String date = innerObj.optString("date");
                                             String clubphotoUrl = innerObj.optString("clubphotoUrl");
                                             String kind = innerObj.optString("kind");
 
-                                            String clubphoto = innerObj.optString("clubphotoUrl");
+
 
                                             ArrayList<String> likesList = new ArrayList<>();
                                             try {
@@ -168,8 +160,6 @@ public class NewsPostsByGroupActivity extends ActionBarActivity {
                                                 ex.printStackTrace();
                                             }
 
-
-                                      //TODO timestamp is required here
                                       //TOdo venue is missing
                                       //Creator name
                                             bean.setDescription(description);
@@ -182,8 +172,12 @@ public class NewsPostsByGroupActivity extends ActionBarActivity {
                                             bean.setTime(time);
                                             bean.setDate(date);
                                             bean.setKind(kind);
-                                            bean.setClubphoto("" + clubphoto);
+                                            bean.setClubphoto("" + clubphotoUrl);
                                             bean.setLikers("" + likesList.toString());
+                                            bean.setTimeStamp(date+" "+time);
+                                            bean.setClubid(clubname);
+                                          //venue not be set
+                                            bean.setVenue(" ");
 
 
                                          /*   ArrayList<String> tagList = new ArrayList<>();

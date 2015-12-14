@@ -17,7 +17,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -465,10 +464,12 @@ public class GoogleSignin extends Activity implements View.OnClickListener,
                             edit.commit();
                             Intent intent_temp = new Intent(v.getContext(), MainActivity.class);
                             startActivity(intent_temp);
+                            finish();
 
                         } else {
                             Intent intent_temp = new Intent(v.getContext(), SelectCollegeActivity.class);
                             startActivity(intent_temp);
+                            finish();
                         }
                     }
                 };

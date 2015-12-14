@@ -35,9 +35,9 @@ public class NotificationAdapterActivity extends
     public static TypefaceSpan robotoRegularSpan_for_group_name, robotoRegularSpan_for_subject;
     public static String group_name = " ", subject = " ", end = "";
 
-    public NotificationAdapterActivity(List<NotificationBean> NotificationList , Context context) {
+    public NotificationAdapterActivity(List<NotificationBean> NotificationList, Context context) {
         this.NotificationList = NotificationList;
-        this.context=context;
+        this.context = context;
     }
 
     @Override
@@ -52,16 +52,14 @@ public class NotificationAdapterActivity extends
         String intro = "";
         String middle = "";
         notification_listViewHolder.notification_ts.setText(timeAgo(ci.getTimestamp()));
-try{
-        if (ci.getPhotoUrl().equalsIgnoreCase("None")) {
-            Picasso.with(context).load(R.mipmap.spark_session).into(notification_listViewHolder.group_icon_notification);
-        } else {
-            Picasso.with(context).load(ci.getPhotoUrl()).into(notification_listViewHolder.group_icon_notification);
-        }
-    } catch (Exception e) {
+        try {
 
-        Picasso.with(context).load(R.mipmap.spark_session).into(notification_listViewHolder.group_icon_notification);
-    }
+
+            Picasso.with(context).load(ci.getPhotoUrl()).into(notification_listViewHolder.group_icon_notification);
+        } catch (Exception e) {
+
+            Picasso.with(context).load(R.mipmap.spark_session).into(notification_listViewHolder.group_icon_notification);
+        }
 
 
         if (ci.getType() != null) {
@@ -77,9 +75,7 @@ try{
 */
 
 
-
             if (ci.getType().equalsIgnoreCase("post")) {
-
                 intro = "This just in! ";
                 middle = " has posted a news post ";
                 group_name = "" + ci.getGroup_name();            //To be gotten from server
@@ -115,18 +111,15 @@ try{
                 g_name.setSpan(robotoRegularSpan_for_subject, middle.length() + intro.length() + subject.length(), middle.length() + intro.length() + group_name.length() + subject.length() + 1, 0);
 
                 notification_listViewHolder.notification.setText(g_name);
-            } else if (ci.getType().trim().equalsIgnoreCase("Join Request")) {
+            } else if (ci.getType().trim().equalsIgnoreCase("approved join request")) {
 
                 intro = "Congratulations! Your request to join ";
                 end = " has been accepted";
                 group_name = "" + ci.getGroup_name();          //To be gotten from server
                 g_name = new SpannableStringBuilder(intro + group_name + end + ".");
                 g_name.setSpan(robotoRegularSpan_for_group_name, intro.length(), intro.length() + group_name.length(), 0);
-
                 notification_listViewHolder.notification.setText(g_name);
-
             } else {
-
             }
 
 

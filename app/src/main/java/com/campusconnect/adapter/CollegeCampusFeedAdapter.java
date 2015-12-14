@@ -81,18 +81,15 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
 
         String url = "http://admin.bookieboost.com/admin/images/2015-02-0116-17-50.jpg";
         try {
-            String urll = cf.getClubphoto();
-            Log.e("url campusfeed", "" + urll);
-            if (cf.getClubphoto().equalsIgnoreCase("None")) {
-                Picasso.with(context).load(R.mipmap.spark_session).into(college_feedViewHolder.event_photo);
-            } else {
-                Picasso.with(context).load(cf.getClubphoto()).into(college_feedViewHolder.event_photo);
-            }
+             Picasso.with(context).load(cf.getPhoto()).into(college_feedViewHolder.event_photo);
         } catch (Exception e) {
-
             Picasso.with(context).load(R.mipmap.spark_session).into(college_feedViewHolder.event_photo);
         }
-        Picasso.with(context).load(url).into(college_feedViewHolder.group_icon);
+        try {
+            Picasso.with(context).load(cf.getClubphoto()).into(college_feedViewHolder.group_icon);
+        } catch (Exception e) {
+            Picasso.with(context).load(R.mipmap.spark_session).into(college_feedViewHolder.group_icon);
+        }
 
         String title = cf.getTitle();
         //news
@@ -101,7 +98,6 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
             college_feedViewHolder.date_month.setVisibility(View.GONE);
             college_feedViewHolder.time.setVisibility(View.GONE);
             college_feedViewHolder.news_icon.setVisibility(View.VISIBLE);
-
             //flag_news[i]=true;
             flag_news.add(i, true);
             college_feedViewHolder.going.setImageResource(R.mipmap.heart);
@@ -125,7 +121,6 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
                 SimpleDateFormat monthFormat = new SimpleDateFormat("MMM");
                 String month = monthFormat.format(date);
                 Log.e("month", month);
-
                 SimpleDateFormat dateformate = new SimpleDateFormat("dd");
                 String dayFormate = monthFormat.format(date);
                 Log.e("day", "" + calendar.get(Calendar.DAY_OF_MONTH));
@@ -141,7 +136,7 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
                 }
                 Log.e(cf.getTitle(), day + "" + month);
                 college_feedViewHolder.date_month.setText("" + day + "" + month);
-                college_feedViewHolder.time.setText("" + cf.getEnd_time());
+                college_feedViewHolder.time.setText("" + cf.getStart_time());
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -212,7 +207,6 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
                 @Override
                 public void onClick(View v) {
 
-
                     int pos_for_going = getAdapterPosition();
                     if (flag_attending_clicked.get(pos_for_going)) {
                         if (flag_news.get(pos_for_going)) {
@@ -261,6 +255,12 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
                 @Override
                 public void onClick(View v) {
                     int pos_for_share = getAdapterPosition();
+                    Intent i = new Intent(android.content.Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    String shareBody = CollegeFeedList.get(pos_for_share).getTitle() + "/n" + CollegeFeedList.get(posi).getDescription();
+                    i.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                    v.getContext().startActivity(Intent.createChooser(i, "Share via"));
+
                     if (flag_share_clicked.get(pos_for_share)) {
                         share.setAlpha((float) 0.5);
                         flag_share_clicked.add(pos_for_share, false);

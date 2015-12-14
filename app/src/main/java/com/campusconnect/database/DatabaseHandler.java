@@ -93,13 +93,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     // Getting single item
-    GroupBean getGroupItem(String clubid) {
+   public  String  getFollowUnfollow(String clubid) {
         SQLiteDatabase db = this.getReadableDatabase();
-
         /*Cursor cursor = db.query(TABLE_CLUBS, new String[]{
                          KEY_CLUBID,KEY_FOLLOWING}, KEY_CLUBID + "=?",
                 new String[]{String.valueOf(id)}, null, null, null, null);*/
-        String sql = " select " + KEY_FOLLOWING + "," + KEY_FOLLOWING + "," + KEY_ABB + "from " + TABLE_CLUBS + " where " + KEY_CLUBID + "= ?";
+        String sql = " select " + KEY_FOLLOWING + "from " + TABLE_CLUBS + " where " + KEY_CLUBID + "= ?";
         Log.e(Tag, sql);
         Cursor cursor = db.rawQuery(sql, new String[]{clubid});
         if (cursor != null)
@@ -109,7 +108,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
        /* Contact contact = new Contact(Integer.parseInt(cursor.getString(0)),
                 cursor.getString(1), cursor.getString(2));*/
         // return contact
-        return groupBean;
+        return groupBean.getFollow();
     }
 
     public int updateFollow(String clubId, String value) {

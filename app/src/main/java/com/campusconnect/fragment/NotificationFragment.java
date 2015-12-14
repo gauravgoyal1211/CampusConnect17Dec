@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Toast;
-
 import com.campusconnect.R;
 import com.campusconnect.adapter.NotificationAdapterActivity;
 import com.campusconnect.bean.NotificationBean;
@@ -177,22 +176,22 @@ public class NotificationFragment extends Fragment {
                     switch (response_code) {
                         case WebServiceDetails.PID_NOTIFICATION: {
                             try {
+                                mNotifiList.clear();
                                 JSONObject jsonObject = new JSONObject(strResponse);
                                 if (jsonObject.has("list")) {
-                                    mNotifiList.clear();
+
                                     JSONArray array = jsonObject.getJSONArray("list");
                                     if (array.length() > 0) {
 
                                         for (int i = 0; i < array.length(); i++) {
                                             JSONObject obj = array.getJSONObject(i);
-                                            String gropname = obj.optString("groupName");
+                                            String gropname = obj.optString("clubName");
                                             String type = obj.optString("type");
-                                            String groupId = obj.optString("groupId");
+                                            String groupId = obj.optString("clubId");
                                             String timestamp = obj.optString("timestamp");
                                             String eventName = obj.optString("eventName");
                                             String eventid = obj.optString("eventId");
-                                            String photoUrl = obj.optString("photoUrl");
-
+                                            String photoUrl = obj.optString("clubphotoUrl");
 
                                             NotificationBean bean = new NotificationBean();
                                             bean.setGroup_name(gropname);

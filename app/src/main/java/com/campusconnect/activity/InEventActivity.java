@@ -124,16 +124,21 @@ public class InEventActivity extends AppCompatActivity {
                 e_time.setText("" + bean.getEnd_time());
             }
             try {
-                if (bean.getClubphoto().equalsIgnoreCase("none")) {
-                    Picasso.with(InEventActivity.this).load(R.mipmap.spark_session).into(event_photo);
-                } else {
-                    Picasso.with(InEventActivity.this).load(bean.getClubphoto()).into(event_photo);
-                }
+                Picasso.with(InEventActivity.this).load(bean.getPhoto()).into(event_photo);
+
             } catch (Exception e) {
                 e.printStackTrace();
-                String url = "http://admin.bookieboost.com/admin/images/2015-02-0116-17-50.jpg";
                 Picasso.with(InEventActivity.this).load(R.mipmap.spark_session).into(event_photo);
             }
+
+            try {
+                Picasso.with(InEventActivity.this).load(bean.getClubphoto()).into(g_icon);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                Picasso.with(InEventActivity.this).load(R.mipmap.spark_session).into(event_photo);
+            }
+
             SimpleDateFormat inFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date date = null;
             try {
@@ -215,7 +220,7 @@ public class InEventActivity extends AppCompatActivity {
                 if (flag_attended_clicked) {
                     if (flag_news) {
                         going.setImageResource(R.mipmap.heart);
-                        Toast.makeText(InEventActivity.this,"coming soon",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(InEventActivity.this, "coming soon", Toast.LENGTH_SHORT).show();
                     } else {
                         going.setImageResource(R.mipmap.going);
 
@@ -236,7 +241,7 @@ public class InEventActivity extends AppCompatActivity {
                 } else {
                     if (flag_news) {
                         going.setImageResource(R.mipmap.heart_selected);
-                        Toast.makeText(InEventActivity.this,"coming soon",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(InEventActivity.this, "coming soon", Toast.LENGTH_SHORT).show();
                     } else {
                         going.setImageResource(R.mipmap.going_selected);
                         try {
@@ -259,9 +264,9 @@ public class InEventActivity extends AppCompatActivity {
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i=new Intent(android.content.Intent.ACTION_SEND);
+                Intent i = new Intent(android.content.Intent.ACTION_SEND);
                 i.setType("text/plain");
-                String shareBody = bean.getTitle()+"/n"+bean.getDescription();
+                String shareBody = bean.getTitle() + "/n" + bean.getDescription();
                 i.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
                 v.getContext().startActivity(Intent.createChooser(i, "Share via"));
 
@@ -317,13 +322,13 @@ public class InEventActivity extends AppCompatActivity {
             }
             if (response_code == 204) {
              /*  if (!flag_news) {*/
-                    if (attending == 1) {
-                        attending = 2;
-                        Toast.makeText(InEventActivity.this, "Attending", Toast.LENGTH_LONG).show();
-                    } else if (attending == 2) {
-                        attending = 1;
-                        Toast.makeText(InEventActivity.this, "Not Attending", Toast.LENGTH_LONG).show();
-                    }
+                if (attending == 1) {
+                    attending = 2;
+                    Toast.makeText(InEventActivity.this, "Attending", Toast.LENGTH_LONG).show();
+                } else if (attending == 2) {
+                    attending = 1;
+                    Toast.makeText(InEventActivity.this, "Not Attending", Toast.LENGTH_LONG).show();
+                }
 /*
 
                 } else {

@@ -74,6 +74,9 @@ public class AppConstants {
 
     public static final String BLOB_URL="blob_url";
 
+    public static final String PERSONAL_FEED_ARRAYLIST="personal_feed_arraylist";
+
+
 
     public static final JsonFactory JSON_FACTORY = new AndroidJsonFactory();
 

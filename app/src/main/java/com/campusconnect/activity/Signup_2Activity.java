@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -64,19 +63,17 @@ public class Signup_2Activity extends Activity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup_2);
 
-        sharedPreferences=getSharedPreferences(AppConstants.SHARED_PREFS, Context.MODE_PRIVATE);
-        college_name=sharedPreferences.getString(AppConstants.COLLEGE_NAME, null);
-        welcome_msg = (TextView)findViewById(R.id.tv_welcome_message);
+        sharedPreferences = getSharedPreferences(AppConstants.SHARED_PREFS, Context.MODE_PRIVATE);
+        college_name = sharedPreferences.getString(AppConstants.COLLEGE_NAME, null);
+        welcome_msg = (TextView) findViewById(R.id.tv_welcome_message);
         btnSignIn = (SignInButton) findViewById(R.id.btn_sign_in);
 
         welcome_msg.setText("Welcome to \n" + college_name);
 
 
-
         boolean gcmstatus = sharedPreferences.getBoolean("gcm_generated", false);
-        if(gcmstatus == false)
-        {
-            Log.i(TAG,"Getting GCM Token Now");
+        if (gcmstatus == false) {
+            Log.i(TAG, "Getting GCM Token Now");
             Intent m = new Intent(Signup_2Activity.this, RegistrationIntentService.class);
             startService(m);
         }
@@ -124,7 +121,7 @@ public class Signup_2Activity extends Activity implements
                     mGoogleApiClient.connect();
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -168,9 +165,9 @@ public class Signup_2Activity extends Activity implements
         mSignInClicked = false;
         Toast.makeText(this, "User is connected!", Toast.LENGTH_LONG).show();
         getProfileInformation();
-        String gcm_token=SharedpreferenceUtility.getInstance(Signup_2Activity.this).getString(AppConstants.GCM_TOKEN);
-        String email=SharedpreferenceUtility.getInstance(Signup_2Activity.this).getString(AppConstants.EMAIL_KEY);
-        webApi(email,gcm_token);
+        String gcm_token = SharedpreferenceUtility.getInstance(Signup_2Activity.this).getString(AppConstants.GCM_TOKEN);
+        String email = SharedpreferenceUtility.getInstance(Signup_2Activity.this).getString(AppConstants.EMAIL_KEY);
+        webApi(email, gcm_token);
     }
 
     private void getProfileInformation() {
@@ -188,9 +185,9 @@ public class Signup_2Activity extends Activity implements
                         + ", Image: " + personPhotoUrl);
 
                 SharedpreferenceUtility.getInstance(Signup_2Activity.this).putString(AppConstants.EMAIL_KEY, email);
-                SharedpreferenceUtility.getInstance(Signup_2Activity.this).putString(AppConstants.PERSON_NAME,personName);
+                SharedpreferenceUtility.getInstance(Signup_2Activity.this).putString(AppConstants.PERSON_NAME, personName);
                 SharedpreferenceUtility.getInstance(Signup_2Activity.this).putBoolean(AppConstants.LOG_IN_STATUS, Boolean.TRUE);
-                SharedpreferenceUtility.getInstance(Signup_2Activity.this).putString(AppConstants.PHOTO_URL,personPhotoUrl);
+                SharedpreferenceUtility.getInstance(Signup_2Activity.this).putString(AppConstants.PHOTO_URL, personPhotoUrl);
 
             } else {
                 Toast.makeText(getApplicationContext(),
@@ -207,7 +204,6 @@ public class Signup_2Activity extends Activity implements
     }
 
 
-
     private void signInWithGplus() {
         if (!mGoogleApiClient.isConnecting()) {
             mSignInClicked = true;
@@ -216,19 +212,19 @@ public class Signup_2Activity extends Activity implements
     }
 
 
-    private void webApi(String email,String gcmId) {
-        JSONObject jsonObject=new JSONObject();
+    private void webApi(String email, String gcmId) {
+        JSONObject jsonObject = new JSONObject();
 
         try {
-            jsonObject.put("email", ""+email);
-            jsonObject.put("gcmId", ""+gcmId);
+            jsonObject.put("email", "" + email);
+            jsonObject.put("gcmId", "" + gcmId);
         } catch (JSONException e) {
             e.printStackTrace();
         }
         List<NameValuePair> param = new ArrayList<NameValuePair>();
         String url = WebServiceDetails.DEFAULT_BASE_URL + "profileGCM";
-        Log.i(TAG ,"get profile"+url);
-        new WebRequestTask(Signup_2Activity.this, param, _handler, WebRequestTask.POST,jsonObject, WebServiceDetails.PID_GET_GCM_PROFILE,
+        Log.i(TAG, "get profile" + url);
+        new WebRequestTask(Signup_2Activity.this, param, _handler, WebRequestTask.POST, jsonObject, WebServiceDetails.PID_GET_GCM_PROFILE,
                 true, url).execute();
     }
 
@@ -343,15 +339,17 @@ public class Signup_2Activity extends Activity implements
 //                                        }
 //
                                     }
-                                        SharedpreferenceUtility.getInstance(Signup_2Activity.this).putBoolean(AppConstants.LOG_IN_STATUS,Boolean.TRUE);
-                                        startActivity(new Intent(Signup_2Activity.this, MainActivity.class));
-                                }else{
-                                    SharedpreferenceUtility.getInstance(Signup_2Activity.this).putBoolean(AppConstants.LOG_IN_STATUS,Boolean.TRUE);
+                                    SharedpreferenceUtility.getInstance(Signup_2Activity.this).putBoolean(AppConstants.LOG_IN_STATUS, Boolean.TRUE);
+                                    startActivity(new Intent(Signup_2Activity.this, MainActivity.class));
+                                    finish();
+                                } else {
+                                    SharedpreferenceUtility.getInstance(Signup_2Activity.this).putBoolean(AppConstants.LOG_IN_STATUS, Boolean.TRUE);
                                     startActivity(new Intent(Signup_2Activity.this, GetProfileDetailsActivity.class));
+                                    finish();
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
-                              //  startActivitys(new Intent(Signup_2Activity.this,MainActivity.class));
+                                //  startActivitys(new Intent(Signup_2Activity.this,MainActivity.class));
                             }
                         }
                         break;

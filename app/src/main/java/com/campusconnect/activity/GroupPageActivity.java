@@ -16,6 +16,7 @@ import com.campusconnect.adapter.GroupPage_infoActivity;
 import com.campusconnect.bean.GroupBean;
 import com.campusconnect.communicator.WebRequestTask;
 import com.campusconnect.communicator.WebServiceDetails;
+import com.campusconnect.database.DatabaseHandler;
 import com.campusconnect.utility.NetworkAvailablity;
 
 import org.apache.http.NameValuePair;
@@ -28,26 +29,38 @@ import java.util.List;
 public class GroupPageActivity extends ActionBarActivity {
 
     RecyclerView group_page;
-
+    String follow ;
+    DatabaseHandler db;
     private static final String LOG_TAG = "GroupPageActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_page);
-
+        db= new DatabaseHandler(GroupPageActivity.this);
         group_page = (RecyclerView) findViewById(R.id.recycler_group_page);
-
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         group_page.setLayoutManager(llm);
         group_page.setHasFixedSize(true);
         group_page.setItemAnimator(new DefaultItemAnimator());
         GroupBean bean = (GroupBean) getIntent().getSerializableExtra("BEAN");
-        String club_id = bean.getClubId();
-        WebApiGetGroup(club_id);
 
+        try {
+            Bundle bundle = getIntent().getExtras();
 
+            follow = bundle.getString("follow");
+            if(follow==null){
+            follow="0";
+            }
+        } catch (Exception e) {
+
+        }
+        if (bean != null) {
+            String club_id = bean.getClubId();
+            WebApiGetGroup(club_id);
+
+        }
     }
 
 
@@ -116,7 +129,9 @@ public class GroupPageActivity extends ActionBarActivity {
                                 bean.setName(name);
                                 bean.setAdmin(admin);
                                 bean.setClubId(clubId);
-                                bean.setFollow("0");
+                                if (follow != null || follow.isEmpty()) {
+                                    bean.setFollow("" + follow);
+                                }
                                 bean.setDescription(description);
                                 bean.setPhotourl(photoUrl);
                                 bean.setMemberCount(member_count);

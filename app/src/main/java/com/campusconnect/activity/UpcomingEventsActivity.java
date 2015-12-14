@@ -75,8 +75,8 @@ public class UpcomingEventsActivity extends ActionBarActivity {
     }
     public void WebApiGetUpComingEvent(String clubId) {
         try {
-            String pid = SharedpreferenceUtility.getInstance(UpcomingEventsActivity.this).getString(AppConstants.PERSON_PID);
             JSONObject jsonObject = new JSONObject();
+            String pid = SharedpreferenceUtility.getInstance(UpcomingEventsActivity.this).getString(AppConstants.PERSON_PID);
             List<NameValuePair> param = new ArrayList<NameValuePair>();
             String url = WebServiceDetails.DEFAULT_BASE_URL + "getEvents?clubId="+clubId;
             new WebRequestTask(UpcomingEventsActivity.this, param, _handler, WebRequestTask.GET, jsonObject, WebServiceDetails.PID_GET_Events,
@@ -113,33 +113,13 @@ public class UpcomingEventsActivity extends ActionBarActivity {
                                     if (array.length() > 0) {
                                         for (int i = 0; i < array.length(); i++) {
 
-                                          //  "event_creator": "Key('Profile', 5383895587487744)",
-                                                  //  "eventId": "5283876536582144",
-                                                 //   "attendees": "[Key('Profile', 5383895587487744), Key('Profile', 5638059940904960), Key('Profile', 4834276138811392)]",
-                                                  //  "description": "test",
-                                                  //  "end_date": "2015-12-11",
-                                                  //  "title": "Attend this test",
-                                                 //   "start_time": "06:00:00",
-                                                  //  "club_id": "Key('Club', 6477919320801280)",
-                                                //    "venue": "SAC",
-                                              //      "start_date": "2015-12-11",
-                                                //    "collegeId": "Key('CollegeDb', 6242363718500352)",
-                                                  //  "completed": "No",
-                                                 //   "end_time": "15:00:00",
-                                                //    "time": "06:00:00",
-                                                //    "date": "2015-12-11",
-                                                //    "isAlumni": "No",
-                                             //       "club_name": "ClubTwo",
-                                            //        "views": "0",
-                                          //          "tags": "[]",
-                                       //             "kind": "clubs#resourcesItem"
                                             JSONObject innerObj = array.getJSONObject(i);
                                             CampusFeedBean bean = new CampusFeedBean();
 
                                             String eventCreator = innerObj.optString("event_creator");
                                             String description = innerObj.optString("description");
                                             String views = innerObj.optString("views");
-                                            String photo = innerObj.optString("photo");
+                                            String photo = innerObj.optString("photoUrl");
 
                                             //TODO remvpe comment here
 
@@ -156,7 +136,7 @@ public class UpcomingEventsActivity extends ActionBarActivity {
                                             String startTime = innerObj.optString("start_time");
                                             String endTime = innerObj.optString("end_time");
                                             String venue = innerObj.optString("venue");
-                                            String clubphoto = innerObj.optString("photoUrl");
+                                            String clubphoto = innerObj.optString("clubphotoUrl");
 
 
                                             String date= innerObj.optString("time");
@@ -189,7 +169,7 @@ public class UpcomingEventsActivity extends ActionBarActivity {
                                             bean.setPid(eventid);
 
                                             bean.setPhoto(photo);
-                                            bean.setTimeStamp(timeStamp);
+                                            bean.setTimeStamp(time+" "+date);
                                             bean.setTitle(title);
                                             bean.setCollegeId(collegeId);
 
@@ -206,6 +186,7 @@ public class UpcomingEventsActivity extends ActionBarActivity {
                                             bean.setLikers("" + liker);
                                             bean.setCompleted("" + complete);
                                             bean.setClubname(clubName);
+                                            bean.setClubid(clubName);
                                             ArrayList<String> tagList = new ArrayList<>();
                                             try {
 

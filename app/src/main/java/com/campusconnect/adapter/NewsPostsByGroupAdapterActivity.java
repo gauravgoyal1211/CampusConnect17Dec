@@ -53,19 +53,22 @@ public class NewsPostsByGroupAdapterActivity extends
     @Override
     public void onBindViewHolder(NewsPostsByGroupViewHolder news_posts_by_groupViewHolder, int i) {
         CampusFeedBean ci = NewsPostsByGroupList.get(i);
-
-        news_posts_by_groupViewHolder.timestamp.setText(timeAgo(ci.getTimeStamp()));
+        news_posts_by_groupViewHolder.timestamp.setText(timeAgo(ci.getDate()+" "+ci.getTime()));
         news_posts_by_groupViewHolder.event_title.setText(ci.getTitle());
         news_posts_by_groupViewHolder.group_name.setText(ci.getClubid());
         try {
-            if (ci.getClubphoto().equalsIgnoreCase("None") || ci.getClubphoto() == null) {
-                Picasso.with(context).load(R.mipmap.spark_session).into(news_posts_by_groupViewHolder.event_photo);
-            } else {
-                Picasso.with(context).load(ci.getPhoto()).into(news_posts_by_groupViewHolder.event_photo);
-            }
+            Picasso.with(context).load(ci.getPhoto()).into(news_posts_by_groupViewHolder.event_photo);
+
         } catch (Exception e) {
             Picasso.with(context).load(R.mipmap.spark_session).into(news_posts_by_groupViewHolder.event_photo);
         }
+        try {
+            Picasso.with(context).load(ci.getClubphoto()).into(news_posts_by_groupViewHolder.group_icon);
+        } catch (Exception e) {
+            Picasso.with(context).load(R.mipmap.spark_session).into(news_posts_by_groupViewHolder.group_icon);
+        }
+
+
     }
 
     public String timeAgo(String createTimeStr) {
@@ -176,6 +179,12 @@ public class NewsPostsByGroupAdapterActivity extends
             share.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+                    Intent i = new Intent(android.content.Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    String shareBody = NewsPostsByGroupList.get(posi).getTitle() + "/n" + NewsPostsByGroupList.get(posi).getDescription();
+                    i.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                    v.getContext().startActivity(Intent.createChooser(i, "Share via"));
                     int pos_for_share = getAdapterPosition();
                     if (flag_share_clicked[pos_for_share]) {
                         share.setAlpha((float) 0.5);
@@ -187,6 +196,7 @@ public class NewsPostsByGroupAdapterActivity extends
                 }
             });
         }
+
         @Override
         public void onClick(View view) {
 

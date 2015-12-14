@@ -72,20 +72,24 @@ public class UpcomingEventsAdapterActivity extends
         upcoming_eventsViewHolder.event_title.setText(ci.getTitle());
         upcoming_eventsViewHolder.group_name.setText(ci.getClubname());
         upcoming_eventsViewHolder.timestamp.setText(timeAgo(ci.getTimeStamp()));
-        upcoming_eventsViewHolder.time.setText("" + ci.getEnd_time());
+        upcoming_eventsViewHolder.time.setText("" + ci.getStart_time());
 
         upcoming_eventsViewHolder.group_icon.setImageResource(R.mipmap.spark_session);
         String url = "http://admin.bookieboost.com/admin/images/2015-02-0116-17-50.jpg";
         try {
-            if (ci.getPhoto().equalsIgnoreCase("None") || ci.getPhoto() == null) {
-                Picasso.with(context).load(R.mipmap.spark_session).into(upcoming_eventsViewHolder.event_photo);
-            } else {
                 Picasso.with(context).load(ci.getPhoto()).into(upcoming_eventsViewHolder.event_photo);
-            }
+
         } catch (Exception e) {
             Picasso.with(context).load(R.mipmap.spark_session).into(upcoming_eventsViewHolder.event_photo);
         }
-        Picasso.with(context).load(url).into(upcoming_eventsViewHolder.group_icon);
+        try {
+            Picasso.with(context).load(ci.getClubphoto()).into(upcoming_eventsViewHolder.group_icon);
+
+        } catch (Exception e) {
+            Picasso.with(context).load(R.mipmap.spark_session).into(upcoming_eventsViewHolder.event_photo);
+        }
+
+
 
         SimpleDateFormat inFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = null;
@@ -250,6 +254,12 @@ public class UpcomingEventsAdapterActivity extends
                 @Override
                 public void onClick(View v) {
                     int pos_for_share = getAdapterPosition();
+                    Intent i = new Intent(android.content.Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    String shareBody = UpcomingEventsList.get(pos_for_share).getTitle() + "/n" + UpcomingEventsList.get(posi).getDescription();
+                    i.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                    v.getContext().startActivity(Intent.createChooser(i, "Share via"));
+
                     if (flag_share_clicked[pos_for_share]) {
                         share.setAlpha((float) 0.5);
                         flag_share_clicked[pos_for_share] = false;

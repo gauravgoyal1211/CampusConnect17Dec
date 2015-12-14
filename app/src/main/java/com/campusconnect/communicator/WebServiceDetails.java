@@ -15,8 +15,8 @@ public class WebServiceDetails {
 
 
     /*For deveopment*/
-    public static final String DEFAULT_ROOT_URL = "https://campus-connect-2015.appspot.com/_ah/api/";
-
+	public static final String DEFAULT_ROOT_URL = "https://campus-connect-2015.appspot.com/_ah/api/";
+//	public static final String DEFAULT_ROOT_URL = "https://campus-connect-test.appspot.com/_ah/api/";
 	public static final String DEFAULT_SERVICE_PATH = "clubs/v1/";
 
 	public static final String DEFAULT_BASE_URL = DEFAULT_ROOT_URL + DEFAULT_SERVICE_PATH;
@@ -41,7 +41,6 @@ public class WebServiceDetails {
 	public static final int PID_GET_CLUB_DETAIL=17;
 	public static final int PID_GET_CLUB_MEMBER=18;
 	public static final int PID_GET_Events=19;
-
 	public static final int  PID_GET_CLUB=20;
 
 

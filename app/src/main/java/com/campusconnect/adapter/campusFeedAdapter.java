@@ -107,7 +107,7 @@ public class campusFeedAdapter extends BaseAdapter {
         flag_share_clicked.add(position, false);
         holder.event_title.setText(cf.getTitle());
         holder.timestamp.setText("" + timeAgo(cf.getTimeStamp()));
-        holder.group_name.setText(cf.getClubid());
+        holder.group_name.setText(cf.getClubname());
 
         String url = "http://admin.bookieboost.com/admin/images/2015-02-0116-17-50.jpg";
         try {

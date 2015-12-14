@@ -48,6 +48,7 @@ public class GroupPageAdapterActivity extends
     String g_name, g_icon;
     Integer m_count, f_count;
     int follow_click_count = 0, member_click_count = 0;
+    static int followClick = 0;
     Context context;
     String Imageurl;
     GroupBean groupBean;
@@ -61,31 +62,35 @@ public class GroupPageAdapterActivity extends
     ExtraGroupInfoListHolder holder2;
     CharSequence GroupInfoAttributes[] = {"About", "Members", "Events", "News Posts",};
 
+
     public GroupPageAdapterActivity(List<GroupPage_infoActivity> GroupsJoinedList) {
         this.GroupPageList = GroupsJoinedList;
     }
 
     public GroupPageAdapterActivity(List<GroupPage_infoActivity> GroupsJoinedList, GroupBean groupBean, Context context) {
-
-
-        g_name = groupBean.getName();
-        g_icon = groupBean.getPhotourl();
-        m_count = Integer.parseInt(groupBean.getMemberCount());
-        f_count = Integer.parseInt(groupBean.getFollowCount());
-        Imageurl = groupBean.getPhotourl();
-        this.groupBean = groupBean;
-        this.context = context;
-        this.GroupPageList = GroupsJoinedList;
-        if (db == null) {
-            db = new DatabaseHandler(context);
-
+        try {
+            g_name = groupBean.getName();
+            g_icon = groupBean.getPhotourl();
+            m_count = Integer.parseInt(groupBean.getMemberCount());
+            f_count = Integer.parseInt(groupBean.getFollowCount());
+            follow_click_count = Integer.parseInt(groupBean.getFollow());
+            Imageurl = groupBean.getPhotourl();
+            this.groupBean = groupBean;
+            this.context = context;
+            this.GroupPageList = GroupsJoinedList;
+            if (db == null) {
+                db = new DatabaseHandler(context);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-
     }
 
     @Override
     public int getItemCount() {
+
         return GroupPageList.size();
+
     }
 
     @Override
@@ -93,25 +98,23 @@ public class GroupPageAdapterActivity extends
         if (getItemViewType(i) == 0) {
             holder1 = (GroupInfoViewHolder) groupViewHolder;
             holder1.group_name.setText(g_name);
-            //holder1.group_icon.setImageResource(g_icon);
             try {
-                if (Imageurl.equalsIgnoreCase("None") || Imageurl == null) {
-                    Picasso.with(context).load(R.mipmap.spark_session).into(holder1.group_icon);
-                } else {
-                    Picasso.with(context).load(Imageurl).into(holder1.group_icon);
-                }
+                Picasso.with(context).load(Imageurl).into(holder1.group_icon);
             } catch (Exception e) {
                 Picasso.with(context).load(R.mipmap.spark_session).into(holder1.group_icon);
             }
-            Picasso.with(context).load(R.mipmap.spark_session).into(holder1.group_icon);
             holder1.members_count.setText(m_count.toString());
             holder1.followers_count.setText(f_count.toString());
+            if (follow_click_count == 1) {
+                holder1.tbtn_follow.setBackgroundResource(R.mipmap.going_selected);
+            } else {
+                holder1.tbtn_follow.setBackgroundResource(R.mipmap.going);
+            }
         } else {
             holder2 = (ExtraGroupInfoListHolder) groupViewHolder;
             holder2.g_name_joined.setText(GroupInfoAttributes[i - 1]);
         }
     }
-
     @Override
     public int getItemViewType(int position) {
         int viewType;
@@ -167,15 +170,17 @@ public class GroupPageAdapterActivity extends
                     if (follow_click_count % 2 == 0) {
                         f_count++;
                         String clubId = groupBean.getClubId();
-                        // updating value in the database;
                         int i = db.updateFollow(clubId, "1");
                         notifyDataSetChanged();
+                        webApiFollow(clubId, v.getContext());
+                        followClick = 1;
                     } else {
                         String clubId = groupBean.getClubId();
                         // updating value in the database;
-                        int i = db.updateFollow(clubId, "1");
-
+                        int i = db.updateFollow(clubId, "0");
+                        webApiFollow(clubId, v.getContext());
                         f_count--;
+                        followClick = 0;
                         notifyDataSetChanged();
                     }
                     follow_click_count++;
@@ -184,23 +189,49 @@ public class GroupPageAdapterActivity extends
             tbtn_member.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (follow_click_count % 2 == 0) {
-                        m_count++;
-                        notifyDataSetChanged();
+                    if (member_click_count % 2 == 0) {
+                        // m_count++;
+                        //   notifyDataSetChanged();
                     } else {
-                        m_count--;
-                        notifyDataSetChanged();
+                        //   m_count--;
+                        // notifyDataSetChanged();
                     }
                     member_click_count++;
 
-                   /* MemberConfirmationDialog confirmDialog = new MemberConfirmationDialog(v.getContext());
+                    MemberConfirmationDialog confirmDialog = new MemberConfirmationDialog((Activity) v.getContext());
                     Window window = confirmDialog.getWindow();
                     window.setLayout(450, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    confirmDialog.show();*/
+                    confirmDialog.show();
 
                 }
             });
+        }
 
+        public void webApiFollow(String clubId, Context context) {
+
+            try {
+                String personPid = SharedpreferenceUtility.getInstance(context).getString(AppConstants.PERSON_PID);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("club_id", "" + clubId);
+                jsonObject.put("from_pid", "" + personPid);
+        /*    jsonObject.put("club_id", "5197870353350656");*/
+           /* jsonObject.put("from_pid", "5688424874901504");*/
+                List<NameValuePair> param = new ArrayList<NameValuePair>();
+                String url;
+                if (followClick == 1) {
+                    url = WebServiceDetails.DEFAULT_BASE_URL + "followClub";
+                } else {
+                    url = WebServiceDetails.DEFAULT_BASE_URL + "unfollowclub";
+
+                }
+                Log.e("follow", "" + jsonObject.toString());
+                Log.e("follow", url);
+                call_web_api = 2;
+                new WebRequestTask(context, param, _handler, WebRequestTask.POST, jsonObject, WebServiceDetails.PID_FOLLOW_UP,
+                        true, url).execute();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -295,24 +326,25 @@ public class GroupPageAdapterActivity extends
                 default:
                     break;
             }
-
         }
-    }
 
-    public void webApiGroupJoin(Context context) {
-        try {
-            String pid = SharedpreferenceUtility.getInstance(context).getString(AppConstants.PERSON_PID);
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("club_id", groupBean.getClubId());
-            jsonObject.put("from_pid", pid);
-            call_web_api = 1;
-            List<NameValuePair> param = new ArrayList<NameValuePair>();
-            String url = WebServiceDetails.DEFAULT_BASE_URL + "joinClub";
-            new WebRequestTask(context, param, _handler, WebRequestTask.POST, jsonObject, WebServiceDetails.PID_CLUB_MEMEBER_JOIN,
-                    true, url).execute();
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        public void webApiGroupJoin(Context context) {
+            try {
+                String pid = SharedpreferenceUtility.getInstance(context).getString(AppConstants.PERSON_PID);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("club_id", groupBean.getClubId());
+                jsonObject.put("from_pid", pid);
+                call_web_api = 1;
+                List<NameValuePair> param = new ArrayList<NameValuePair>();
+                String url = WebServiceDetails.DEFAULT_BASE_URL + "joinClub";
+                new WebRequestTask(context, param, _handler, WebRequestTask.POST, jsonObject, WebServiceDetails.PID_CLUB_MEMEBER_JOIN,
+                        true, url).execute();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
+
+
     }
 
     private final Handler _handler = new Handler() {
@@ -331,6 +363,9 @@ public class GroupPageAdapterActivity extends
                             }
                         }
                         break;
+                        case WebServiceDetails.PID_FOLLOW_UP: {
+
+                        }
                         default:
                             break;
                     }
@@ -341,12 +376,18 @@ public class GroupPageAdapterActivity extends
                 if (call_web_api == 1) {
                     Toast.makeText(context, "Your request to join group has been sent to admin for approval", Toast.LENGTH_LONG).show();
                 }
+                if (call_web_api == 2) {
+                    if (followClick == 1) {
+                        followClick = 0;
+                        Toast.makeText(context, "following", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(context, "unfollowing", Toast.LENGTH_LONG).show();
+                    }
+                }
             } else {
                 Toast.makeText(context, "SERVER_ERROR", Toast.LENGTH_LONG).show();
             }
         }
     };
-
-
 }
 

@@ -26,7 +26,7 @@ public class GroupMembersByGroupAdapterActivity extends
 
     public GroupMembersByGroupAdapterActivity(List<GroupMemberBean> GroupMembersByGroupList, Context context) {
         this.GroupMembersByGroupList = GroupMembersByGroupList;
-        this.context=context;
+        this.context = context;
     }
 
     @Override
@@ -42,11 +42,10 @@ public class GroupMembersByGroupAdapterActivity extends
         group_membersbygroupViewHolder.member_name.setText(ci.getName());
 
         try {
-            if (ci.getPhotoUrl().equalsIgnoreCase("None") || ci.getPhotoUrl()== null) {
-                Picasso.with(context).load(R.mipmap.spark_session).into(group_membersbygroupViewHolder.member_icon);
-            } else {
-                Picasso.with(context).load(ci.getPhotoUrl()).into(group_membersbygroupViewHolder.member_icon);
-            }
+
+
+            Picasso.with(context).load(ci.getPhotoUrl()).into(group_membersbygroupViewHolder.member_icon);
+
         } catch (Exception e) {
             Picasso.with(context).load(R.mipmap.spark_session).into(group_membersbygroupViewHolder.member_icon);
         }
@@ -64,6 +63,7 @@ public class GroupMembersByGroupAdapterActivity extends
 
         TextView member_name, member_batch, member_branch;
         CircularImageView member_icon;
+
         public GroupMembersByGroupViewHolder(View v) {
             super(v);
 
@@ -73,7 +73,7 @@ public class GroupMembersByGroupAdapterActivity extends
             member_name = (TextView) v.findViewById(R.id.tv_member_name);
             member_branch = (TextView) v.findViewById(R.id.tv_member_branch);
             member_batch = (TextView) v.findViewById(R.id.tv_member_batch);
-            member_icon=  (CircularImageView) v.findViewById(R.id.group_icon_notification);
+            member_icon = (CircularImageView) v.findViewById(R.id.group_icon_notification);
             member_name.setTypeface(r_reg);
             member_batch.setTypeface(r_lig);
             member_branch.setTypeface(r_lig);
