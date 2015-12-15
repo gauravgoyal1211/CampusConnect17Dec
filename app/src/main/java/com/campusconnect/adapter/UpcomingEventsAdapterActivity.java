@@ -258,7 +258,8 @@ public class UpcomingEventsAdapterActivity extends
                     int pos_for_share = getAdapterPosition();
                     Intent i = new Intent(android.content.Intent.ACTION_SEND);
                     i.setType("text/plain");
-                    String shareBody = UpcomingEventsList.get(pos_for_share).getTitle() + "/n" + UpcomingEventsList.get(posi).getDescription();
+
+                    String shareBody = "Title : "+ UpcomingEventsList.get(pos_for_share).getTitle() + "/n" +"Description : "+ UpcomingEventsList.get(posi).getDescription()+" for more info visit http://campusconnect.cc";
                     i.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
                     v.getContext().startActivity(Intent.createChooser(i, "Share via"));
 

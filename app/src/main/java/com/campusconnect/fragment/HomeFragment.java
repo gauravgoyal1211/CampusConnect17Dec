@@ -1,11 +1,13 @@
 package com.campusconnect.fragment;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -48,6 +50,7 @@ import com.campusconnect.activity.CreateGroupActivity;
 import com.campusconnect.activity.CreatePostActivity;
 import com.campusconnect.activity.FlashActivity;
 import com.campusconnect.activity.GroupPageActivity;
+import com.campusconnect.activity.MainActivity;
 import com.campusconnect.activity.SettingsActivity;
 import com.campusconnect.adapter.CollegeCampusFeedAdapter;
 import com.campusconnect.adapter.CollegeMyFeedAdapter;
@@ -603,11 +606,8 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
         popupWindow = new PopupWindow(context);
 
         ArrayList<String> sortList = new ArrayList<String>();
-        sortList.add("Settings");
-        sortList.add("Report an issue");
-        sortList.add("Rate Us!");
-        sortList.add("Invite a friend");
-        sortList.add("About us");
+        sortList.add("Feedback");
+        sortList.add("Rate Us");
         sortList.add("Log out");
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, R.layout.drop_down_text,
@@ -642,17 +642,47 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
 
             @Override
             public void onItemClick(AdapterView parent, View view, int position, long id) {
+                //feedback
                 if (position == 0) {
-                    Intent intent_temp = new Intent(getContext(), SettingsActivity.class);
-                    getContext().startActivity(intent_temp);
-                } else if (position == 1) {
-                } else if (position == 2) {
-                } else if (position == 3) {
-                } else if (position == 4) {
+                    Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+                    String email = SharedpreferenceUtility.getInstance(getContext()).getString("hello@campusconnect.cc");
+                    sendIntent.setType("plain/text");
+                    sendIntent.setData(Uri.parse(email));
+                    sendIntent.setClassName("com.google.android.gm", "com.google.android.gm.ComposeActivityGmail");
+                    sendIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{email});
+                    getContext().startActivity(sendIntent);
 
+//                    Doorbell doorbellDialog =new Doorbell(getContext(), 2764, "czPslyxNo9JTzQog5JcrWBlRbHVSQKyqnieLG8QDVZNK1hesEJtPD9E0MRuBbeW0").show();
+//                    doorbellDialog.setEmail(SharedpreferenceUtility.getInstance(getContext()).getString(AppConstants.EMAIL_KEY)); // Prepopulate the email address field
+//                    doorbellDialog.setName(SharedpreferenceUtility.getInstance(getContext()).getString(AppConstants.PERSON_NAME)); // Set the name of the user (if known)
+//
+//                    // Callback for when the dialog is shown
+//                    doorbellDialog.setOnShowCallback(new io.doorbell.android.callbacks.OnShowCallback() {
+//                        @Override
+//                        public void handle() {
+//                            Toast.makeText(getContext(), "Dialog shown", Toast.LENGTH_LONG).show();
+//                        }
+//                    });
+//
+//                    doorbellDialog.show();
+                }
+                else if (position == 1){
+                    Uri uri = Uri.parse("market://details?id=" + context.getPackageName());
+                    Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
+                    // To count with Play market backstack, After pressing back button,
+                    // to taken back to our application, we need to add following flags to intent.
+                    goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
+                            Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET |
+                            Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                    try {
+                        startActivity(goToMarket);
+                    } catch (ActivityNotFoundException e) {
+                        startActivity(new Intent(Intent.ACTION_VIEW,
+                                Uri.parse("http://play.google.com/store/apps/details?id=" + context.getPackageName())));
+                    }
                 }
                 //logout button
-                else if (position == 5) {
+                else if (position == 2) {
                     if (mGoogleApiClient.isConnected()) {
                         Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
                         mGoogleApiClient.disconnect();
@@ -666,6 +696,7 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
                     SharedpreferenceUtility.getInstance(getActivity()).putBoolean(AppConstants.LOG_IN_STATUS, Boolean.FALSE);
                     Intent intent_temp = new Intent(getContext(), FlashActivity.class);
                     getContext().startActivity(intent_temp);
+                    getActivity().finish();
                 }
                 dismissPopup();
             }

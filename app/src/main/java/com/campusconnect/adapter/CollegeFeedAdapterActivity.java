@@ -204,7 +204,9 @@ public class CollegeFeedAdapterActivity extends
 
                     Intent i=new Intent(android.content.Intent.ACTION_SEND);
                     i.setType("text/plain");
-                    String shareBody = CollegeFeedList.get(posi).getTitle()+"/n"+CollegeFeedList.get(posi).getDescription();
+                    String shareBody = "Title : "+CollegeFeedList.get(posi).getTitle() + "/n" + "Description : "+CollegeFeedList.get(posi).getDescription()+" for more info visit http://campusconnect.cc/";
+
+                    //String shareBody = CollegeFeedList.get(posi).getTitle()+"/n"+CollegeFeedList.get(posi).getDescription();
                     i.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
                     v.getContext().startActivity(Intent.createChooser(i, "Share via"));
 //

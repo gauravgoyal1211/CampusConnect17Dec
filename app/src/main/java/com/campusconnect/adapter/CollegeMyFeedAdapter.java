@@ -297,7 +297,9 @@ public class CollegeMyFeedAdapter extends
                     int pos_for_share = getAdapterPosition();
                     Intent i = new Intent(android.content.Intent.ACTION_SEND);
                     i.setType("text/plain");
-                    String shareBody = myFeedList.get(pos_for_share).getTitle() + "/n" + myFeedList.get(posi).getDescription();
+                    String shareBody = "Title : "+myFeedList.get(pos_for_share).getTitle() + "/n" + "Description : "+myFeedList.get(pos_for_share).getDescription()+" for more info visit http://campusconnect.cc/";
+
+//                    String shareBody = myFeedList.get(pos_for_share).getTitle() + "/n" + myFeedList.get(posi).getDescription();
                     i.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
                     v.getContext().startActivity(Intent.createChooser(i, "Share via"));
 

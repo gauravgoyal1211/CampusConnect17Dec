@@ -80,6 +80,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/et_batch"
         android:hint="Location"
+        android:visibility="invisible"
         android:layout_marginTop="5dp"
         android:background="@drawable/edittext_rounded"
         android:padding="12dp" />
@@ -90,6 +91,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/et_location"
         android:hint="Company"
+        android:visibility="invisible"
         android:layout_marginTop="5dp"
         android:background="@drawable/edittext_rounded"
         android:padding="12dp" />

@@ -34,7 +34,7 @@ import java.util.List;
 public class GetProfileDetailsActivity extends AppCompatActivity implements View.OnClickListener {
 
     Button cont;
-    EditText et_batch, et_branch,et_name;
+    EditText et_batch, et_branch,et_name,et_location,et_company;
     Switch sw_student;
     static ModelsProfileMiniForm pmf;
     private static final String LOG_TAG = "GetProfileDetails";
@@ -51,6 +51,8 @@ public class GetProfileDetailsActivity extends AppCompatActivity implements View
         et_name = (EditText) findViewById(R.id.et_name);
         et_batch = (EditText) findViewById(R.id.et_batch);
         et_branch = (EditText) findViewById(R.id.et_branch);
+        et_company = (EditText) findViewById(R.id.et_company);
+        et_location = (EditText) findViewById(R.id.et_location);
         //et_email = (EditText) findViewById(R.id.et_email);
         //et_phone = (EditText) findViewById(R.id.et_phone);
         cont = (Button) findViewById(R.id.b_continue);
@@ -67,10 +69,14 @@ public class GetProfileDetailsActivity extends AppCompatActivity implements View
             public void onCheckedChanged(CompoundButton buttonView,
                                          boolean isChecked) {
 
-                if (isChecked) {
-                    SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).putString(AppConstants.ALUMNI,"Y");
-                } else {
+                if (!isChecked) {
                     SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).putString(AppConstants.ALUMNI,"N");
+                    et_location.setVisibility(View.INVISIBLE);
+                    et_company.setVisibility(View.INVISIBLE);
+                } else {
+                    SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).putString(AppConstants.ALUMNI,"Y");
+                    et_company.setVisibility(View.VISIBLE);
+                    et_location.setVisibility(View.VISIBLE);
                 }
 
             }
@@ -100,6 +106,15 @@ public class GetProfileDetailsActivity extends AppCompatActivity implements View
             isAlumini="N";
         }
 
+        String str_company = et_company.getText().toString().trim();
+        if(str_company==null){
+            str_company="";
+        }
+        String str_location = et_location.getText().toString().trim();
+        if(str_location==null){
+            str_location="";
+        }
+
         SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).putString(AppConstants.BATCH,str_batch);
         //SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).putString(AppConstants.PHONE,str_phone);
         SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).putString(AppConstants.BRANCH, str_branch);
@@ -119,7 +134,11 @@ public class GetProfileDetailsActivity extends AppCompatActivity implements View
             object.put("branch",str_branch);
             object.put("batch",str_batch);
             object.put("gcmId",gcmId);
-            object.put("photoUrl",photoUrl);
+            object.put("photoUrl", photoUrl);
+            if(isAlumini=="Y"){
+                object.put("company",str_company);
+                object.put("location",str_location);
+            }
             Log.i("Save profile Web api",object.toString());
             WebApiSaveProfile(object);
 
@@ -167,6 +186,7 @@ public class GetProfileDetailsActivity extends AppCompatActivity implements View
                 createProfile(v);
                 Intent intent_temp = new Intent(v.getContext(), MainActivity.class);
                 startActivity(intent_temp);
+                finish();
                 break;
         }
 
@@ -181,6 +201,14 @@ public class GetProfileDetailsActivity extends AppCompatActivity implements View
                 if (strResponse != null && strResponse.length() > 0) {
                     switch (response_code) {
                         case WebServiceDetails.PID_SAVE_PROFILE: {
+                            try {
+                                JSONObject profileObj = new JSONObject(strResponse);
+                                String pid=profileObj.getString("pid");
+                                SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).putString(AppConstants.PERSON_PID,pid);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
 //                            try {
 //
 //                                List<CollegeListInfoBean> list = new ArrayList<CollegeListInfoBean>();

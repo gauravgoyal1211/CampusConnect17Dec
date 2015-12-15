@@ -106,7 +106,7 @@ public class CollegeListAdapterActivity extends
 
                     Intent intent_temp = new Intent(v.getContext(), Signup_2Activity.class);
                     v.getContext().startActivity(intent_temp);
-
+                    //v.getActivity().finish();
                 }
             });
 

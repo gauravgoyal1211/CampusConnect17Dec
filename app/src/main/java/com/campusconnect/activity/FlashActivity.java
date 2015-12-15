@@ -29,7 +29,7 @@ public class FlashActivity extends AppCompatActivity {
             public void run() {
                 super.run();
                 try {
-                    sleep(1500);
+                    sleep(7000);
                     Boolean loggedIn = SharedpreferenceUtility.getInstance(FlashActivity.this).getBoolean(AppConstants.LOG_IN_STATUS);
                     SharedPreferences prefs = FlashActivity.this.getSharedPreferences("AllPersonalFeeds", Context.MODE_PRIVATE);
 //save the user list to preference

@@ -1,5 +1,8 @@
 package com.campusconnect.activity;
 
+import android.content.ComponentName;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -8,6 +11,8 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.campusconnect.R;
@@ -35,6 +40,7 @@ public class SelectCollegeActivity extends AppCompatActivity {
   //  private String mEmailAccount = "";
 
     RecyclerView college_list;
+    TextView tv_not_found;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,10 +53,20 @@ public class SelectCollegeActivity extends AppCompatActivity {
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         college_list.setLayoutManager(llm);
+        tv_not_found= (TextView) findViewById(R.id.tv_not_found);
         college_list.setItemAnimator(new DefaultItemAnimator());
    /*     SharedPreferences sharedpreferences = getSharedPreferences(AppConstants.SHARED_PREFS, Context.MODE_PRIVATE);
         mEmailAccount = sharedpreferences.getString(AppConstants.EMAIL_KEY, null);*/
 
+        tv_not_found.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                    Log.d("SelectClgActivity", "Clicked on not found");
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://campusconnect.cc/"));
+                startActivity(browserIntent);
+                }
+
+        });
         //TODO network check
 
         if (NetworkAvailablity.hasInternetConnection(SelectCollegeActivity.this)) {

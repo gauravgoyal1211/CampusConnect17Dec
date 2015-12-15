@@ -182,7 +182,7 @@ public class NewsPostsByGroupAdapterActivity extends
 
                     Intent i = new Intent(android.content.Intent.ACTION_SEND);
                     i.setType("text/plain");
-                    String shareBody = NewsPostsByGroupList.get(posi).getTitle() + "/n" + NewsPostsByGroupList.get(posi).getDescription();
+                    String shareBody = "Title : "+NewsPostsByGroupList.get(posi).getTitle() + "/n" +"Description : " +NewsPostsByGroupList.get(posi).getDescription()+"for more info visit http://campusconnect.cc";
                     i.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
                     v.getContext().startActivity(Intent.createChooser(i, "Share via"));
                     int pos_for_share = getAdapterPosition();

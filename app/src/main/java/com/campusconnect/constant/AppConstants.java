@@ -29,6 +29,7 @@ public class AppConstants {
   /*  public static final String WEB_CLIENT_ID = "245400873255-u13ijemvsqbej9quq5g2i2q3caif3rp2.apps.googleusercontent.com";*/
     public static final String WEB_CLIENT_ID = "722474693619-qbigsh12fg6a7m14ca50d7m9v1la6iq4.apps.googleusercontent.com";
 
+    public static final String MY_FLURRY_APIKEY="N26DF2K5GN459DRKK558";
 
     public static final String AUDIENCE = "server:client_id:" + WEB_CLIENT_ID;
 
