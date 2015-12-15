@@ -46,7 +46,9 @@ import com.campusconnect.R;
 import com.campusconnect.activity.AdminPageActivity;
 import com.campusconnect.activity.CreateGroupActivity;
 import com.campusconnect.activity.CreatePostActivity;
+import com.campusconnect.activity.FlashActivity;
 import com.campusconnect.activity.GroupPageActivity;
+import com.campusconnect.activity.SelectCollegeActivity;
 import com.campusconnect.activity.SettingsActivity;
 import com.campusconnect.adapter.CollegeCampusFeedAdapter;
 import com.campusconnect.adapter.CollegeMyFeedAdapter;
@@ -62,6 +64,9 @@ import com.campusconnect.utility.DividerItemDecoration;
 import com.campusconnect.utility.NetworkAvailablity;
 import com.campusconnect.utility.ObjectSerializer;
 import com.campusconnect.utility.SharedpreferenceUtility;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.plus.Plus;
 import com.google.common.base.Strings;
 
 import org.apache.http.NameValuePair;
@@ -78,7 +83,7 @@ import java.util.List;
 /**
  * Created by RK on 17-09-2015.
  */
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     View setting;
     Context context;
@@ -118,6 +123,8 @@ public class HomeFragment extends Fragment {
     public String campusCompleted = "";
     private PubSubHelper mPubSubHelper;
     String gcm_token;
+    GoogleApiClient mGoogleApiClient;
+    boolean mSignInClicked;
 
     private static boolean isLaunch = true;
 
@@ -504,6 +511,10 @@ public class HomeFragment extends Fragment {
             i_add_post = (ImageButton) mRootView.findViewById(R.id.ib_create_post);
             i_settings = (ImageButton) mRootView.findViewById(R.id.ib_settings);
 
+            mGoogleApiClient = new GoogleApiClient.Builder(getContext())
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this).addApi(Plus.API)
+                    .addScope(Plus.SCOPE_PLUS_LOGIN).build();
 
             pager = (ViewPager) mRootView.findViewById(R.id.pager);
             tabs = (SlidingTabLayout_home) mRootView.findViewById(R.id.tabs);
@@ -617,7 +628,6 @@ public class HomeFragment extends Fragment {
                 sortList);
         // the drop down list is a list view
         ListView listViewSort = new ListView(context);
-
         listViewSort.setBackgroundColor(Color.WHITE);
 
         ColorDrawable divider_color = new ColorDrawable(ContextCompat.getColor(context, R.color.dividerColor));
@@ -653,7 +663,23 @@ public class HomeFragment extends Fragment {
                 } else if (position == 2) {
                 } else if (position == 3) {
                 } else if (position == 4) {
-                } else if (position == 5) {
+
+                }
+                //logout button
+                else if (position == 5) {
+                    if (mGoogleApiClient.isConnected()) {
+                        Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+                        mGoogleApiClient.disconnect();
+                        //mGoogleApiClient.connect();
+                        // updateUI(false);
+                        System.err.println("LOG OUT ^^^^^^^^^^^^^^^^^^^^ SUCESS");
+                    }
+                    DatabaseHandler db=new DatabaseHandler(getContext());
+                    db.clearClub();
+                    SharedpreferenceUtility.getInstance(getActivity()).clearSharedPreference();
+                    SharedpreferenceUtility.getInstance(getActivity()).putBoolean(AppConstants.LOG_IN_STATUS, Boolean.FALSE);
+                    Intent intent_temp = new Intent(getContext(), FlashActivity.class);
+                    getContext().startActivity(intent_temp);
                 }
                 dismissPopup();
             }
@@ -824,6 +850,36 @@ public class HomeFragment extends Fragment {
             Log.e(LOG_TAG, clubList.get(0).getItems().toString());
             return clubList.get(0).getItems();
         }
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        mSignInClicked = false;
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        mGoogleApiClient.connect();
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+     @Override
+     public void onStop() {
+        super.onStop();
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
+    }
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
     }
 
     public class FragmentGroups extends Fragment {

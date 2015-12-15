@@ -124,6 +124,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void clearClub() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("delete from " + TABLE_CLUBS);
+        Log.d("DB","Cleared DB Data");
 
     }
 

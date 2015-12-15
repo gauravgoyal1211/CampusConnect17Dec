@@ -212,6 +212,19 @@ public class Signup_2Activity extends Activity implements
     }
 
 
+    private void signOutFromGplus() {
+        if (mGoogleApiClient.isConnected()) {
+            Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+            mGoogleApiClient.disconnect();
+            mGoogleApiClient.connect();
+
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.clear();
+            editor.commit();
+            SharedpreferenceUtility.getInstance(Signup_2Activity.this).putBoolean(AppConstants.LOG_IN_STATUS, Boolean.FALSE);
+        }
+    }
+
     private void webApi(String email, String gcmId) {
         JSONObject jsonObject = new JSONObject();
 

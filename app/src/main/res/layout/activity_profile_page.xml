@@ -32,6 +32,13 @@
         </LinearLayout>
 
         <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="15"
+            android:gravity="center">
+
+        </LinearLayout>
+        <LinearLayout
             android:id="@+id/plus"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -41,23 +48,8 @@
                 android:id="@+id/ib_create_post"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
                 android:background="#383838"
                 android:src="@mipmap/edit" />
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/settings"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="10"
-            android:gravity="center">
-            <ImageButton
-                android:id="@+id/ib_settings"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:background="#383838"
-                android:src="@mipmap/settings_profile" />
         </LinearLayout>
     </LinearLayout>
 
