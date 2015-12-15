@@ -165,7 +165,6 @@ public class CreatePostActivity extends AppCompatActivity {
             String url = WebServiceDetails.DEFAULT_BASE_URL + "getClubList";
             new WebRequestTask(CreatePostActivity.this, param, _handler, WebRequestTask.POST, jsonObject, WebServiceDetails.PID_GET_GROUPS,
                     true, url).execute();
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -189,7 +188,6 @@ public class CreatePostActivity extends AppCompatActivity {
 
             new WebRequestTask(CreatePostActivity.this, param, _handler, WebRequestTask.POST, jsonObject, WebServiceDetails.PID_CREATE_POST,
                     true, url).execute();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -454,8 +452,13 @@ public class CreatePostActivity extends AppCompatActivity {
                         pmf.getClubId();*/
 
 
-                        if (imageUrlForUpload.isEmpty() || title.isEmpty() || et_description.getText().toString().isEmpty()) {
+                        if (title.isEmpty() || et_description.getText().toString().isEmpty()) {
+
+
                             Toast.makeText(getActivity(), "Please Fill all data", Toast.LENGTH_SHORT).show();
+                            return;
+                        }else   if (imageUrlForUpload.isEmpty()) {
+                            Toast.makeText(getActivity(), "Please Select image again and Upload it", Toast.LENGTH_SHORT).show();
                             return;
                         }
 
@@ -802,9 +805,11 @@ public class CreatePostActivity extends AppCompatActivity {
                             String endTime = e_time.getText().toString();
 
                             if (title.isEmpty() || vanue.isEmpty() || description.isEmpty() || endTime.isEmpty() || s_timestr.isEmpty()
-                                    || startDate.isEmpty() || endDate.isEmpty() || clubid.isEmpty() || imageUrlForUpload.isEmpty()
-                                    ) {
+                                    || startDate.isEmpty() || endDate.isEmpty() || clubid.isEmpty()) {
                                 Toast.makeText(getActivity(), "Please fill all data", Toast.LENGTH_SHORT).show();
+                                return;
+                            } else if (imageUrlForUpload.isEmpty()) {
+                                Toast.makeText(getActivity(), "Please Select image again and Upload it", Toast.LENGTH_SHORT).show();
                                 return;
                             }
                             jsonObject.put("club_id", "" + clubid);
@@ -949,7 +954,9 @@ public class CreatePostActivity extends AppCompatActivity {
                             calendar.set(Calendar.SECOND, 0);
                             SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
-                            if (selectedHour > start_hour)
+                            e_time.setText("" + selectedHour + ":" + selectedMinute + ":00");
+
+                          /*  if (selectedHour > start_hour)
                                 e_time.setText("" + selectedHour + ":" + selectedMinute + ":00");
                                 //  e_time.setText(dateFormat.format(calendar.getTime()));
                             else if (selectedHour == start_hour) {
@@ -961,7 +968,7 @@ public class CreatePostActivity extends AppCompatActivity {
                                             Toast.LENGTH_SHORT).show();
                             } else
                                 Toast.makeText(getActivity().getApplicationContext(), "Please make sure that End time is after Start time",
-                                        Toast.LENGTH_SHORT).show();
+                                        Toast.LENGTH_SHORT).show();*/
                         }
                     }, hour, minute, true);
                     mTimePicker.setTitle("Select Time");

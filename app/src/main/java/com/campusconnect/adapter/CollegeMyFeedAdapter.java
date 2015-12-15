@@ -139,6 +139,7 @@ public class CollegeMyFeedAdapter extends
                     SimpleDateFormat monthFormat = new SimpleDateFormat("MMM");
                     String month = monthFormat.format(date);
                     Log.e("month", month);
+
                     if (goal.length() > 3) {
                         goal = goal.substring(0, 3);
                     } else {
@@ -152,7 +153,6 @@ public class CollegeMyFeedAdapter extends
                     if (month.length() > 0) {
                         month = month.substring(0, 3);
                     }
-
                     college_feedViewHolder.date_month.setText("" + day + "" + month);
                 } catch (Exception e) {
                     e.printStackTrace();
