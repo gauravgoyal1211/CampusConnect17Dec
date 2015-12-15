@@ -375,7 +375,11 @@ public class GroupPageAdapterActivity extends
                 }
             } else if (response_code == 204) {
                 if (call_web_api == 1) {
-                    Toast.makeText(context, "Your request to join group has been sent to admin for approval", Toast.LENGTH_LONG).show();
+                    if(member_click_count==1) {
+                        Toast.makeText(context, "Your request to join group has been sent to admin for approval", Toast.LENGTH_LONG).show();
+                    }else{
+                        Toast.makeText(context, "Your request to leave group has been sent to admin for approval", Toast.LENGTH_LONG).show();
+                    }
                 }
                 if (call_web_api == 2) {
                     if (followClick == 1) {

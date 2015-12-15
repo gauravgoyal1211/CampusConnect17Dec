@@ -206,10 +206,16 @@ public class CreateGroupActivity extends AppCompatActivity {
             String abbre = groupAbbreviation.getText().toString();
             String groupTypeStr = (String) groupType.getSelectedItem();
 
-            if (groupTypestr.isEmpty() || groupname.isEmpty() || grpDes.isEmpty() || abbre.isEmpty() || imageUrlForUpload.isEmpty()) {
+            if (groupTypestr.isEmpty() || groupname.isEmpty() || grpDes.isEmpty() || abbre.isEmpty()) {
+
                 Toast.makeText(CreateGroupActivity.this, "Please fill all details", Toast.LENGTH_SHORT).show();
                 return;
+            }   else   if (imageUrlForUpload.isEmpty()) {
+                Toast.makeText(CreateGroupActivity.this, "Please Select image again and Upload it", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+
 
             jsonObject.put("club_name", "" + groupName.getText().toString());
             jsonObject.put("description", "" + groupDescription.getText().toString());
@@ -218,18 +224,6 @@ public class CreateGroupActivity extends AppCompatActivity {
             jsonObject.put("college_id", "" + collegeId);
             jsonObject.put("photoUrl", "" + imageUrlForUpload);
             Log.e("Json String", jsonObject.toString());
-/*
-
-            {
-                "abbreviation": "test",
-                    "club_name": "TEST1",
-                    "college_id": "5644309118320640",
-                    "from_pid": "5688424874901504",
-                    "description": "test description"
-            }
-
-*/
-
 
             List<NameValuePair> param = new ArrayList<NameValuePair>();
             String url = WebServiceDetails.DEFAULT_BASE_URL + "club";

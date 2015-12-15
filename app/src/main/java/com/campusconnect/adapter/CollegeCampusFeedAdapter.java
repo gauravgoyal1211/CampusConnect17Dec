@@ -118,10 +118,10 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
             college_feedViewHolder.date_month.setVisibility(View.VISIBLE);
             college_feedViewHolder.time.setVisibility(View.VISIBLE);
             flag_news.add(i, false);
-            SimpleDateFormat inFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat inFormat = new SimpleDateFormat("yyyy-MM-dd");
             Date date = null;
             try {
-                date = inFormat.parse(cf.getTimeStamp());
+                date = inFormat.parse(cf.getStart_date());
                 Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
                 calendar.setTime(date);
 
@@ -132,9 +132,9 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
                 SimpleDateFormat monthFormat = new SimpleDateFormat("MMM");
                 String month = monthFormat.format(date);
                 Log.e("month", month);
-                SimpleDateFormat dateformate = new SimpleDateFormat("dd");
-                String dayFormate = monthFormat.format(date);
-                Log.e("day", "" + calendar.get(Calendar.DAY_OF_MONTH));
+            //    SimpleDateFormat dateformate = new SimpleDateFormat("dd");
+             //   String dayFormate = monthFormat.format(date);
+               // Log.e("day", "" + calendar.get(Calendar.DAY_OF_MONTH));
                 if (goal.length() > 3) {
                     goal = goal.substring(0, 3);
                 } else {
