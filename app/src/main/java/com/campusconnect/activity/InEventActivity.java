@@ -19,6 +19,7 @@ import com.campusconnect.bean.CampusFeedBean;
 import com.campusconnect.communicator.WebRequestTask;
 import com.campusconnect.communicator.WebServiceDetails;
 import com.campusconnect.constant.AppConstants;
+import com.campusconnect.database.DatabaseHandler;
 import com.campusconnect.utility.CircularImageView;
 import com.campusconnect.utility.CustomTypefaceSpan;
 import com.campusconnect.utility.SharedpreferenceUtility;
@@ -49,15 +50,19 @@ public class InEventActivity extends AppCompatActivity {
     Boolean flag_news, flag_selected_share, flag_selected_attend_like;
     Boolean flag_attended_clicked = false, flag_share_clicked = false;
     ImageView event_photo, location_icon, going, share;
-    TextView e_name, e_time, e_date, g_name, v_name, e_description, attendees_count;
+    TextView e_name, e_time, e_date, g_name, v_name, e_description, attendees_count ,tv_header;
     CircularImageView g_icon;
     static int attending = 1;
     static int liking = 1;
+
+    private DatabaseHandler dataBase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_in_event);
+
+        dataBase = new DatabaseHandler(InEventActivity.this);
 
         r_lig = Typeface.createFromAsset(getAssets(), "font/Roboto_Light.ttf");
         r_reg = Typeface.createFromAsset(getAssets(), "font/Roboto_Regular.ttf");
@@ -74,6 +79,7 @@ public class InEventActivity extends AppCompatActivity {
         g_name = (TextView) findViewById(R.id.tv_group_name);
         e_description = (TextView) findViewById(R.id.tv_event_description);
         v_name = (TextView) findViewById(R.id.tv_venue);
+        tv_header=(TextView) findViewById(R.id.tv_header);
         g_icon = (CircularImageView) findViewById(R.id.group_icon);
         attendees_count = (TextView) findViewById(R.id.tv_attendees_count);
 
@@ -110,7 +116,7 @@ public class InEventActivity extends AppCompatActivity {
             bean.getCollegeId();
             bean.getViews();
 
-            g_name.setText("" + bean.getClubid());
+            g_name.setText("" + bean.getClubname());
             e_name.setText("" + bean.getTitle());
             e_description.setText("" + bean.getDescription());
             v_name.setText("" + bean.getVenue());
@@ -118,10 +124,11 @@ public class InEventActivity extends AppCompatActivity {
             if (bean.getAttendees() == null || bean.getAttendees().size() == 0) {
                 attendees_count.setVisibility(View.INVISIBLE);
                 e_time.setVisibility(View.INVISIBLE);
+                tv_header.setText("News");
             } else {
                 int attendies = bean.getAttendees().size();
                 attendees_count.setText("+" + attendies + " attending");
-                e_time.setText("" + bean.getEnd_time());
+                e_time.setText("" + bean.getStart_time());
             }
             try {
                 Picasso.with(InEventActivity.this).load(bean.getPhoto()).into(event_photo);
@@ -220,10 +227,11 @@ public class InEventActivity extends AppCompatActivity {
                 if (flag_attended_clicked) {
                     if (flag_news) {
                         going.setImageResource(R.mipmap.heart);
+                        dataBase.saveFeedInfo(bean.getPid(), "0");
                         Toast.makeText(InEventActivity.this, "coming soon", Toast.LENGTH_SHORT).show();
                     } else {
                         going.setImageResource(R.mipmap.going);
-
+                        dataBase.saveFeedInfo(bean.getPid(), "0");
 
                         try {
                             String persoPid = SharedpreferenceUtility.getInstance(InEventActivity.this).getString(AppConstants.PERSON_PID);
@@ -240,9 +248,11 @@ public class InEventActivity extends AppCompatActivity {
                     flag_attended_clicked = false;
                 } else {
                     if (flag_news) {
+                        dataBase.saveFeedInfo(bean.getPid(), "1");
                         going.setImageResource(R.mipmap.heart_selected);
                         Toast.makeText(InEventActivity.this, "coming soon", Toast.LENGTH_SHORT).show();
                     } else {
+                        dataBase.saveFeedInfo(bean.getPid(), "1");
                         going.setImageResource(R.mipmap.going_selected);
                         try {
                             String persoPid = SharedpreferenceUtility.getInstance(InEventActivity.this).getString(AppConstants.PERSON_PID);

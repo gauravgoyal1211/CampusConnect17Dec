@@ -50,7 +50,7 @@ public class GroupPageAdapterActivity extends
     int follow_click_count = 0, member_click_count = 0;
     static int followClick = 0;
     Context context;
-    String Imageurl;
+    String Imageurl = "";
     GroupBean groupBean;
     int call_web_api;
 
@@ -74,6 +74,7 @@ public class GroupPageAdapterActivity extends
             m_count = Integer.parseInt(groupBean.getMemberCount());
             f_count = Integer.parseInt(groupBean.getFollowCount());
             follow_click_count = Integer.parseInt(groupBean.getFollow());
+            member_click_count = Integer.parseInt(groupBean.getIsMember());
             Imageurl = groupBean.getPhotourl();
             this.groupBean = groupBean;
             this.context = context;
@@ -88,7 +89,6 @@ public class GroupPageAdapterActivity extends
 
     @Override
     public int getItemCount() {
-
         return GroupPageList.size();
 
     }
@@ -110,11 +110,18 @@ public class GroupPageAdapterActivity extends
             } else {
                 holder1.tbtn_follow.setBackgroundResource(R.mipmap.going);
             }
+            if (member_click_count == 1) {
+
+                holder1.tbtn_member.setBackgroundResource(R.drawable.members_selected);
+            } else {
+                holder1.tbtn_member.setBackgroundResource(R.drawable.members);
+            }
         } else {
             holder2 = (ExtraGroupInfoListHolder) groupViewHolder;
             holder2.g_name_joined.setText(GroupInfoAttributes[i - 1]);
         }
     }
+
     @Override
     public int getItemViewType(int position) {
         int viewType;
@@ -189,15 +196,6 @@ public class GroupPageAdapterActivity extends
             tbtn_member.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (member_click_count % 2 == 0) {
-                        // m_count++;
-                        //   notifyDataSetChanged();
-                    } else {
-                        //   m_count--;
-                        // notifyDataSetChanged();
-                    }
-                    member_click_count++;
-
                     MemberConfirmationDialog confirmDialog = new MemberConfirmationDialog((Activity) v.getContext());
                     Window window = confirmDialog.getWindow();
                     window.setLayout(450, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -308,13 +306,19 @@ public class GroupPageAdapterActivity extends
 
             yes.setOnClickListener(this);
             no.setOnClickListener(this);
-
         }
 
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.btn_yes: {
+                    if (member_click_count == 1) {
+                        member_click_count=0;
+                        holder1.tbtn_member.setBackgroundResource(R.drawable.members);
+                    } else {
+                        member_click_count=1;
+                        holder1.tbtn_member.setBackgroundResource(R.drawable.members_selected);
+                    }
                     yes_dialog_box_click_count++;
                     webApiGroupJoin(v.getContext());
                     dismiss();
@@ -343,10 +347,7 @@ public class GroupPageAdapterActivity extends
                 ex.printStackTrace();
             }
         }
-
-
     }
-
     private final Handler _handler = new Handler() {
         public void handleMessage(Message msg) {
             int response_code = msg.what;

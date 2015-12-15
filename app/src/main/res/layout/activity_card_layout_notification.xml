@@ -44,7 +44,7 @@
             android:layout_marginRight="2dp"
             android:layout_toRightOf="@+id/group_icon_notification"
             android:layout_toLeftOf="@+id/tv_notification_timestamp"
-            android:text="bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            android:text="notification"
             android:textColor="#383838"
             android:textSize="14sp" />
         <TextView

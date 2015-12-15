@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.ActivityNotFoundException;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,7 +13,10 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -348,6 +352,8 @@ public class CreatePostActivity extends AppCompatActivity {
         String encodedImageStr = "";
         String Clubid = "";
 
+        private Uri fileUri;
+
         public FragmentPostNews() {
         }
 
@@ -516,7 +522,14 @@ public class CreatePostActivity extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialog, int item) {
                     if (items[item].equals("Take Photo")) {
+                        ContentValues values = new ContentValues();
+                        values.put(MediaStore.Images.Media.TITLE, "New Picture");
+                        values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
+                        fileUri = getContentResolver().insert(
+                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
                         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
                         startActivityForResult(intent, 0);
                     } else if (items[item].equals("Choose from Library")) {
                         Intent intent = new Intent(
@@ -572,10 +585,16 @@ public class CreatePostActivity extends AppCompatActivity {
             switch (requestCode) {
                 case 0:
                     try {
-                        bitmap = (Bitmap) data.getExtras().get("data");
+                        bitmap = MediaStore.Images.Media.getBitmap(
+                                getContentResolver(), fileUri);
+                        bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 4, bitmap.getHeight() / 4, true);
+//                        bitmap = (Bitmap) data.getExtras().get("data");
                         //  _addPhotoBitmap = bitmap;
                         iv_upload.setImageBitmap(bitmap);
-                        iv_upload.setScaleType(ImageView.ScaleType.FIT_XY);
+                       /* bitmap = (Bitmap) data.getExtras().get("data");
+                        //  _addPhotoBitmap = bitmap;
+                        iv_upload.setImageBitmap(bitmap);*/
+//                        iv_upload.setScaleType(ImageView.ScaleType.FIT_XY);
 
                        /* ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
@@ -608,7 +627,7 @@ public class CreatePostActivity extends AppCompatActivity {
                         BitmapFactory.Options btmapOptions = new BitmapFactory.Options();
                         bm = BitmapFactory.decodeFile(tempPath, btmapOptions);
                         iv_upload.setImageBitmap(bm);
-                        iv_upload.setScaleType(ImageView.ScaleType.FIT_XY);
+//                        iv_upload.setScaleType(ImageView.ScaleType.FIT_XY);
                         encodedImageStr = Base64.encodeToString(getBytesFromBitmap(bm), Base64.NO_WRAP);
 
                     } catch (OutOfMemoryError e) {
@@ -664,6 +683,7 @@ public class CreatePostActivity extends AppCompatActivity {
         ImageView iv_upload;
         String encodedImageStr = "";
         String clubid = "";
+        private Uri fileUri;
 
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -757,66 +777,8 @@ public class CreatePostActivity extends AppCompatActivity {
                         Log.e(LOG_TAG, "" + sharedPreferences.getString(AppConstants.COLLEGE_ID, null));
                         Log.e(LOG_TAG, "" + sharedPreferences.getString(AppConstants.PERSON_PID, null));
 
-                       /* Log.e(LOG_TAG, "" + eventMiniForm.getClubId());
-
-
-                        //eventMiniForm.setClubId();
-                        //eventMiniForm.setCompleted();
-                        //eventMiniForm.setAttendees();
-                        eventMiniForm.setDate(date);//timestamp
-                        eventMiniForm.setTime(time);//timestamp
-                        eventMiniForm.setDescription(et_post_description.getText().toString());
-                        //eventMiniForm.setStartDate();
-                        //eventMiniForm.setStartTime();
-                        //eventMiniForm.setEndDate();
-                        //eventMiniForm.setEndTime();
-                        eventMiniForm.setEventCreator(sharedPreferences.getString(AppConstants.PERSON_PID, null));
-                        //eventMiniForm.setTags();
-                        eventMiniForm.setIsAlumni(sharedPreferences.getString(AppConstants.ALUMNI, null));*/
-                        //eventMiniForm.setTitle();
-                        //eventMiniForm.setVenue();
-                        //eventMiniForm.set
                         try {
-                            /*title,
-                            description
-                            ,clubId
-                            ,views(not compulsory)
-                            ,event_creator
-                            ,venue,date
-                            ,time,
-                            ,start_time
-                            ,start_date
-                            ,start_date
-                            ,end_time,
-                            attendees(PID)
-                            ,tags
-                            ,views*/
-/*
-                            {
-                                "club_id": "6281948016148480",
-                                    "date": "2015-12-03",
-                                    "description": "test description",
-                                    "completed": "No",
-                                    "end_date": "2015-12-03",
-                                    "start_date": "2015-12-03",
-                                    "end_time": "15:00:00",
-                                    "venue": "SAC",
-                                    "title": "Event1",
-                                    "isAlumni": "No",
-                                    "time": "15:00:00",
-                                    "start_time": "12:00:00",
-                                    "event_creator": "4834276138811392"
-                            }*/
 
-
-
-                        /*    {
-                                "status": "2",
-                                    "text": "Could not insert",
-                                    "kind": "clubs#resourcesItem",
-                                    "etag": "\"KF6I-46FHtkmq1NnKBWjgYzpvcs/4_4CPmnvJ9H91631TVAP57KBGqA\""
-                            }
-*/
                             String pid = SharedpreferenceUtility.getInstance(getActivity()).getString(AppConstants.PERSON_PID);
                             String isAlumni = SharedpreferenceUtility.getInstance(getActivity()).getString(AppConstants.ALUMNI);
                             if (isAlumni.equalsIgnoreCase("") || isAlumni.isEmpty()) {
@@ -825,43 +787,6 @@ public class CreatePostActivity extends AppCompatActivity {
                                 isAlumni = "Y";
                             }
                             JSONObject jsonObject = new JSONObject();
-                      /*      jsonObject.put("title", et_title.getText().toString());
-                            jsonObject.put("description", "" + et_post_description.getText().toString());
-                            jsonObject.put("club_id", "" + clubid);
-                            jsonObject.put("views", "2");
-                            jsonObject.put("event_creator", "" + pid);
-                            jsonObject.put("venue", "" + et_venue.getText().toString());
-                            jsonObject.put("date", "" + date);
-                            jsonObject.put("time", "" + time);
-
-                            String startDate = s_date.getText().toString();
-                            String endDate = e_date.getText().toString();
-                            startDate.replace("/", "-");
-                            jsonObject.put("start_time", "" + s_time.getText().toString());
-                            jsonObject.put("start_date", "" + startDate);
-                            jsonObject.put("end_time", "" + et_end_time.getText().toString());
-                            jsonObject.put("attendees", "" + pid);
-                            jsonObject.put("end_date", "" + endDate);
-                            jsonObject.put("tags", "" + et_tags.getText().toString());
-                            jsonObject.put("views", "0");
-                            jsonObject.put("isAlumni", "" + isAlumni);
-                            jsonObject.put("completed", "N");
-                            jsonObject.put("photo", "" + encodedImageStr);*/
-
-
-                            /* "club_id": "6281948016148480",
-                                    "date": "2015-12-03",
-                                    "description": "test description",
-                                    "completed": "No",
-                                    "end_date": "2015-12-03",
-                                    "start_date": "2015-12-03",
-                                    "end_time": "15:00:00",
-                                    "venue": "SAC",
-                                    "title": "Event1",
-                                    "isAlumni": "No",
-                                    "time": "15:00:00",
-                                    "start_time": "12:00:00",
-                                    "event_creator": "4834276138811392"*/
 
 
                             String startDate = s_date.getText().toString();
@@ -1032,10 +957,10 @@ public class CreatePostActivity extends AppCompatActivity {
                                     e_time.setText("" + selectedHour + ":" + selectedMinute + ":00");
                                     // e_time.setText(dateFormat.format(calendar.getTime()));
                                 else
-                                    Toast.makeText(getActivity().getApplicationContext(), "The end time you entered occurred before the start time.",
+                                    Toast.makeText(getActivity().getApplicationContext(), "Please make sure that End time is after Start time",
                                             Toast.LENGTH_SHORT).show();
                             } else
-                                Toast.makeText(getActivity().getApplicationContext(), "The end time you entered occurred before the start time.",
+                                Toast.makeText(getActivity().getApplicationContext(), "Please make sure that End time is after Start time",
                                         Toast.LENGTH_SHORT).show();
                         }
                     }, hour, minute, true);
@@ -1057,18 +982,22 @@ public class CreatePostActivity extends AppCompatActivity {
                     performCrop(picturePath);
                 }
             }
-
             Bitmap bitmap = null;
             switch (requestCode) {
                 case 0:
                     try {
-                        bitmap = (Bitmap) data.getExtras().get("data");
+
+                        bitmap = MediaStore.Images.Media.getBitmap(
+                                getContentResolver(), fileUri);
+                        bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 4, bitmap.getHeight() / 4, true);
+//                        bitmap = (Bitmap) data.getExtras().get("data");
                         //  _addPhotoBitmap = bitmap;
+
                         iv_upload.setImageBitmap(bitmap);
-                        iv_upload.setScaleType(ImageView.ScaleType.FIT_XY);
+//                        iv_upload.setScaleType(ImageView.ScaleType.FIT_XY);
 
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                         byte[] _byteArray = baos.toByteArray();
                         encodedImageStr = Base64.encodeToString(_byteArray, Base64.DEFAULT);
 
@@ -1092,12 +1021,11 @@ public class CreatePostActivity extends AppCompatActivity {
                         if (finalFile.exists()) {
                             showAlertDialog(finalFile);
                         }
-
                         Bitmap bm;
                         BitmapFactory.Options btmapOptions = new BitmapFactory.Options();
                         bm = BitmapFactory.decodeFile(tempPath, btmapOptions);
                         iv_upload.setImageBitmap(bm);
-                        iv_upload.setScaleType(ImageView.ScaleType.FIT_XY);
+//                        iv_upload.setScaleType(ImageView.ScaleType.FIT_XY);
                         encodedImageStr = Base64.encodeToString(getBytesFromBitmap(bm), Base64.NO_WRAP);
 
                     } catch (OutOfMemoryError e) {
@@ -1111,6 +1039,36 @@ public class CreatePostActivity extends AppCompatActivity {
             }
         }
 
+        private void scaleImage(ImageView view, Bitmap bm) {
+            Drawable drawing = view.getDrawable();
+            if (drawing == null) {
+                return;
+            }
+
+
+            int width = bm.getWidth();
+            int height = bm.getHeight();
+            int bounding_x = ((View) view.getParent()).getWidth();//EXPECTED WIDTH
+            int bounding_y = ((View) view.getParent()).getHeight();//EXPECTED HEIGHT
+
+            float xScale = ((float) bounding_x) / width;
+            float yScale = ((float) bounding_y) / height;
+
+            Matrix matrix = new Matrix();
+            matrix.postScale(xScale, yScale);
+
+            Bitmap scaledBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, true);
+            width = scaledBitmap.getWidth();
+            height = scaledBitmap.getHeight();
+            BitmapDrawable result = new BitmapDrawable(context.getResources(), scaledBitmap);
+
+            view.setImageDrawable(result);
+
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) view.getLayoutParams();
+            params.width = width;
+            params.height = height;
+            view.setLayoutParams(params);
+        }
 
         void uploadImage() {
             final CharSequence[] items = {"Take Photo", "Choose from Library",
@@ -1121,8 +1079,17 @@ public class CreatePostActivity extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialog, int item) {
                     if (items[item].equals("Take Photo")) {
+
+                        ContentValues values = new ContentValues();
+                        values.put(MediaStore.Images.Media.TITLE, "New Picture");
+                        values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
+                        fileUri = getContentResolver().insert(
+                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
                         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
                         startActivityForResult(intent, 0);
+
                     } else if (items[item].equals("Choose from Library")) {
                         Intent intent = new Intent(
                                 Intent.ACTION_PICK,
@@ -1210,20 +1177,19 @@ public class CreatePostActivity extends AppCompatActivity {
 
             if (myCalendar_s_date.get(Calendar.MONTH) <= myCalendar_e_date.get(Calendar.MONTH)) {
 
-               if (myCalendar_s_date.get(Calendar.MONTH) == myCalendar_e_date.get(Calendar.MONTH)) {
-                    if (myCalendar_s_date.get(Calendar.DAY_OF_MONTH) > myCalendar_e_date.get(Calendar.DAY_OF_MONTH))
-                    {
+                if (myCalendar_s_date.get(Calendar.MONTH) == myCalendar_e_date.get(Calendar.MONTH)) {
+                    if (myCalendar_s_date.get(Calendar.DAY_OF_MONTH) > myCalendar_e_date.get(Calendar.DAY_OF_MONTH)) {
                         e_date.setText("");
-                        Toast.makeText(getActivity().getApplicationContext(), "The end date you entered occurred before the start date.",
+                        Toast.makeText(getActivity().getApplicationContext(), "Please make sure that End date is after Start date",
                                 Toast.LENGTH_SHORT).show();
-                    }else {
+                    } else {
                         e_date.setText(sdf.format(myCalendar_e_date.getTime()));
                     }
-                }else {
+                } else {
                     e_date.setText(sdf.format(myCalendar_e_date.getTime()));
                 }
             } else {
-                Toast.makeText(getActivity().getApplicationContext(), "The end date you entered occurred before the start date.",
+                Toast.makeText(getActivity().getApplicationContext(), "Please make sure that End date is after Start date",
                         Toast.LENGTH_SHORT).show();
             }
 
@@ -1245,7 +1211,7 @@ public class CreatePostActivity extends AppCompatActivity {
                                 groupList.clear();
                                 JSONObject grpJson = new JSONObject(strResponse);
                                 if (grpJson.has("list")) {
-                                     JSONArray grpArray = grpJson.getJSONArray("list");
+                                    JSONArray grpArray = grpJson.getJSONArray("list");
                                     for (int i = 0; i < grpArray.length(); i++) {
 
                                         JSONObject innerGrpObj = grpArray.getJSONObject(i);
@@ -1274,16 +1240,15 @@ public class CreatePostActivity extends AppCompatActivity {
                                 JSONObject createPost = new JSONObject(strResponse);
                                 String status = createPost.optString("status");
                                 String text = createPost.optString("text");
-                                //    Toast.makeText(CreatePostActivity.this, "" + text, Toast.LENGTH_SHORT).show();
 
                                 if (status.equals("1")) {
-                                    Toast.makeText(CreatePostActivity.this, "Your News has been posted" + text, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(CreatePostActivity.this, "Your News has been posted", Toast.LENGTH_SHORT).show();
                                     CreatePostActivity.this.finish();
                                 } else if (status.equals("2")) {
-                                    Toast.makeText(CreatePostActivity.this, "Your News has been sent to admin for approval" + text, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(CreatePostActivity.this, "Your News has been sent to admin for approval", Toast.LENGTH_SHORT).show();
                                     CreatePostActivity.this.finish();
                                 } else if (status.equals("3")) {
-                                    Toast.makeText(CreatePostActivity.this, "Invalid Entries, please check" + text, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(CreatePostActivity.this, "Invalid Entries, please check", Toast.LENGTH_SHORT).show();
                                     CreatePostActivity.this.finish();
                                 }
 
@@ -1303,13 +1268,13 @@ public class CreatePostActivity extends AppCompatActivity {
                                 String text = grpJson.optString("text");
                                 //  Toast.makeText(CreatePostActivity.this, "" + text, Toast.LENGTH_SHORT).show();
                                 if (status.equals("1")) {
-                                    Toast.makeText(CreatePostActivity.this, "Your Event has been posted" + text, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(CreatePostActivity.this, "Your Event has been posted", Toast.LENGTH_SHORT).show();
                                     CreatePostActivity.this.finish();
                                 } else if (status.equals("2")) {
-                                    Toast.makeText(CreatePostActivity.this, "Your Event has been sent to admin for approval" + text, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(CreatePostActivity.this, "Your Event has been sent to admin for approval", Toast.LENGTH_SHORT).show();
                                     CreatePostActivity.this.finish();
                                 } else if (status.equals("3")) {
-                                    Toast.makeText(CreatePostActivity.this, "Invalid Entries, please check" + text, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(CreatePostActivity.this, "Invalid Entries, please check", Toast.LENGTH_SHORT).show();
                                     CreatePostActivity.this.finish();
                                 }
 

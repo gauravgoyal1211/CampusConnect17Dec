@@ -17,7 +17,16 @@ public class GroupBean implements Serializable {
     private String memberCount;
     private String followCount;
     private String photourl;
+    private String isMember;
 
+
+    public String getIsMember() {
+        return isMember;
+    }
+
+    public void setIsMember(String isMember) {
+        this.isMember = isMember;
+    }
     public String getMemberCount() {
         return memberCount;
     }

@@ -23,6 +23,7 @@ import com.campusconnect.bean.CampusFeedBean;
 import com.campusconnect.communicator.WebRequestTask;
 import com.campusconnect.communicator.WebServiceDetails;
 import com.campusconnect.constant.AppConstants;
+import com.campusconnect.database.DatabaseHandler;
 import com.campusconnect.utility.CircularImageView;
 import com.campusconnect.utility.SharedpreferenceUtility;
 import com.squareup.picasso.Picasso;
@@ -60,9 +61,13 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
     int share_click_count = 0;
     Context context;
 
+    private DatabaseHandler dataBase;
+
     public CollegeCampusFeedAdapter(List<CampusFeedBean> CollegeFeedList, Context contect) {
         this.CollegeFeedList = CollegeFeedList;
         this.context = contect;
+
+        dataBase = new DatabaseHandler(context);
     }
 
     @Override
@@ -77,7 +82,7 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
         flag_share_clicked.add(i, false);
         college_feedViewHolder.event_title.setText(cf.getTitle());
         college_feedViewHolder.timestamp.setText("" + timeAgo(cf.getTimeStamp()));
-        college_feedViewHolder.group_name.setText(cf.getClubid());
+        college_feedViewHolder.group_name.setText(cf.getClubname());
 
         String url = "http://admin.bookieboost.com/admin/images/2015-02-0116-17-50.jpg";
         try {
@@ -100,7 +105,13 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
             college_feedViewHolder.news_icon.setVisibility(View.VISIBLE);
             //flag_news[i]=true;
             flag_news.add(i, true);
-            college_feedViewHolder.going.setImageResource(R.mipmap.heart);
+            if (dataBase.getFeedIsLike(cf.getPid())){
+                flag_attending_clicked.set(i, true);
+                college_feedViewHolder.going.setImageResource(R.mipmap.heart_selected);
+            } else {
+                flag_attending_clicked.set(i, false);
+                college_feedViewHolder.going.setImageResource(R.mipmap.heart);
+            }
 
         } else {
             college_feedViewHolder.day.setVisibility(View.VISIBLE);
@@ -143,7 +154,13 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
             // college_feedViewHolder.date_month.setText(Date_Month[i]);
             //college_feedViewHolder.time.setText(Time_[i]);
             college_feedViewHolder.news_icon.setVisibility(View.GONE);
-            college_feedViewHolder.going.setImageResource(R.mipmap.going);
+            if (dataBase.getFeedIsLike(cf.getPid())){
+                flag_attending_clicked.set(i, true);
+                college_feedViewHolder.going.setImageResource(R.mipmap.going_selected);
+            } else {
+                flag_attending_clicked.set(i, false);
+                college_feedViewHolder.going.setImageResource(R.mipmap.going);
+            }
         }
     }
 
@@ -212,7 +229,11 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
                         if (flag_news.get(pos_for_going)) {
                             going.setImageResource(R.mipmap.heart);
                             Toast.makeText(context, "coming soon", Toast.LENGTH_SHORT).show();
+
+                            dataBase.saveFeedInfo(CollegeFeedList.get(pos_for_going).getPid(), "0");
                         } else {
+                            dataBase.saveFeedInfo(CollegeFeedList.get(pos_for_going).getPid(), "0");
+
                             going.setImageResource(R.mipmap.going);
 
                             try {
@@ -232,7 +253,11 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
                         if (flag_news.get(pos_for_going)) {
                             going.setImageResource(R.mipmap.heart_selected);
                             Toast.makeText(context, "coming soon", Toast.LENGTH_SHORT).show();
+
+                            dataBase.saveFeedInfo(CollegeFeedList.get(pos_for_going).getPid(), "1");
                         } else {
+                            dataBase.saveFeedInfo(CollegeFeedList.get(pos_for_going).getPid(), "1");
+
                             going.setImageResource(R.mipmap.going_selected);
 
                             try {

@@ -48,7 +48,6 @@ import com.campusconnect.activity.CreateGroupActivity;
 import com.campusconnect.activity.CreatePostActivity;
 import com.campusconnect.activity.FlashActivity;
 import com.campusconnect.activity.GroupPageActivity;
-import com.campusconnect.activity.SelectCollegeActivity;
 import com.campusconnect.activity.SettingsActivity;
 import com.campusconnect.adapter.CollegeCampusFeedAdapter;
 import com.campusconnect.adapter.CollegeMyFeedAdapter;
@@ -167,6 +166,7 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
                                             String title = innerObj.optString("title");
                                             String collegeId = innerObj.optString("collegeId");
                                             String kind = innerObj.optString("kind");
+                                            String clubname = innerObj.optString("club_name");
 
                                             bean.setEventCreator(eventCreator);
                                             bean.setDescription(description);
@@ -179,7 +179,7 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
                                             bean.setTitle(title);
                                             bean.setCollegeId(collegeId);
                                             bean.setKind(kind);
-
+                                            bean.setClubname(clubname);
 
                                             ArrayList<String> attendList = new ArrayList<>();
                                             if (innerObj.has("attendees")) {
@@ -295,11 +295,12 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
                                             String views = innerObj.optString("views");
                                             String photo = innerObj.optString("photoUrl");
                                             String clubid = innerObj.optString("club_id");
-                                            String pid = innerObj.optString("pid");
+                                            String pid = innerObj.optString("id");
                                             String timeStamp = innerObj.optString("timestamp");
                                             String title = innerObj.optString("title");
                                             String collegeId = innerObj.optString("collegeId");
                                             String kind = innerObj.optString("kind");
+                                            String clubname = innerObj.optString("club_name");
 
                                             bean.setEventCreator(eventCreator);
                                             bean.setDescription(description);
@@ -312,7 +313,7 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
                                             bean.setTitle(title);
                                             bean.setCollegeId(collegeId);
                                             bean.setKind(kind);
-
+                                            bean.setClubname(clubname);
 
                                             ArrayList<String> attendList = new ArrayList<>();
                                             if (innerObj.has("attendees")) {
@@ -485,10 +486,11 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        isLaunch = true;
         setRetainInstance(true);
+        isLaunch = true;
+        indexMyfeed = 1;
+        indexCollegeFeed = 1;
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -523,22 +525,6 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
             pager.setCurrentItem(1);
             tabs.setDistributeEvenly(true);
             tabs.setViewPager(pager);
-        /*    pager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                @Override
-                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-                }
-
-                @Override
-                public void onPageSelected(int position) {
-                    pager.getAdapter().notifyDataSetChanged();
-                }
-
-                @Override
-                public void onPageScrollStateChanged(int state) {
-
-                }
-            });*/
 
 
             sharedPreferences = getActivity().getSharedPreferences(AppConstants.SHARED_PREFS, Context.MODE_PRIVATE);
@@ -674,7 +660,7 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
                         // updateUI(false);
                         System.err.println("LOG OUT ^^^^^^^^^^^^^^^^^^^^ SUCESS");
                     }
-                    DatabaseHandler db=new DatabaseHandler(getContext());
+                    DatabaseHandler db = new DatabaseHandler(getContext());
                     db.clearClub();
                     SharedpreferenceUtility.getInstance(getActivity()).clearSharedPreference();
                     SharedpreferenceUtility.getInstance(getActivity()).putBoolean(AppConstants.LOG_IN_STATUS, Boolean.FALSE);
@@ -870,13 +856,14 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
         mGoogleApiClient.connect();
     }
 
-     @Override
-     public void onStop() {
+    @Override
+    public void onStop() {
         super.onStop();
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
     }
+
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
@@ -897,12 +884,18 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
             gl.notifyDataSetChanged();
         }
 */
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            gl.notifyDataSetChanged();
+        }
+
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
             //getActivity().getGroups();
             View v = inflater.inflate(R.layout.fragment_groups, null, false);
-
 
             group_list = (RecyclerView) v.findViewById(R.id.rv_group_list);
             create_group = (RelativeLayout) v.findViewById(R.id.create_group_group);
@@ -976,6 +969,11 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
         String Tag = "FragmentCampusFeed";
         String mEmailAccount = "";
 
+        @Override
+        public void onResume() {
+            super.onResume();
+            cf.notifyDataSetChanged();
+        }
 
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -986,10 +984,7 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
             college_feed.setHasFixedSize(false);
             swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipeRefreshLayout);
             swipeRefreshLayout.setColorScheme(new int[]{
-                    android.R.color.holo_blue_bright,
-                    android.R.color.holo_green_light,
-                    android.R.color.holo_orange_light,
-                    android.R.color.holo_red_light});
+                    R.color.yello});
 
             final LinearLayoutManager llm = new LinearLayoutManager(v.getContext());
             llm.setOrientation(LinearLayoutManager.VERTICAL);
@@ -1112,10 +1107,8 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
             personal_feed = (RecyclerView) v.findViewById(R.id.rv_top_news);
             swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipeRefreshLayout);
             swipeRefreshLayout.setColorScheme(new int[]{
-                    android.R.color.holo_blue_bright,
-                    android.R.color.holo_green_light,
-                    android.R.color.holo_orange_light,
-                    android.R.color.holo_red_light});
+                    R.color.yello
+            });
             personal_feed.setHasFixedSize(false);
             final LinearLayoutManager llm = new LinearLayoutManager(v.getContext());
             llm.setOrientation(LinearLayoutManager.VERTICAL);
@@ -1325,8 +1318,8 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
         public void onBindViewHolder(GroupListViewHolder group_listViewHolder, int i) {
             //ModelsClubMiniForm ci = GroupList.get(i);
 
-            GroupBean bean = GroupList.get(posi);
-
+            GroupBean bean = GroupList.get(i);
+            posi=i;
 
             group_listViewHolder.group_title.setText(GroupList.get(i).getAbb());
         /*    if (followingFlag != null) {
@@ -1341,11 +1334,10 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
 
             if (GroupList != null && str != null) {
 
-                if (GroupList.get(i).getFollow().equals(dbFollow)) {
+                if (db.getFollowUnfollow(GroupList.get(i).getClubId()).equalsIgnoreCase("1")) {
                     group_listViewHolder.following.setVisibility(View.VISIBLE);
                     group_listViewHolder.follow.setVisibility(View.GONE);
-                } else if (GroupList.get(i).getFollow().equals(dbUnFollow)) {
-
+                } else {
                     group_listViewHolder.following.setVisibility(View.GONE);
                     group_listViewHolder.follow.setVisibility(View.VISIBLE);
                 }

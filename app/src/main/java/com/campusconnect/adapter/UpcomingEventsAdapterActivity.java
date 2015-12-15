@@ -68,6 +68,8 @@ public class UpcomingEventsAdapterActivity extends
 
     @Override
     public void onBindViewHolder(UpcomingEventsViewHolder upcoming_eventsViewHolder, int i) {
+
+
         CampusFeedBean ci = UpcomingEventsList.get(i);
         upcoming_eventsViewHolder.event_title.setText(ci.getTitle());
         upcoming_eventsViewHolder.group_name.setText(ci.getClubname());

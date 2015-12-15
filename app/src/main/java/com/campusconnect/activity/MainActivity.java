@@ -127,7 +127,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 startActivity(intent_cal);
                 finish();*/
                 break;
-
             case R.id.ib_calendar:
 
                 fragmentManager = getSupportFragmentManager();
@@ -137,14 +136,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 fragmentTransaction.replace(R.id.frame_container, calender);
                 fragmentTransaction.commit();
                 UpdateUi("calender");
-
-              /*  Intent intent_cal = new Intent(v.getContext(), SearchFragment.class);
-                startActivity(intent_cal);
-                finish();*/
                 break;
         }
     }
-
 
     public void UpdateUi(String str) {
 

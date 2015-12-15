@@ -51,31 +51,12 @@ public class NotificationAdapterActivity extends
 
         String intro = "";
         String middle = "";
-        notification_listViewHolder.notification_ts.setText(timeAgo(ci.getTimestamp()));
-        try {
-
-
-            Picasso.with(context).load(ci.getPhotoUrl()).into(notification_listViewHolder.group_icon_notification);
-        } catch (Exception e) {
-
-            Picasso.with(context).load(R.mipmap.spark_session).into(notification_listViewHolder.group_icon_notification);
-        }
-
 
         if (ci.getType() != null) {
-/*
-
-            1) This just in! groupname has posted a news postname  - type: Post
-
-            2) Check it out! groupname has posted an event post postname  - type: Event
-
-            3) Get ready! postname posted by groupname .... - type: Reminder
-
-            4)Congratulations! Your request to join groupname ... - type: Approved Club Creation Request
-*/
-
 
             if (ci.getType().equalsIgnoreCase("post")) {
+
+                SettingRestData(notification_listViewHolder,ci);
                 intro = "This just in! ";
                 middle = " has posted a news post ";
                 group_name = "" + ci.getGroup_name();            //To be gotten from server
@@ -88,6 +69,7 @@ public class NotificationAdapterActivity extends
                 notification_listViewHolder.notification.setText(g_name);
 
             } else if (ci.getType().equalsIgnoreCase("Event")) {
+                SettingRestData(notification_listViewHolder,ci);
 
                 intro = "Check it out! ";
                 middle = " has posted an event post ";
@@ -100,6 +82,9 @@ public class NotificationAdapterActivity extends
 
                 notification_listViewHolder.notification.setText(g_name);
             } else if (ci.getType().equalsIgnoreCase("Reminder")) {
+
+                SettingRestData(notification_listViewHolder,ci);
+
                 intro = "Get Ready! ";
                 middle = " posted by ";
                 end = " will begin in half hour ";
@@ -113,6 +98,9 @@ public class NotificationAdapterActivity extends
                 notification_listViewHolder.notification.setText(g_name);
             } else if (ci.getType().trim().equalsIgnoreCase("approved join request")) {
 
+                SettingRestData(notification_listViewHolder,ci);
+
+
                 intro = "Congratulations! Your request to join ";
                 end = " has been accepted";
                 group_name = "" + ci.getGroup_name();          //To be gotten from server
@@ -120,6 +108,7 @@ public class NotificationAdapterActivity extends
                 g_name.setSpan(robotoRegularSpan_for_group_name, intro.length(), intro.length() + group_name.length(), 0);
                 notification_listViewHolder.notification.setText(g_name);
             } else {
+
             }
 
 
@@ -140,6 +129,17 @@ public class NotificationAdapterActivity extends
             }*/
 
         }
+    }
+
+    public void SettingRestData(NotificationViewHolder holder, NotificationBean ci) {
+        holder.notification_ts.setText(timeAgo(ci.getTimestamp()));
+        try {
+            Picasso.with(context).load(ci.getPhotoUrl()).into(holder.group_icon_notification);
+        } catch (Exception e) {
+
+            Picasso.with(context).load(R.mipmap.spark_session).into(holder.group_icon_notification);
+        }
+
     }
 
     @Override

@@ -41,6 +41,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_FOLLOWING = "following";
     SQLiteDatabase db;
 
+    //    ----------------------------------------------
+    private static final String TABLE_FEEDS = "feeds_table";
+    private static final String FEED_ID = "feed_id";
+    private static final String LIKE_UNLIKE_FEED = "like_unlike_feed";
+
 
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -59,10 +64,62 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_ABB + " TEXT,"
                 + KEY_FOLLOWING + " TEXT" + ")";
 
+
+        String sql = "CREATE TABLE  IF NOT EXISTS " + TABLE_FEEDS
+                + "( _id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + FEED_ID + " TEXT , "
+                + LIKE_UNLIKE_FEED + " TEXT)";
+        db.execSQL(sql);
+
+
         Log.e(Tag, CREATE_CLUB_TABLE);
         db.execSQL(CREATE_CLUB_TABLE);
 
     }
+
+
+    public void saveFeedInfo(String feedID, String likeUnlike) {
+        String id = "";
+        try {
+            String sql = " select * from " + TABLE_FEEDS + " where feed_id = ?";
+            Cursor cursor = db.rawQuery(sql, new String[]{feedID});
+            cursor.moveToNext();
+            id = cursor.getString(1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (id.equalsIgnoreCase("")) {
+            ContentValues values = new ContentValues();
+            values.put(FEED_ID, feedID);
+            values.put(LIKE_UNLIKE_FEED, likeUnlike);
+            db.insert(TABLE_FEEDS, "_id", values);
+        } else {
+            ContentValues values = new ContentValues();
+            values.put(LIKE_UNLIKE_FEED, likeUnlike);
+            db.update(TABLE_FEEDS, values, "feed_id = ?", new String[]{feedID});
+        }
+    }
+
+
+    public boolean getFeedIsLike(String feedID) {
+        boolean isLike = false;
+        String likeUnlikeStr = "";
+        if (!feedID.equalsIgnoreCase("")) {
+            try {
+                String sql = " select * from " + TABLE_FEEDS + " where feed_id = ?";
+                Cursor cursor = db.rawQuery(sql, new String[]{feedID});
+                cursor.moveToNext();
+                likeUnlikeStr = cursor.getString(2);
+                if (likeUnlikeStr.equalsIgnoreCase("1")) {
+                    isLike = true;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return isLike;
+    }
+
 
     // Upgrading database
     @Override
@@ -93,22 +150,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     // Getting single item
-   public  String  getFollowUnfollow(String clubid) {
+    public String getFollowUnfollow(String clubid) {
         SQLiteDatabase db = this.getReadableDatabase();
         /*Cursor cursor = db.query(TABLE_CLUBS, new String[]{
                          KEY_CLUBID,KEY_FOLLOWING}, KEY_CLUBID + "=?",
                 new String[]{String.valueOf(id)}, null, null, null, null);*/
-        String sql = " select " + KEY_FOLLOWING + "from " + TABLE_CLUBS + " where " + KEY_CLUBID + "= ?";
+//        String sql = " select " + KEY_FOLLOWING + "from " + TABLE_CLUBS + " where " + KEY_CLUBID + "= ?";
+        String sql = " select * from " + TABLE_CLUBS + " where clubId = ?";
         Log.e(Tag, sql);
         Cursor cursor = db.rawQuery(sql, new String[]{clubid});
-        if (cursor != null)
-            cursor.moveToFirst();
-        GroupBean groupBean = new GroupBean();
-
-       /* Contact contact = new Contact(Integer.parseInt(cursor.getString(0)),
-                cursor.getString(1), cursor.getString(2));*/
-        // return contact
-        return groupBean.getFollow();
+        cursor.moveToNext();
+        String isFollowing = cursor.getString(6);
+        return isFollowing;
     }
 
     public int updateFollow(String clubId, String value) {
@@ -124,7 +177,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void clearClub() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("delete from " + TABLE_CLUBS);
-        Log.d("DB","Cleared DB Data");
+        Log.d("DB", "Cleared DB Data");
 
     }
 
@@ -172,6 +225,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         return retBool;
     }
+
 
     public ArrayList<GroupBean> getFollowingClubData() {
         ArrayList<GroupBean> list = new ArrayList<>();

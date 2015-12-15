@@ -60,6 +60,18 @@ public class CampusFeedBean implements Serializable {
     String date;
     String likes;
 
+
+    Boolean isLike;
+
+    public boolean isLike() {
+        return isLike;
+    }
+
+    public void setIsLike(boolean isLike) {
+        this.isLike = isLike;
+    }
+
+
     public String getLikes() {
         return likes;
     }

@@ -83,79 +83,6 @@ public class NotificationFragment extends Fragment {
         }
     }
 
-
-  /*  @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_notification);
-        overridePendingTransition(R.anim.pushfront, R.anim.centertoright);*/
-
-       /* home = (ImageButton) findViewById(R.id.ib_home);
-        noti = (ImageButton) findViewById(R.id.ib_notification);
-        profile = (ImageButton) findViewById(R.id.ib_profile);
-        calendar = (ImageButton) findViewById(R.id.ib_calendar);
-        search = (ImageButton) findViewById(R.id.ib_search);*/
-
-
-    //     home.setOnClickListener(this);
-    //   calendar.setOnClickListener(this);
-    //  profile.setOnClickListener(this);
-    //  search.setOnClickListener(this);
-
-    //   }
-
-   /* //TODO  changes in the listner
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.ib_profile:
-                Intent intent_profile = new Intent(v.getContext(), ProfilePageFragment.class);
-                startActivity(intent_profile);
-                finish();
-                break;
-            case R.id.ib_home:
-                Intent intent_home = new Intent(v.getContext(), HomeFragment.class);
-                startActivity(intent_home);
-                overridePendingTransition(R.anim.pushfront, R.anim.centertoright);
-                finish();
-                break;
-            case R.id.ib_calendar:
-                Intent intent_noti = new Intent(v.getContext(), CalenderFragment.class);
-                startActivity(intent_noti);
-                finish();
-                break;
-            case R.id.ib_search:
-                Intent intent_cal = new Intent(v.getContext(), SearchFragment.class);
-                startActivity(intent_cal);
-                finish();
-                break;
-        }
-    }*/
-
-
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-*/
-  /*  @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }*/
-
-
     private List<NotificationBean> createList_nl(int size) {
         List<NotificationBean> result = new ArrayList<NotificationBean>();
         for (int i = 1; i <= size; i++) {
@@ -203,7 +130,10 @@ public class NotificationFragment extends Fragment {
                                             bean.setPhotoUrl(photoUrl);
                                             bean.setPostName(postName);
 
-                                            mNotifiList.add(bean);
+                                            if(type.equalsIgnoreCase("post")||type.equalsIgnoreCase("Event")||type.equalsIgnoreCase("Reminder")||type.equalsIgnoreCase("approved join reques"))
+                                            {
+                                                mNotifiList.add(bean);
+                                            }
                                         }
                                         nl = new NotificationAdapterActivity(mNotifiList, getActivity());
                                         notification_list.setAdapter(nl);

@@ -45,6 +45,8 @@
                 android:id="@+id/iv_upload"
                 android:layout_width="match_parent"
                 android:layout_height="180dp"
+                android:scaleType="centerCrop"
+                android:adjustViewBounds="true"
                 android:layout_below="@+id/group_select_when_posting"
                 android:layout_marginTop="10dp"
                 android:src="@mipmap/upload" />

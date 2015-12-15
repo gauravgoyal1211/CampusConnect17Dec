@@ -3,6 +3,7 @@ package com.campusconnect.activity;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -21,11 +23,16 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -64,7 +71,8 @@ public class CreateGroupActivity extends AppCompatActivity {
     static String imageUrlForUpload = "";
     ImageView upload;
     Button createGroup;
-    EditText groupAbbreviation, groupName, groupDescription, groupType;
+    EditText groupAbbreviation, groupName, groupDescription;
+    Spinner groupType;
     LinearLayout close;
     ModelsClubRequestMiniForm cbr;
     private int PICK_IMAGE_REQUEST = 1;
@@ -72,11 +80,14 @@ public class CreateGroupActivity extends AppCompatActivity {
     private String mEmailAccount = "";
     private static final String LOG_TAG = "CreateGroupActivity";
     TextView create_group_text;
+    private Uri fileUri;
+
 
     private final int GALLERY_ACTIVITY_CODE = 200;
     private final int RESULT_CROP = 400;
 
     String encodedImageStr;
+    ArrayList<String> typeArry = new ArrayList<>();
 
     private boolean isSignedIn() {
         if (!Strings.isNullOrEmpty(mEmailAccount)) {
@@ -98,7 +109,8 @@ public class CreateGroupActivity extends AppCompatActivity {
 
         create_group_text = (TextView) findViewById(R.id.tv_create_group);
         createGroup = (Button) findViewById(R.id.et_createGroup);
-        groupType = (EditText) findViewById(R.id.et_group_type);
+        //groupType = (EditText) findViewById(R.id.et_group_type);
+        groupType = (Spinner) findViewById(R.id.spin_group_type);
         groupName = (EditText) findViewById(R.id.et_group_name);
         groupAbbreviation = (EditText) findViewById(R.id.et_group_abbreviation);
         groupDescription = (EditText) findViewById(R.id.et_group_description);
@@ -106,14 +118,34 @@ public class CreateGroupActivity extends AppCompatActivity {
 
         create_group_text.setTypeface(r_med);
         createGroup.setTypeface(r_reg);
-        groupType.setTypeface(r_reg);
         groupName.setTypeface(r_reg);
         groupAbbreviation.setTypeface(r_reg);
         groupDescription.setTypeface(r_reg);
 
-
         sharedPreferences = getSharedPreferences(AppConstants.SHARED_PREFS, Context.MODE_PRIVATE);
         mEmailAccount = sharedPreferences.getString(AppConstants.EMAIL_KEY, null);
+        typeArry.add("Group Type");
+        typeArry.add("Student");
+        typeArry.add("Alumni");
+
+       /* ArrayAdapter<String> typeAdapter = new ArrayAdapter<String>(this,
+                R.layout.spinn_text_item, typeArry);*/
+
+
+        CustomTypeAdapter typeAdapter = new CustomTypeAdapter(CreateGroupActivity.this, R.layout.spinn_text_item, typeArry);
+        groupType.setAdapter(typeAdapter);
+        groupType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
 
         createGroup.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -168,13 +200,13 @@ public class CreateGroupActivity extends AppCompatActivity {
             String collegeId = SharedpreferenceUtility.getInstance(CreateGroupActivity.this).getString(AppConstants.COLLEGE_ID);
             String pid = SharedpreferenceUtility.getInstance(CreateGroupActivity.this).getString(AppConstants.PERSON_PID);
             //   club_name,club_description,abbreviation,from_pid(profile ID),college_id
-            String groupType = groupName.getText().toString();
+            String groupTypestr = groupName.getText().toString();
             String groupname = groupName.getText().toString();
             String grpDes = groupDescription.getText().toString();
             String abbre = groupAbbreviation.getText().toString();
+            String groupTypeStr = (String) groupType.getSelectedItem();
 
-            if (groupType.isEmpty()||groupname.isEmpty() || grpDes.isEmpty() || abbre.isEmpty() || imageUrlForUpload.isEmpty()) {
-
+            if (groupTypestr.isEmpty() || groupname.isEmpty() || grpDes.isEmpty() || abbre.isEmpty() || imageUrlForUpload.isEmpty()) {
                 Toast.makeText(CreateGroupActivity.this, "Please fill all details", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -241,7 +273,14 @@ public class CreateGroupActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int item) {
                 if (items[item].equals("Take Photo")) {
+                    ContentValues values = new ContentValues();
+                    values.put(MediaStore.Images.Media.TITLE, "New Picture");
+                    values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
+                    fileUri = getContentResolver().insert(
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
                     startActivityForResult(intent, 0);
                 } else if (items[item].equals("Choose from Library")) {
                     Intent intent = new Intent(
@@ -284,10 +323,14 @@ public class CreateGroupActivity extends AppCompatActivity {
         switch (requestCode) {
             case 0:
                 try {
-                    bitmap = (Bitmap) data.getExtras().get("data");
+
+                    bitmap = MediaStore.Images.Media.getBitmap(
+                            getContentResolver(), fileUri);
+                    bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 4, bitmap.getHeight() / 4, true);
+//                        bitmap = (Bitmap) data.getExtras().get("data");
                     //  _addPhotoBitmap = bitmap;
+
                     upload.setImageBitmap(bitmap);
-                    upload.setScaleType(ImageView.ScaleType.FIT_XY);
 
                    /* ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
@@ -503,4 +546,50 @@ public class CreateGroupActivity extends AppCompatActivity {
 
 
     }
+
+    private class CustomTypeAdapter extends ArrayAdapter {
+
+        private Context context;
+        private List<String> itemList;
+
+        public CustomTypeAdapter(Context context, int textViewResourceId, List<String> itemList) {
+            super(context, textViewResourceId, itemList);
+
+            this.context = context;
+            this.itemList = itemList;
+        }
+
+        public TextView getView(int position, View convertView, ViewGroup parent) {
+            LayoutInflater inflater = getLayoutInflater();
+            View row = inflater.inflate(R.layout.spinn_text_item, parent,
+                    false);
+            TextView make = (TextView) row.findViewById(R.id.tv_spinner);
+            Typeface r_reg = Typeface.createFromAsset(getAssets(), "font/Roboto_Regular.ttf");
+            make.setTypeface(r_reg);
+            make.setText(itemList.get(position));
+            if (itemList.get(position).equalsIgnoreCase("group type")) {
+                make.setTextColor(Color.parseColor("#808080"));
+            }
+            return (TextView) row;
+        }
+
+        public TextView getDropDownView(int position, View convertView,
+                                        ViewGroup parent) {
+            LayoutInflater inflater = getLayoutInflater();
+            View row = inflater.inflate(R.layout.spinn_text_item, parent,
+                    false);
+            TextView make = (TextView) row.findViewById(R.id.tv_spinner);
+            Typeface r_reg = Typeface.createFromAsset(getAssets(), "font/Roboto_Regular.ttf");
+            make.setTypeface(r_reg);
+            make.setText(itemList.get(position));
+        /*    if(itemList.get(position).equalsIgnoreCase("type")){
+                make.setTextColor(Color.parseColor("#808080"));
+            }*/
+
+            return (TextView) row;
+        }
+
+    }
+
+
 }

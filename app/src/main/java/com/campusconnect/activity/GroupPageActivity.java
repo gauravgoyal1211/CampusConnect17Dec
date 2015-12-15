@@ -16,8 +16,10 @@ import com.campusconnect.adapter.GroupPage_infoActivity;
 import com.campusconnect.bean.GroupBean;
 import com.campusconnect.communicator.WebRequestTask;
 import com.campusconnect.communicator.WebServiceDetails;
+import com.campusconnect.constant.AppConstants;
 import com.campusconnect.database.DatabaseHandler;
 import com.campusconnect.utility.NetworkAvailablity;
+import com.campusconnect.utility.SharedpreferenceUtility;
 
 import org.apache.http.NameValuePair;
 import org.json.JSONException;
@@ -29,7 +31,7 @@ import java.util.List;
 public class GroupPageActivity extends ActionBarActivity {
 
     RecyclerView group_page;
-    String follow ;
+    String follow;
     DatabaseHandler db;
     private static final String LOG_TAG = "GroupPageActivity";
 
@@ -37,7 +39,7 @@ public class GroupPageActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_page);
-        db= new DatabaseHandler(GroupPageActivity.this);
+        db = new DatabaseHandler(GroupPageActivity.this);
         group_page = (RecyclerView) findViewById(R.id.recycler_group_page);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
@@ -50,8 +52,8 @@ public class GroupPageActivity extends ActionBarActivity {
             Bundle bundle = getIntent().getExtras();
 
             follow = bundle.getString("follow");
-            if(follow==null){
-            follow="0";
+            if (follow == null) {
+                follow = "0";
             }
         } catch (Exception e) {
 
@@ -80,8 +82,11 @@ public class GroupPageActivity extends ActionBarActivity {
     public void WebApiGetGroup(String club_id) {
         if (NetworkAvailablity.hasInternetConnection(GroupPageActivity.this)) {
             try {
+                String pid= SharedpreferenceUtility.getInstance(GroupPageActivity.this).getString(AppConstants.PERSON_PID);
+
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("club_id", "" + club_id);
+                jsonObject.put("pid",pid);
                 //     jsonObject.put("pid", "" + pid);
                 List<NameValuePair> param = new ArrayList<NameValuePair>();
                 String url = WebServiceDetails.DEFAULT_BASE_URL + "getClub";
@@ -122,15 +127,26 @@ public class GroupPageActivity extends ActionBarActivity {
                                 String photoUrl = grpJson.optString("photoUrl");
                                 String followcount = grpJson.optString("followercount");
                                 String member_count = grpJson.optString("membercount");
-
+                                String isMember = grpJson.optString("isMember");
+                                String isFollower = grpJson.optString("isFollower");
 
                                 GroupBean bean = new GroupBean();
                                 bean.setAbb(abb);
                                 bean.setName(name);
                                 bean.setAdmin(admin);
                                 bean.setClubId(clubId);
-                                if (follow != null || follow.isEmpty()) {
-                                    bean.setFollow("" + follow);
+                                if (isFollower.equalsIgnoreCase("Y")) {
+                                    bean.setFollow("1");
+                                    int i = db.updateFollow(clubId, "1");
+
+                                } else {
+                                    bean.setFollow("0");
+                                    int i = db.updateFollow(clubId, "0");
+                                }
+                                if (isMember.equalsIgnoreCase("Y")) {
+                                    bean.setIsMember("1");
+                                } else {
+                                    bean.setIsMember("0");
                                 }
                                 bean.setDescription(description);
                                 bean.setPhotourl(photoUrl);
@@ -138,7 +154,6 @@ public class GroupPageActivity extends ActionBarActivity {
                                 bean.setFollowCount(followcount);
                                 GroupPageAdapterActivity gp = new GroupPageAdapterActivity(createList_group_page(5), bean, GroupPageActivity.this);
                                 group_page.setAdapter(gp);
-
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
