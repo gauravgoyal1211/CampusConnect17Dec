@@ -158,8 +158,13 @@ public class CollegeMyFeedAdapter extends
                     e.printStackTrace();
                 }
 
+                SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm:ss");
+                SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+                Date _24HourDt = _24HourSDF.parse(cf.getStart_time());
+              String time12=   _12HourSDF.format(_24HourDt);
 
-                college_feedViewHolder.time.setText("" + cf.getStart_time());
+                college_feedViewHolder.time.setText("" + time12);
+
                 // college_feedViewHolder.date_month.setText(Date_Month[i]);
                 //college_feedViewHolder.time.setText(Time_[i]);
                 college_feedViewHolder.news_icon.setVisibility(View.GONE);
@@ -171,7 +176,7 @@ public class CollegeMyFeedAdapter extends
                     college_feedViewHolder.going.setImageResource(R.mipmap.going);
                 }
             }
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
@@ -246,7 +251,7 @@ public class CollegeMyFeedAdapter extends
                     if (flag_attending_clicked.get(pos_for_going)) {
                         if (flag_news.get(pos_for_going)) {
                             going.setImageResource(R.mipmap.heart);
-                            Toast.makeText(context,"coming soon",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "coming soon", Toast.LENGTH_SHORT).show();
                             dataBase.saveFeedInfo(myFeedList.get(pos_for_going).getPid(), "0");
                         } else {
                             dataBase.saveFeedInfo(myFeedList.get(pos_for_going).getPid(), "0");
@@ -266,7 +271,7 @@ public class CollegeMyFeedAdapter extends
                         flag_attending_clicked.set(pos_for_going, false);
                     } else {
                         if (flag_news.get(pos_for_going)) {
-                            Toast.makeText(context,"coming soon",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "coming soon", Toast.LENGTH_SHORT).show();
                             going.setImageResource(R.mipmap.heart_selected);
                             dataBase.saveFeedInfo(myFeedList.get(pos_for_going).getPid(), "1");
                         } else {
@@ -284,7 +289,7 @@ public class CollegeMyFeedAdapter extends
                             }
 
                         }
-                        flag_attending_clicked.set(pos_for_going,true);
+                        flag_attending_clicked.set(pos_for_going, true);
 //                        flag_attending_clicked[pos_for_going] = true;
                     }
 
@@ -297,7 +302,7 @@ public class CollegeMyFeedAdapter extends
                     int pos_for_share = getAdapterPosition();
                     Intent i = new Intent(android.content.Intent.ACTION_SEND);
                     i.setType("text/plain");
-                    String shareBody = "Title : "+myFeedList.get(pos_for_share).getTitle() + "/n" + "Description : "+myFeedList.get(pos_for_share).getDescription()+" for more info visit http://campusconnect.cc/";
+                    String shareBody = "Title : " + myFeedList.get(pos_for_share).getTitle() + "/n" + "Description : " + myFeedList.get(pos_for_share).getDescription() + " for more info visit http://campusconnect.cc/";
 
 //                    String shareBody = myFeedList.get(pos_for_share).getTitle() + "/n" + myFeedList.get(posi).getDescription();
                     i.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
@@ -305,11 +310,11 @@ public class CollegeMyFeedAdapter extends
 
                     if (flag_share_clicked.get(pos_for_share)) {
                         share.setAlpha((float) 0.5);
-                        flag_share_clicked.set(pos_for_share,false);
+                        flag_share_clicked.set(pos_for_share, false);
 //                        flag_share_clicked[pos_for_share] = false;
                     } else {
                         share.setAlpha((float) 1);
-                        flag_share_clicked.set(pos_for_share,true);
+                        flag_share_clicked.set(pos_for_share, true);
 //                        flag_share_clicked[pos_for_share] = true;
                     }
                 }
@@ -376,17 +381,13 @@ public class CollegeMyFeedAdapter extends
                 if (strResponse != null && strResponse.length() > 0) {
                     switch (response_code) {
                         case WebServiceDetails.PID_ATTENDING: {
-
                             try {
                                 JSONObject jsonObject = new JSONObject(strResponse);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-
-
                         }
                         break;
-
                         default:
                             break;
                     }

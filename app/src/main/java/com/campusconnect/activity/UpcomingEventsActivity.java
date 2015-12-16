@@ -169,7 +169,7 @@ public class UpcomingEventsActivity extends ActionBarActivity {
                                             bean.setPid(eventid);
 
                                             bean.setPhoto(photo);
-                                            bean.setTimeStamp(time+" "+date);
+                                            bean.setTimeStamp(timeStamp);
                                             bean.setTitle(title);
                                             bean.setCollegeId(collegeId);
 

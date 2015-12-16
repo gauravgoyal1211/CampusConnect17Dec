@@ -147,7 +147,18 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
                 }
                 Log.e(cf.getTitle(), day + "" + month);
                 college_feedViewHolder.date_month.setText("" + day + "" + month);
-                college_feedViewHolder.time.setText("" + cf.getStart_time());
+
+
+
+                SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm:ss");
+                SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+                Date _24HourDt = _24HourSDF.parse(cf.getStart_time());
+                String time12=   _12HourSDF.format(_24HourDt);
+                college_feedViewHolder.time.setText("" + time12);
+
+
+
+
             } catch (ParseException e) {
                 e.printStackTrace();
             }

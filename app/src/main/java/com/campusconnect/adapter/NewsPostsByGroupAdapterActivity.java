@@ -115,8 +115,6 @@ public class NewsPostsByGroupAdapterActivity extends
 
         return new NewsPostsByGroupViewHolder(itemView);
     }
-
-
     public class NewsPostsByGroupViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         CardView news_feed;
@@ -159,7 +157,6 @@ public class NewsPostsByGroupAdapterActivity extends
                     v.getContext().startActivity(intent_temp);
                 }
             });
-
             like.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

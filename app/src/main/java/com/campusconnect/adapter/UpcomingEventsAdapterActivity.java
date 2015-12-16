@@ -74,7 +74,20 @@ public class UpcomingEventsAdapterActivity extends
         upcoming_eventsViewHolder.event_title.setText(ci.getTitle());
         upcoming_eventsViewHolder.group_name.setText(ci.getClubname());
         upcoming_eventsViewHolder.timestamp.setText(timeAgo(ci.getTimeStamp()));
-        upcoming_eventsViewHolder.time.setText("" + ci.getStart_time());
+
+        try {
+            SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm:ss");
+            SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+            Date _24HourDt = null;
+
+            _24HourDt = _24HourSDF.parse(ci.getStart_time());
+            String time12 = _12HourSDF.format(_24HourDt);
+            upcoming_eventsViewHolder.time.setText("" +time12);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
 
         upcoming_eventsViewHolder.group_icon.setImageResource(R.mipmap.spark_session);
         String url = "http://admin.bookieboost.com/admin/images/2015-02-0116-17-50.jpg";

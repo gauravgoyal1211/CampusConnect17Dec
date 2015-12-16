@@ -20,6 +20,9 @@ android {
         exclude 'META-INF/notice.txt'
     }
 
+    lintOptions {
+        abortOnError false
+    }
     defaultConfig {
         applicationId "com.campusconnect"
         minSdkVersion 15

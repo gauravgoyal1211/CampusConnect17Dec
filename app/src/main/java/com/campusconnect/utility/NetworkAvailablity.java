@@ -41,6 +41,7 @@ public class NetworkAvailablity {
 	 */
 	public static boolean hasInternetConnection(Context context) {
 
+
 	    ConnectivityManager connectivity = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivity != null)
         {

@@ -52,6 +52,9 @@ public class CollegeListAdapterActivity extends
 
             group_listViewHolder.college_name.setText(ci.getName());
             if (i == 0) {
+
+
+
                 group_listViewHolder.college_name.setTypeface(null, Typeface.BOLD);
                 group_listViewHolder.college_name.setGravity(Gravity.CENTER);
                 group_listViewHolder.i_divider.setVisibility(View.GONE);

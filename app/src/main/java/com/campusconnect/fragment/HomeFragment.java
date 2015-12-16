@@ -243,7 +243,9 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
                                                 , getActivity());*/
                                         tn.notifyDataSetChanged();
 
-                                        if (indexMyfeed == 1) {
+                                        if (indexMyfeed == 1)
+
+                                        if (isLaunch) {{
                                             SharedPreferences prefs = getActivity().getSharedPreferences("AllPersonalFeeds", Context.MODE_PRIVATE);
 //save the user list to preference
                                             SharedPreferences.Editor editor = prefs.edit();
@@ -254,14 +256,17 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
                                             }
                                             editor.commit();
                                         }
-
-                                        if (isLaunch) {
                                             WebApiGetGroups();
                                             isLaunch = false;
                                         }
                                     }
-
                                 } else {
+                                    if (indexMyfeed == 1){
+
+                                        if (isLaunch){
+                                            WebApiGetGroups();
+                                        }}
+
                                     Toast.makeText(getActivity(), "Follow interesting groups to create your feed!", Toast.LENGTH_SHORT).show();
                                 }
 

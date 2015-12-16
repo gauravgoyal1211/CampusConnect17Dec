@@ -29,6 +29,7 @@ import org.apache.http.NameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -50,7 +51,7 @@ public class InEventActivity extends AppCompatActivity {
     Boolean flag_news, flag_selected_share, flag_selected_attend_like;
     Boolean flag_attended_clicked = false, flag_share_clicked = false;
     ImageView event_photo, location_icon, going, share;
-    TextView e_name, e_time, e_date, g_name, v_name, e_description, attendees_count ,tv_header;
+    TextView e_name, e_time, e_date, g_name, v_name, e_description, attendees_count, tv_header;
     CircularImageView g_icon;
     static int attending = 1;
     static int liking = 1;
@@ -79,7 +80,7 @@ public class InEventActivity extends AppCompatActivity {
         g_name = (TextView) findViewById(R.id.tv_group_name);
         e_description = (TextView) findViewById(R.id.tv_event_description);
         v_name = (TextView) findViewById(R.id.tv_venue);
-        tv_header=(TextView) findViewById(R.id.tv_header);
+        tv_header = (TextView) findViewById(R.id.tv_header);
         g_icon = (CircularImageView) findViewById(R.id.group_icon);
         attendees_count = (TextView) findViewById(R.id.tv_attendees_count);
 
@@ -128,7 +129,19 @@ public class InEventActivity extends AppCompatActivity {
             } else {
                 int attendies = bean.getAttendees().size();
                 attendees_count.setText("+" + attendies + " attending");
-                e_time.setText("" + bean.getStart_time());
+                try {
+                    SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm:ss");
+                    SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+                    Date _24HourDt = null;
+
+                    _24HourDt = _24HourSDF.parse(bean.getStart_time());
+                    String time12 = _12HourSDF.format(_24HourDt);
+                    e_time.setText("" + time12);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+
             }
             try {
                 Picasso.with(InEventActivity.this).load(bean.getPhoto()).into(event_photo);

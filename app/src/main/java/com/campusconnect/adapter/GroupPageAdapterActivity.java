@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -69,6 +70,7 @@ public class GroupPageAdapterActivity extends
 
     public GroupPageAdapterActivity(List<GroupPage_infoActivity> GroupsJoinedList, GroupBean groupBean, Context context) {
         try {
+            this.GroupPageList = GroupsJoinedList;
             g_name = groupBean.getName();
             g_icon = groupBean.getPhotourl();
             m_count = Integer.parseInt(groupBean.getMemberCount());
@@ -78,7 +80,7 @@ public class GroupPageAdapterActivity extends
             Imageurl = groupBean.getPhotourl();
             this.groupBean = groupBean;
             this.context = context;
-            this.GroupPageList = GroupsJoinedList;
+
             if (db == null) {
                 db = new DatabaseHandler(context);
             }
@@ -96,6 +98,10 @@ public class GroupPageAdapterActivity extends
     @Override
     public void onBindViewHolder(GroupPageHolder groupViewHolder, int i) {
         if (getItemViewType(i) == 0) {
+
+
+
+
             holder1 = (GroupInfoViewHolder) groupViewHolder;
             holder1.group_name.setText(g_name);
             try {
@@ -112,9 +118,9 @@ public class GroupPageAdapterActivity extends
             }
             if (member_click_count == 1) {
 
-                holder1.tbtn_member.setBackgroundResource(R.drawable.members_selected);
+                holder1.iv_member.setBackgroundResource(R.drawable.group_member_selected);
             } else {
-                holder1.tbtn_member.setBackgroundResource(R.drawable.members);
+                holder1.iv_member.setBackgroundResource(R.drawable.group_member);
             }
         } else {
             holder2 = (ExtraGroupInfoListHolder) groupViewHolder;
@@ -129,8 +135,7 @@ public class GroupPageAdapterActivity extends
             viewType = 0;
         else
             viewType = 1;
-
-        return viewType;
+       return viewType;
     }
 
     @Override
@@ -159,7 +164,8 @@ public class GroupPageAdapterActivity extends
 
         TextView group_name, members_count, followers_count;
         CircularImageView group_icon;
-        ToggleButton tbtn_follow, tbtn_member;
+        ToggleButton tbtn_follow;
+        ImageView iv_member;
 
         public GroupInfoViewHolder(View itemView) {
             super(itemView);
@@ -168,7 +174,7 @@ public class GroupPageAdapterActivity extends
             followers_count = (TextView) itemView.findViewById(R.id.tv_followers_count);
             group_icon = (CircularImageView) itemView.findViewById(R.id.group_image);
             tbtn_follow = (ToggleButton) itemView.findViewById(R.id.tb_followers);
-            tbtn_member = (ToggleButton) itemView.findViewById(R.id.tb_members);
+            iv_member = (ImageView) itemView.findViewById(R.id.tb_members);
 
 
             tbtn_follow.setOnClickListener(new View.OnClickListener() {
@@ -193,7 +199,7 @@ public class GroupPageAdapterActivity extends
                     follow_click_count++;
                 }
             });
-            tbtn_member.setOnClickListener(new View.OnClickListener() {
+            iv_member.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     MemberConfirmationDialog confirmDialog = new MemberConfirmationDialog((Activity) v.getContext());
@@ -314,10 +320,10 @@ public class GroupPageAdapterActivity extends
                 case R.id.btn_yes: {
                     if (member_click_count == 1) {
                         member_click_count=0;
-                        holder1.tbtn_member.setBackgroundResource(R.drawable.members);
+                        holder1.iv_member.setBackgroundResource(R.drawable.group_member);
                     } else {
                         member_click_count=1;
-                        holder1.tbtn_member.setBackgroundResource(R.drawable.members_selected);
+                        holder1.iv_member.setBackgroundResource(R.drawable.group_member_selected);
                     }
                     yes_dialog_box_click_count++;
                     webApiGroupJoin(v.getContext());
@@ -348,6 +354,7 @@ public class GroupPageAdapterActivity extends
             }
         }
     }
+
     private final Handler _handler = new Handler() {
         public void handleMessage(Message msg) {
             int response_code = msg.what;
@@ -383,7 +390,6 @@ public class GroupPageAdapterActivity extends
                 }
                 if (call_web_api == 2) {
                     if (followClick == 1) {
-                        followClick = 0;
                         Toast.makeText(context, "following", Toast.LENGTH_LONG).show();
                     } else {
                         Toast.makeText(context, "unfollowing", Toast.LENGTH_LONG).show();

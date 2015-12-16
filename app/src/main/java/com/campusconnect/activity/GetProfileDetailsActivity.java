@@ -34,7 +34,7 @@ import java.util.List;
 public class GetProfileDetailsActivity extends AppCompatActivity implements View.OnClickListener {
 
     Button cont;
-    EditText et_batch, et_branch,et_name,et_location,et_company;
+    EditText et_batch, et_branch, et_name, et_location, et_company;
     Switch sw_student;
     static ModelsProfileMiniForm pmf;
     private static final String LOG_TAG = "GetProfileDetails";
@@ -47,7 +47,7 @@ public class GetProfileDetailsActivity extends AppCompatActivity implements View
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_get_profile_details);
 
-        sw_student = (Switch)findViewById(R.id.student_alumini_switch);
+        sw_student = (Switch) findViewById(R.id.student_alumini_switch);
         et_name = (EditText) findViewById(R.id.et_name);
         et_batch = (EditText) findViewById(R.id.et_batch);
         et_branch = (EditText) findViewById(R.id.et_branch);
@@ -57,7 +57,7 @@ public class GetProfileDetailsActivity extends AppCompatActivity implements View
         //et_phone = (EditText) findViewById(R.id.et_phone);
         cont = (Button) findViewById(R.id.b_continue);
 
-        name=SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).getString(AppConstants.PERSON_NAME);
+        name = SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).getString(AppConstants.PERSON_NAME);
         mEmailAccount = SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).getString(AppConstants.EMAIL_KEY);
 
         et_name.setText(name);
@@ -70,11 +70,11 @@ public class GetProfileDetailsActivity extends AppCompatActivity implements View
                                          boolean isChecked) {
 
                 if (!isChecked) {
-                    SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).putString(AppConstants.ALUMNI,"N");
+                    SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).putString(AppConstants.ALUMNI, "N");
                     et_location.setVisibility(View.INVISIBLE);
                     et_company.setVisibility(View.INVISIBLE);
                 } else {
-                    SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).putString(AppConstants.ALUMNI,"Y");
+                    SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).putString(AppConstants.ALUMNI, "Y");
                     et_company.setVisibility(View.VISIBLE);
                     et_location.setVisibility(View.VISIBLE);
                 }
@@ -102,44 +102,44 @@ public class GetProfileDetailsActivity extends AppCompatActivity implements View
         }
 
         String isAlumini = SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).getString(AppConstants.ALUMNI);
-        if(isAlumini.equals("")){
-            isAlumini="N";
+        if (isAlumini.equals("")) {
+            isAlumini = "N";
         }
 
         String str_company = et_company.getText().toString().trim();
-        if(str_company==null){
-            str_company="";
+        if (str_company == null) {
+            str_company = "";
         }
         String str_location = et_location.getText().toString().trim();
-        if(str_location==null){
-            str_location="";
+        if (str_location == null) {
+            str_location = "";
         }
 
-        SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).putString(AppConstants.BATCH,str_batch);
+        SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).putString(AppConstants.BATCH, str_batch);
         //SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).putString(AppConstants.PHONE,str_phone);
         SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).putString(AppConstants.BRANCH, str_branch);
-        String name= SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).getString(AppConstants.PERSON_NAME);
-        String email= SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).getString(AppConstants.EMAIL_KEY);
-        String collegeId= SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).getString(AppConstants.COLLEGE_ID);
-        String gcmId=SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).getString(AppConstants.GCM_TOKEN);
-        String photoUrl=SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).getString(AppConstants.PHOTO_URL);
+        String name = SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).getString(AppConstants.PERSON_NAME);
+        String email = SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).getString(AppConstants.EMAIL_KEY);
+        String collegeId = SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).getString(AppConstants.COLLEGE_ID);
+        String gcmId = SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).getString(AppConstants.GCM_TOKEN);
+        String photoUrl = SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).getString(AppConstants.PHOTO_URL);
 
         try {
-            JSONObject object= new JSONObject();
-            object.put("name",name);
-            object.put("phone","");
-            object.put("isAlumni",isAlumini);
-            object.put("email",email);
-            object.put("collegeId",collegeId);
-            object.put("branch",str_branch);
-            object.put("batch",str_batch);
-            object.put("gcmId",gcmId);
+            JSONObject object = new JSONObject();
+            object.put("name", name);
+            object.put("phone", "");
+            object.put("isAlumni", isAlumini);
+            object.put("email", email);
+            object.put("collegeId", collegeId);
+            object.put("branch", str_branch);
+            object.put("batch", str_batch);
+            object.put("gcmId", gcmId);
             object.put("photoUrl", photoUrl);
-            if(isAlumini=="Y"){
-                object.put("company",str_company);
-                object.put("location",str_location);
+            if (isAlumini == "Y") {
+                object.put("company", str_company);
+                object.put("location", str_location);
             }
-            Log.i("Save profile Web api",object.toString());
+            Log.i("Save profile Web api", object.toString());
             WebApiSaveProfile(object);
 
         } catch (JSONException e) {
@@ -156,12 +156,12 @@ public class GetProfileDetailsActivity extends AppCompatActivity implements View
     }
 
 
-  public void   WebApiSaveProfile(JSONObject jsonObject){
+    public void WebApiSaveProfile(JSONObject jsonObject) {
 
-      List<NameValuePair> param = new ArrayList<NameValuePair>();
-      String url = WebServiceDetails.DEFAULT_BASE_URL + "profile";
-      new WebRequestTask(GetProfileDetailsActivity.this, param, _handler, WebRequestTask.POST, jsonObject, WebServiceDetails.PID_SAVE_PROFILE,
-              true, url).execute();
+        List<NameValuePair> param = new ArrayList<NameValuePair>();
+        String url = WebServiceDetails.DEFAULT_BASE_URL + "profile";
+        new WebRequestTask(GetProfileDetailsActivity.this, param, _handler, WebRequestTask.POST, jsonObject, WebServiceDetails.PID_SAVE_PROFILE,
+                true, url).execute();
 
 
     }
@@ -203,13 +203,18 @@ public class GetProfileDetailsActivity extends AppCompatActivity implements View
                         case WebServiceDetails.PID_SAVE_PROFILE: {
                             try {
                                 JSONObject profileObj = new JSONObject(strResponse);
-                                String pid=profileObj.getString("pid");
-                                SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).putString(AppConstants.PERSON_PID,pid);
+                                String pid = profileObj.getString("pid");
+                                String collegeid = profileObj.getString("collegeId");
+                                Log.v("GetProfileDEtails", pid + " " + collegeid);
+                                SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).putString(AppConstants.COLLEGE_ID, collegeid);
+                                SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).putString(AppConstants.PERSON_PID, pid);
+                                SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).putString(AppConstants.PERSON_PID, pid);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-
 //                            try {
+
+
 //
 //                                List<CollegeListInfoBean> list = new ArrayList<CollegeListInfoBean>();
 //                                JSONObject collegeObj = new JSONObject(strResponse);
