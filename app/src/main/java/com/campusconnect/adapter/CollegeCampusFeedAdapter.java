@@ -293,7 +293,7 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
                     int pos_for_share = getAdapterPosition();
                     Intent i = new Intent(android.content.Intent.ACTION_SEND);
                     i.setType("text/plain");
-                    String shareBody = "Title : "+CollegeFeedList.get(pos_for_share).getTitle() + "/n" + "Description : "+CollegeFeedList.get(pos_for_share).getDescription()+" for more info visit http://campusconnect.cc/";
+                    String shareBody = "Title : "+CollegeFeedList.get(pos_for_share).getTitle() + "\n" + "Description : "+CollegeFeedList.get(pos_for_share).getDescription()+" for more info visit http://campusconnect.cc/";
                     //String shareBody = CollegeFeedList.get(pos_for_share).getTitle() + "/n" + CollegeFeedList.get(posi).getDescription();
                     i.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
                     v.getContext().startActivity(Intent.createChooser(i, "Share via"));
