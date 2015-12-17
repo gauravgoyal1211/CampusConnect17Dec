@@ -28,11 +28,11 @@ public class CalenderFragment extends Fragment {
     ViewPager pager;
     ViewPagerAdapter_Calendar adapter;
     SlidingTabLayout_Calendar tabs;
-    CharSequence Titles[]={"Mon 5","Tue 6","Wed 7","Thu 8","Fri 9","Sat 10","Sun 11"};
+    CharSequence Titles[] = {"Mon 5", "Tue 6", "Wed 7", "Thu 8", "Fri 9", "Sat 10", "Sun 11"};
     int Numboftabs = 7;
 
     RecyclerView calendar;
-    View  mRootView;
+    View mRootView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,15 +67,9 @@ public class CalenderFragment extends Fragment {
                     headersDecor.invalidateHeaders();
                 }
             });
-
-
-
         } catch (InflateException e) {
             e.printStackTrace();
         }
-
-
-
         return mRootView;
     }
 
@@ -90,11 +84,11 @@ public class CalenderFragment extends Fragment {
         return result;
     }
 
-    public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.CalendarViewHolder> implements StickyRecyclerHeadersAdapter<RecyclerView.ViewHolder>{
+    public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.CalendarViewHolder> implements StickyRecyclerHeadersAdapter<RecyclerView.ViewHolder> {
 
 
         //Get the day from the server for each card and feed it to the getHeaderId(int position) function below.
-        int dates[] = {17,18,18,27,27,29,29};
+        int dates[] = {1, 18, 18, 27, 27, 29, 29};
 
         public CalendarAdapter(List<NotificationBean> list_cal) {
         }
@@ -106,12 +100,10 @@ public class CalenderFragment extends Fragment {
             return new CalendarViewHolder(view) {
             };
         }
-
         @Override
         public void onBindViewHolder(CalendarViewHolder holder, int position) {
 
         }
-
         @Override
         public int getItemCount() {
             return 7;
@@ -120,8 +112,8 @@ public class CalenderFragment extends Fragment {
         @Override
         public long getHeaderId(int position) {
             char ch;
-            ch  = (char)(dates[position]+64);
-                return ch;
+            ch = (char) (dates[position] + 64);
+            return ch;
         }
 
         @Override
@@ -135,10 +127,10 @@ public class CalenderFragment extends Fragment {
         @Override
         public void onBindHeaderViewHolder(RecyclerView.ViewHolder holder, int position) {
             TextView textView = (TextView) holder.itemView;
-            textView.setText(dates[position]+"");
+            textView.setText(dates[position] + "");
             Typeface r_med = Typeface.createFromAsset(holder.itemView.getContext().getAssets(), "font/Roboto_Light.ttf");
             textView.setTypeface(r_med);
-            holder.itemView.setBackgroundColor(Color.rgb(56,56,56));
+            holder.itemView.setBackgroundColor(Color.rgb(56, 56, 56));
         }
 
         public class CalendarViewHolder extends RecyclerView.ViewHolder {

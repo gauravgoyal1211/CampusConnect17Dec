@@ -51,7 +51,6 @@ import com.campusconnect.activity.CreatePostActivity;
 import com.campusconnect.activity.FlashActivity;
 import com.campusconnect.activity.GroupPageActivity;
 import com.campusconnect.activity.MainActivity;
-import com.campusconnect.activity.SettingsActivity;
 import com.campusconnect.adapter.CollegeCampusFeedAdapter;
 import com.campusconnect.adapter.CollegeMyFeedAdapter;
 import com.campusconnect.bean.CampusFeedBean;
@@ -127,8 +126,9 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
     String gcm_token;
     GoogleApiClient mGoogleApiClient;
     boolean mSignInClicked;
+    TextView tv_show_campusFeed, tv_show_personal;
 
-    private static boolean isLaunch = true;
+//    private static boolean isLaunch = true;
 
     public HomeFragment() {
     }
@@ -153,12 +153,13 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
                                 JSONObject jsonObject = new JSONObject(strResponse);
                                 personalCompleted = jsonObject.optString("completed");
                                 if (jsonObject.has("items")) {
+                                    tv_show_personal.setVisibility(View.GONE);
                                     JSONArray campusArry = jsonObject.getJSONArray("items");
                                     if (campusArry.length() > 0) {
                                         for (int i = 0; i < campusArry.length(); i++) {
                                             JSONObject innerObj = campusArry.getJSONObject(i);
-                                            CampusFeedBean bean = new CampusFeedBean();
 
+                                            CampusFeedBean bean = new CampusFeedBean();
                                             String eventCreator = innerObj.optString("event_creator");
                                             String description = innerObj.optString("description");
                                             String views = innerObj.optString("views");
@@ -238,16 +239,14 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
 
                                             myFeedList.add(bean);
                                         }
-
                                       /*  tn = new CollegeMyFeedAdapter(myFeedList
                                                 , getActivity());*/
                                         tn.notifyDataSetChanged();
+                                        if (indexMyfeed == 1) {
+                                           /* if (MainActivity.isLaunch) {*/
 
-                                        if (indexMyfeed == 1)
-
-                                        if (isLaunch) {{
                                             SharedPreferences prefs = getActivity().getSharedPreferences("AllPersonalFeeds", Context.MODE_PRIVATE);
-//save the user list to preference
+                                            //save the user list to preference
                                             SharedPreferences.Editor editor = prefs.edit();
                                             try {
                                                 editor.putString(AppConstants.PERSONAL_FEED_ARRAYLIST, ObjectSerializer.serialize(myFeedList));
@@ -256,18 +255,22 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
                                             }
                                             editor.commit();
                                         }
-                                            WebApiGetGroups();
-                                            isLaunch = false;
-                                        }
+                                        WebApiGetGroups();
+                                        MainActivity.isLaunch = false;
+//                                            }
                                     }
                                 } else {
-                                    if (indexMyfeed == 1){
+                                    if (indexMyfeed == 1) {
 
-                                        if (isLaunch){
+                                        // for launching if data not avaialble in personal feed
+                                        if (MainActivity.isLaunch) {
                                             WebApiGetGroups();
-                                        }}
+                                        }
+                                    }
+                                    // Toast.makeText(getActivity(), "Follow interesting groups to create your feed!", Toast.LENGTH_SHORT).show();
+                                    tv_show_personal.setVisibility(View.VISIBLE);
 
-                                    Toast.makeText(getActivity(), "Follow interesting groups to create your feed!", Toast.LENGTH_SHORT).show();
+
                                 }
 
                             /*  for(int i =0;i<10;i++){
@@ -366,7 +369,6 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
                                                             String tag = tagArray.getString(l);
                                                             tagList.add(tag);
                                                         }
-
                                                     }
                                                 }
                                             } catch (JSONException e) {
@@ -376,23 +378,24 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
                                             //End of getting data here
                                             campusFeedList.add(bean);
                                         }
-                                       /* cf = new CollegeCampusFeedAdapter(campusFeedList
-                                                , getActivity());
-                                        college_feed.setAdapter(cf);*/
-                                        adapter.notifyDataSetChanged();
-                                        cf.notifyDataSetChanged();
 
-                                        if (isLaunch) {
+                                        cf.notifyDataSetChanged();
+                                        if (indexCollegeFeed == 1) {
+                                            SharedpreferenceUtility.getInstance(getActivity()).putString(AppConstants.CAMPUS_FEED_ARRAYLIST, ObjectSerializer.serialize(campusFeedList));
+                                        }
+                                        if (MainActivity.isLaunch) {
                                             WebApiGetPersonalFeed(indexMyfeed);
                                         }
                                     }
                                 } else {
-                                    Toast.makeText(getActivity(), "Create posts to create your campus feed!", Toast.LENGTH_SHORT).show();
+                                    tv_show_campusFeed.setVisibility(View.VISIBLE);
+                                    // Toast.makeText(getActivity(), "Create posts to create your campus feed!", Toast.LENGTH_SHORT).show();
                                 }
-
                             } catch (JSONException e) {
                                 e.printStackTrace();
                                 Log.e("Error", "" + e);
+                            } catch (IOException e) {
+                                e.printStackTrace();
                             }
                         }
                         break;
@@ -495,7 +498,7 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setRetainInstance(true);
-        isLaunch = true;
+//        isLaunch = true;
         indexMyfeed = 1;
         indexCollegeFeed = 1;
     }
@@ -670,8 +673,7 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
 //                    });
 //
 //                    doorbellDialog.show();
-                }
-                else if (position == 1){
+                } else if (position == 1) {
                     Uri uri = Uri.parse("market://details?id=" + context.getPackageName());
                     Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
                     // To count with Play market backstack, After pressing back button,
@@ -715,7 +717,6 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
         }
     }
 
-
     public void WebApiGetPersonalFeed(int index) {
         if (NetworkAvailablity.hasInternetConnection(getActivity())) {
             try {
@@ -731,7 +732,7 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
                 List<NameValuePair> param = new ArrayList<NameValuePair>();
                 String url = WebServiceDetails.DEFAULT_BASE_URL + "myFeed";
                 Log.e("Home Fragment", url);
-                Log.e("request personal feed", "___________" + jsonObject);
+                Log.e("request personal feed", "__________" + jsonObject);
                 checkWebApi = 1;
                 new WebRequestTask(getActivity(), param, _handler, WebRequestTask.POST, jsonObject, WebServiceDetails.PID_GET_PERSONAL_FEED,
                         true, url).execute();
@@ -772,8 +773,9 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
     }
 
     public void WebApiGetGroups() {
-        if (NetworkAvailablity.hasInternetConnection(getActivity())) {
-            try {
+        try {
+            if (NetworkAvailablity.hasInternetConnection(getActivity())) {
+
                 String collegeId = SharedpreferenceUtility.getInstance(getActivity()).getString(AppConstants.COLLEGE_ID);
                 String pid = SharedpreferenceUtility.getInstance(getActivity()).getString(AppConstants.PERSON_PID);
                 JSONObject jsonObject = new JSONObject();
@@ -787,30 +789,34 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
                 new WebRequestTask(getActivity(), param, _handler, WebRequestTask.POST, jsonObject, WebServiceDetails.PID_GET_GROUPS,
                         true, url).execute();
 
-            } catch (JSONException e) {
-                e.printStackTrace();
+            } else {
+                Toast.makeText(getActivity(), "Network is not available.", Toast.LENGTH_SHORT).show();
             }
-        } else {
-            Toast.makeText(getActivity(), "Network is not available.", Toast.LENGTH_SHORT).show();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
     public void webApiFollow(GroupBean bean) {
 
         try {
-            String personPid = SharedpreferenceUtility.getInstance(getActivity()).getString(AppConstants.PERSON_PID);
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("club_id", "" + bean.getClubId());
-            jsonObject.put("from_pid", "" + personPid);
+            if (NetworkAvailablity.hasInternetConnection(getActivity())) {
 
+                String personPid = SharedpreferenceUtility.getInstance(getActivity()).getString(AppConstants.PERSON_PID);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("club_id", "" + bean.getClubId());
+                jsonObject.put("from_pid", "" + personPid);
 
-            List<NameValuePair> param = new ArrayList<NameValuePair>();
-            String url = WebServiceDetails.DEFAULT_BASE_URL + "followClub";
-            Log.e("follow", "" + jsonObject.toString());
-            Log.e("follow", url);
-            checkWebApi = 4;
-            new WebRequestTask(getActivity(), param, _handler, WebRequestTask.POST, jsonObject, WebServiceDetails.PID_FOLLOW_UP,
-                    true, url).execute();
+                List<NameValuePair> param = new ArrayList<NameValuePair>();
+                String url = WebServiceDetails.DEFAULT_BASE_URL + "followClub";
+                Log.e("follow", "" + jsonObject.toString());
+                Log.e("follow", url);
+                checkWebApi = 4;
+                new WebRequestTask(getActivity(), param, _handler, WebRequestTask.POST, jsonObject, WebServiceDetails.PID_FOLLOW_UP,
+                        true, url).execute();
+            } else {
+                Toast.makeText(getActivity(), "Network is not available.", Toast.LENGTH_SHORT).show();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -912,19 +918,18 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
         private String mEmailAccount = "";
         SharedPreferences sharedPreferences;
 
-        /*@Override
-        public void onResume() {
-            super.onResume();
-            groupList.clear();
-            groupList = db.getAllClubData();
-            gl.notifyDataSetChanged();
-        }
-*/
-
         @Override
         public void onResume() {
             super.onResume();
-            gl.notifyDataSetChanged();
+            try {
+                groupList.clear();
+                groupList = db.getAllClubData();
+
+                gl = new GroupListAdapterActivity(groupList);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            group_list.setAdapter(gl);
         }
 
         @Override
@@ -996,10 +1001,8 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
         }
     }
 
-
     public class FragmentCampusFeed extends Fragment {
         private static final String LOG_TAG = "FragmentCampusFeed";
-        //  FloatingActionButton fab;
         String collegeId;
         SwipeRefreshLayout swipeRefreshLayout;
         String Tag = "FragmentCampusFeed";
@@ -1008,25 +1011,46 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
         @Override
         public void onResume() {
             super.onResume();
-            cf.notifyDataSetChanged();
+            String list = SharedpreferenceUtility.getInstance(getActivity()).getString(AppConstants.CAMPUS_FEED_ARRAYLIST);
+            try {
+                campusFeedList.clear();
+                ArrayList<CampusFeedBean> arrayList = (ArrayList) ObjectSerializer.deserialize(list);
+
+                if (arrayList == null) {
+                    for (int i = 0; i <= 1; i++) {
+                        CampusFeedBean ci = new CampusFeedBean();
+                        campusFeedList.add(ci);
+                    }
+                    cf = new CollegeCampusFeedAdapter(campusFeedList, getActivity());
+                    college_feed.setAdapter(cf);
+                    campusFeedList.clear();
+                } else {
+                    campusFeedList = (ArrayList<CampusFeedBean>) arrayList.clone();
+                    cf = new CollegeCampusFeedAdapter(campusFeedList, getActivity());
+                    college_feed.setAdapter(cf);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+
+            }
         }
 
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             View v = inflater.inflate(R.layout.fragment_events, null, false);
-
           /*  fab = (FloatingActionButton) v.findViewById(R.id.fab_add);*/
             college_feed = (RecyclerView) v.findViewById(R.id.rv_college_feed);
+            tv_show_campusFeed = (TextView) v.findViewById(R.id.tv_show_blank);
+
             college_feed.setHasFixedSize(false);
             swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipeRefreshLayout);
             swipeRefreshLayout.setColorScheme(new int[]{
                     R.color.yello});
-
             final LinearLayoutManager llm = new LinearLayoutManager(v.getContext());
             llm.setOrientation(LinearLayoutManager.VERTICAL);
             college_feed.setLayoutManager(llm);
             college_feed.setItemAnimator(new DefaultItemAnimator());
-            if (cf == null) {
+          /*  if (cf == null) {
                 for (int i = 0; i <= 1; i++) {
                     CampusFeedBean ci = new CampusFeedBean();
                     campusFeedList.add(ci);
@@ -1035,7 +1059,7 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
                         , getActivity());
                 college_feed.setAdapter(cf);
                 campusFeedList.clear();
-            }
+            }*/
             SharedPreferences sharedpreferences = v.getContext().getSharedPreferences(AppConstants.SHARED_PREFS, Context.MODE_PRIVATE);
             collegeId = sharedpreferences.getString(AppConstants.COLLEGE_ID, null);
             mEmailAccount = sharedpreferences.getString(AppConstants.EMAIL_KEY, null);
@@ -1114,32 +1138,33 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
         public int pos = 0;
         String tag = "FragmentMyFeed";
 
-
         @Override
         public void onResume() {
             super.onResume();
 
-// WebApiGetPersonalFeed(indexMyfeed);
-
+            // WebApiGetPersonalFeed(indexMyfeed);
             SharedPreferences prefs1 = getActivity().getSharedPreferences("AllPersonalFeeds", Context.MODE_PRIVATE);
             try {
                 myFeedList.clear();
                 myFeedList = (ArrayList) ObjectSerializer.deserialize(prefs1.getString(AppConstants.PERSONAL_FEED_ARRAYLIST, ObjectSerializer.serialize(new ArrayList())));
+                if (myFeedList.size() <= 0) {
+                    tv_show_personal.setVisibility(View.VISIBLE);
+                } else {
+                    tv_show_personal.setVisibility(View.GONE);
+                }
                 tn = new CollegeMyFeedAdapter(
                         myFeedList, getActivity());
                 personal_feed.setAdapter(tn);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
         }
-
 
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             View v = inflater.inflate(R.layout.fragment_top_news, null, false);
-
             //  fab = (FloatingActionButton) v.findViewById(R.id.fab_add);
+            tv_show_personal = (TextView) v.findViewById(R.id.tv_show_noEvent);
             personal_feed = (RecyclerView) v.findViewById(R.id.rv_top_news);
             swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipeRefreshLayout);
             swipeRefreshLayout.setColorScheme(new int[]{
@@ -1244,10 +1269,12 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
             Fragment fragment = null;
 
             if (position == 0) {
-//                WebApiGetPersonalFeed(indexMyfeed);
+
                 fragment = new FragmentMyFeed();
             } else if (position == 1) {
-                webApiCampusFeed(indexCollegeFeed);
+                if (MainActivity.isLaunch) {
+                    webApiCampusFeed(indexCollegeFeed);
+                }
                 fragment = new FragmentCampusFeed();
             } else if (position == 2) {
 //                WebApiGetGroups();
@@ -1355,7 +1382,7 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
             //ModelsClubMiniForm ci = GroupList.get(i);
 
             GroupBean bean = GroupList.get(i);
-            posi=i;
+            posi = i;
 
             group_listViewHolder.group_title.setText(GroupList.get(i).getAbb());
         /*    if (followingFlag != null) {

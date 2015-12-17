@@ -16,10 +16,12 @@ import android.widget.Toast;
 import com.campusconnect.R;
 import com.campusconnect.activity.InEventActivity;
 import com.campusconnect.bean.CampusFeedBean;
+import com.campusconnect.database.DatabaseHandler;
 import com.campusconnect.utility.CircularImageView;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -31,17 +33,19 @@ public class NewsPostsByGroupAdapterActivity extends
         RecyclerView.Adapter<NewsPostsByGroupAdapterActivity.NewsPostsByGroupViewHolder> {
 
     private List<CampusFeedBean> NewsPostsByGroupList;
-    boolean[] flag_attending_clicked, flag_share_clicked;
+    ArrayList<Boolean> flag_attending_clicked, flag_share_clicked;
     int posi = 0;
     int going_click_count = 0;
     int share_click_count = 0;
     Context context;
+    private DatabaseHandler dataBase;
 
     public NewsPostsByGroupAdapterActivity(List<CampusFeedBean> NewsPostsByGroupList, Context context) {
         this.NewsPostsByGroupList = NewsPostsByGroupList;
-        flag_attending_clicked = new boolean[getItemCount()];
-        flag_share_clicked = new boolean[getItemCount()];
+        flag_attending_clicked = new ArrayList<Boolean>();
+        flag_share_clicked = new ArrayList<Boolean>();
         this.context = context;
+        dataBase = new DatabaseHandler(context);
     }
 
     @Override
@@ -53,9 +57,11 @@ public class NewsPostsByGroupAdapterActivity extends
     @Override
     public void onBindViewHolder(NewsPostsByGroupViewHolder news_posts_by_groupViewHolder, int i) {
         CampusFeedBean ci = NewsPostsByGroupList.get(i);
-        news_posts_by_groupViewHolder.timestamp.setText(timeAgo(ci.getDate()+" "+ci.getTime()));
+        flag_attending_clicked.add(i, false);
+        flag_share_clicked.add(i, false);
+        news_posts_by_groupViewHolder.timestamp.setText(timeAgo(ci.getTimeStamp()));
         news_posts_by_groupViewHolder.event_title.setText(ci.getTitle());
-        news_posts_by_groupViewHolder.group_name.setText(ci.getClubid());
+        news_posts_by_groupViewHolder.group_name.setText(ci.getClubname());
         try {
             Picasso.with(context).load(ci.getPhoto()).into(news_posts_by_groupViewHolder.event_photo);
 
@@ -67,7 +73,13 @@ public class NewsPostsByGroupAdapterActivity extends
         } catch (Exception e) {
             Picasso.with(context).load(R.mipmap.spark_session).into(news_posts_by_groupViewHolder.group_icon);
         }
-
+        if (dataBase.getFeedIsLike(ci.getPid())) {
+            flag_attending_clicked.set(i, true);
+            news_posts_by_groupViewHolder.like.setImageResource(R.mipmap.heart_selected);
+        } else {
+            flag_attending_clicked.set(i, false);
+            news_posts_by_groupViewHolder.like.setImageResource(R.mipmap.heart);
+        }
 
     }
 
@@ -115,6 +127,7 @@ public class NewsPostsByGroupAdapterActivity extends
 
         return new NewsPostsByGroupViewHolder(itemView);
     }
+
     public class NewsPostsByGroupViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         CardView news_feed;
@@ -145,14 +158,15 @@ public class NewsPostsByGroupAdapterActivity extends
             news_feed.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    int pos = getAdapterPosition();
                     Intent intent_temp = new Intent(v.getContext(), InEventActivity.class);
                     posi = getAdapterPosition();
                     Bundle bundle = new Bundle();
-                    CampusFeedBean bean = NewsPostsByGroupList.get(posi);
+                    CampusFeedBean bean = NewsPostsByGroupList.get(pos);
                     bundle.putSerializable("BEAN", bean);
-                    bundle.putBoolean("FLAG_SELECTED_SHARE", flag_share_clicked[posi]);
-                    bundle.putBoolean("FLAG_SELECTED_ATTEND/LIKE", flag_attending_clicked[posi]);
+                    bundle.putBoolean("FLAG_NEWS",true);
+                    bundle.putBoolean("FLAG_SELECTED_SHARE", flag_share_clicked.get(pos));
+                    bundle.putBoolean("FLAG_SELECTED_ATTEND/LIKE", flag_attending_clicked.get(pos));
                     intent_temp.putExtras(bundle);
                     v.getContext().startActivity(intent_temp);
                 }
@@ -161,13 +175,16 @@ public class NewsPostsByGroupAdapterActivity extends
                 @Override
                 public void onClick(View v) {
                     int pos_for_going = getAdapterPosition();
-                    if (flag_attending_clicked[pos_for_going]) {
+                    if (flag_attending_clicked.get(pos_for_going)) {
                         like.setImageResource(R.mipmap.heart);
-                        flag_attending_clicked[pos_for_going] = false;
+
+                        dataBase.saveFeedInfo(NewsPostsByGroupList.get(pos_for_going).getPid(), "0");
+                        flag_attending_clicked.set(pos_for_going, false);
                         Toast.makeText(context, "coming soon", Toast.LENGTH_SHORT).show();
                     } else {
                         like.setImageResource(R.mipmap.heart_selected);
-                        flag_attending_clicked[pos_for_going] = true;
+                        dataBase.saveFeedInfo(NewsPostsByGroupList.get(pos_for_going).getPid(), "1");
+                        flag_attending_clicked.set(pos_for_going, true);
                         Toast.makeText(context, "coming soon", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -176,19 +193,19 @@ public class NewsPostsByGroupAdapterActivity extends
             share.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    int pos = getAdapterPosition();
                     Intent i = new Intent(android.content.Intent.ACTION_SEND);
                     i.setType("text/plain");
-                    String shareBody = "Title : "+NewsPostsByGroupList.get(posi).getTitle() + "/n" +"Description : " +NewsPostsByGroupList.get(posi).getDescription()+"for more info visit http://campusconnect.cc";
+                    String shareBody = "Title : " + NewsPostsByGroupList.get(pos).getTitle() + "/n" + "Description : " + NewsPostsByGroupList.get(posi).getDescription() + "for more info visit http://campusconnect.cc";
                     i.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
                     v.getContext().startActivity(Intent.createChooser(i, "Share via"));
                     int pos_for_share = getAdapterPosition();
-                    if (flag_share_clicked[pos_for_share]) {
+                    if (flag_share_clicked.get(pos_for_share)) {
                         share.setAlpha((float) 0.5);
-                        flag_share_clicked[pos_for_share] = false;
+                        flag_share_clicked.set(pos_for_share, false);
                     } else {
                         share.setAlpha((float) 1);
-                        flag_share_clicked[pos_for_share] = true;
+                        flag_share_clicked.set(pos_for_share, true);
                     }
                 }
             });

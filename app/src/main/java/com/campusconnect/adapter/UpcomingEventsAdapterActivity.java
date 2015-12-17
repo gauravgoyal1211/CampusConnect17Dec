@@ -22,6 +22,7 @@ import com.campusconnect.bean.CampusFeedBean;
 import com.campusconnect.communicator.WebRequestTask;
 import com.campusconnect.communicator.WebServiceDetails;
 import com.campusconnect.constant.AppConstants;
+import com.campusconnect.database.DatabaseHandler;
 import com.campusconnect.utility.CircularImageView;
 import com.campusconnect.utility.SharedpreferenceUtility;
 import com.squareup.picasso.Picasso;
@@ -45,20 +46,21 @@ public class UpcomingEventsAdapterActivity extends
         RecyclerView.Adapter<UpcomingEventsAdapterActivity.UpcomingEventsViewHolder> {
 
     private List<CampusFeedBean> UpcomingEventsList;
-    boolean[] flag_attending_clicked;
+    ArrayList<Boolean> flag_attending_clicked;
     boolean[] flag_share_clicked;
     int posi = 0;
     int going_click_count = 0;
     int share_click_count = 0;
     Context context;
     public static int attending = 1;
+    private DatabaseHandler dataBase;
 
     public UpcomingEventsAdapterActivity(List<CampusFeedBean> UpcomingEventsList, Context context) {
         this.UpcomingEventsList = UpcomingEventsList;
         this.context = context;
-        flag_attending_clicked = new boolean[getItemCount()];
+        flag_attending_clicked = new ArrayList<Boolean>();
         flag_share_clicked = new boolean[getItemCount()];
-
+        dataBase = new DatabaseHandler(context);
     }
 
     @Override
@@ -68,31 +70,33 @@ public class UpcomingEventsAdapterActivity extends
 
     @Override
     public void onBindViewHolder(UpcomingEventsViewHolder upcoming_eventsViewHolder, int i) {
-
-
         CampusFeedBean ci = UpcomingEventsList.get(i);
-        upcoming_eventsViewHolder.event_title.setText(ci.getTitle());
-        upcoming_eventsViewHolder.group_name.setText(ci.getClubname());
-        upcoming_eventsViewHolder.timestamp.setText(timeAgo(ci.getTimeStamp()));
-
+        flag_attending_clicked.add(i, false);
         try {
+            upcoming_eventsViewHolder.event_title.setText(ci.getTitle());
+            upcoming_eventsViewHolder.group_name.setText(ci.getClubname());
+            upcoming_eventsViewHolder.timestamp.setText(timeAgo(ci.getTimeStamp()));
+            if (dataBase.getFeedIsLike(ci.getPid())) {
+                flag_attending_clicked.set(i, true);
+                upcoming_eventsViewHolder.going.setImageResource(R.mipmap.going_selected);
+            } else {
+                flag_attending_clicked.set(i, false);
+                upcoming_eventsViewHolder.going.setImageResource(R.mipmap.going);
+            }
             SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm:ss");
             SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
             Date _24HourDt = null;
 
             _24HourDt = _24HourSDF.parse(ci.getStart_time());
             String time12 = _12HourSDF.format(_24HourDt);
-            upcoming_eventsViewHolder.time.setText("" +time12);
+            upcoming_eventsViewHolder.time.setText("" + time12);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
-
-
         upcoming_eventsViewHolder.group_icon.setImageResource(R.mipmap.spark_session);
         String url = "http://admin.bookieboost.com/admin/images/2015-02-0116-17-50.jpg";
         try {
-                Picasso.with(context).load(ci.getPhoto()).into(upcoming_eventsViewHolder.event_photo);
+            Picasso.with(context).load(ci.getPhoto()).into(upcoming_eventsViewHolder.event_photo);
 
         } catch (Exception e) {
             Picasso.with(context).load(R.mipmap.spark_session).into(upcoming_eventsViewHolder.event_photo);
@@ -103,7 +107,6 @@ public class UpcomingEventsAdapterActivity extends
         } catch (Exception e) {
             Picasso.with(context).load(R.mipmap.spark_session).into(upcoming_eventsViewHolder.event_photo);
         }
-
 
 
         SimpleDateFormat inFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -141,6 +144,7 @@ public class UpcomingEventsAdapterActivity extends
             e.printStackTrace();
         }
     }
+
     public String timeAgo(String createTimeStr) {
         try {
             SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -177,12 +181,15 @@ public class UpcomingEventsAdapterActivity extends
         }
         return createTimeStr;
     }
+
+
     @Override
     public UpcomingEventsViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(
                 R.layout.activity_card_layout_my_feed, viewGroup, false);
         return new UpcomingEventsViewHolder(itemView);
     }
+
     public class UpcomingEventsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         CardView my_feed;
@@ -192,7 +199,10 @@ public class UpcomingEventsAdapterActivity extends
         TextView day;
         TextView date_month;
         TextView time;
-        ImageView event_photo, news_icon, going, share;
+        ImageView event_photo;
+        ImageView news_icon;
+        ImageView going;
+        ImageView share;
         CircularImageView group_icon;
 
         public UpcomingEventsViewHolder(View v) {
@@ -221,12 +231,13 @@ public class UpcomingEventsAdapterActivity extends
             my_feed.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    int pos_for = getAdapterPosition();
                     Intent intent_temp = new Intent(v.getContext(), InEventActivity.class);
                     Bundle bundle = new Bundle();
-                    CampusFeedBean bean = UpcomingEventsList.get(posi);
+                    CampusFeedBean bean = UpcomingEventsList.get(pos_for);
                     bundle.putSerializable("BEAN", bean);
-                    bundle.putBoolean("FLAG_SELECTED_SHARE", flag_share_clicked[posi]);
-                    bundle.putBoolean("FLAG_SELECTED_ATTEND/LIKE", flag_attending_clicked[posi]);
+                    bundle.putBoolean("FLAG_SELECTED_SHARE", flag_share_clicked[pos_for]);
+                    bundle.putBoolean("FLAG_SELECTED_ATTEND/LIKE", flag_attending_clicked.get(pos_for));
                     intent_temp.putExtras(bundle);
                     context.startActivity(intent_temp);
                 }
@@ -235,11 +246,13 @@ public class UpcomingEventsAdapterActivity extends
                 @Override
                 public void onClick(View v) {
                     int pos_for_going = getAdapterPosition();
-                    if (flag_attending_clicked[pos_for_going]) {
+                    if (flag_attending_clicked.get(pos_for_going)) {
                         going.setImageResource(R.mipmap.going);
                         try {
+                            attending = 2;
+                            dataBase.saveFeedInfo(UpcomingEventsList.get(pos_for_going).getPid(), "0");
                             String persoPid = SharedpreferenceUtility.getInstance(v.getContext()).getString(AppConstants.PERSON_PID);
-                            String pid = UpcomingEventsList.get(posi).getPid();
+                            String pid = UpcomingEventsList.get(pos_for_going).getPid();
                             JSONObject jsonObject = new JSONObject();
                             jsonObject.put("eventId", pid);
                             jsonObject.put("from_pid", persoPid);
@@ -247,11 +260,13 @@ public class UpcomingEventsAdapterActivity extends
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        flag_attending_clicked[pos_for_going] = false;
+                        flag_attending_clicked.set(pos_for_going, false);
                     } else {
                         going.setImageResource(R.mipmap.going_selected);
-                        flag_attending_clicked[pos_for_going] = true;
+                        attending = 1;
+                        flag_attending_clicked.set(pos_for_going, true);
                         try {
+                            dataBase.saveFeedInfo(UpcomingEventsList.get(pos_for_going).getPid(), "1");
                             String persoPid = SharedpreferenceUtility.getInstance(v.getContext()).getString(AppConstants.PERSON_PID);
                             String pid = UpcomingEventsList.get(posi).getPid();
                             JSONObject jsonObject = new JSONObject();
@@ -272,7 +287,7 @@ public class UpcomingEventsAdapterActivity extends
                     Intent i = new Intent(android.content.Intent.ACTION_SEND);
                     i.setType("text/plain");
 
-                    String shareBody = "Title : "+ UpcomingEventsList.get(pos_for_share).getTitle() + "/n" +"Description : "+ UpcomingEventsList.get(posi).getDescription()+" for more info visit http://campusconnect.cc";
+                    String shareBody = "Title : " + UpcomingEventsList.get(pos_for_share).getTitle() + "/n" + "Description : " + UpcomingEventsList.get(posi).getDescription() + " for more info visit http://campusconnect.cc";
                     i.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
                     v.getContext().startActivity(Intent.createChooser(i, "Share via"));
 
@@ -355,7 +370,6 @@ public class UpcomingEventsAdapterActivity extends
             }
         }
     };
-
 
 }
 

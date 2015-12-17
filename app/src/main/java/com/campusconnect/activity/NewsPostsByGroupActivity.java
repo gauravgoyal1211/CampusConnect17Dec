@@ -37,7 +37,18 @@ public class NewsPostsByGroupActivity extends ActionBarActivity {
     LinearLayout close;
     Typeface r_med;
     TextView news_posts_text;
+    NewsPostsByGroupAdapterActivity newsPostsByGroupAdapterActivity;
     ArrayList<CampusFeedBean> postNewsList = new ArrayList<CampusFeedBean>();
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (newsPostsByGroupAdapterActivity != null) {
+            newsPostsByGroupAdapterActivity.notifyDataSetChanged();
+
+        }
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,8 +102,6 @@ public class NewsPostsByGroupActivity extends ActionBarActivity {
             ex.printStackTrace();
         }
     }
-
-
     private final Handler _handler = new Handler() {
         public void handleMessage(Message msg) {
             int response_code = msg.what;
@@ -111,29 +120,11 @@ public class NewsPostsByGroupActivity extends ActionBarActivity {
 
                                             JSONObject innerObj = array.getJSONObject(i);
                                             CampusFeedBean bean = new CampusFeedBean();
-
-/*
-
-                                            "likers":"[]",
-                                                    "description":"hdhdhdhdhdhd",
-                                                    "from_pid":"Key('Profile', 4834276138811392)",
-                                                    "views":"0",
-                                                    "photoUrl":"None",
-                                                    "likes":"0",
-                                                    "time":"11:58:34",
-                                                    "date":"2015-12-10",
-                                                    "title":"news eventifjfhfh",
-                                                    "clubphotoUrl":
-                                            "https://lh3.googleusercontent.com/qe9m1joR-j7LRwyWUPcGN1sFwJU6-xzpMACHULIphKrCr1sj9tLBIQxBfXz_6EZNOGywbXxi-WRJqbsSGOm0ad-9kQBhgplkrw",
-                                                    "kind":"clubs#resourcesItem"
-*/
                                             String description = innerObj.optString("description");
                                             String pid = innerObj.optString("from_pid");
                                             String photo = innerObj.optString("photoUrl");
-
                                             //TODO remvpe comment here
-
-                                            String clubname = innerObj.optString("clubname");
+                                            String clubname = innerObj.optString("club_name");
                                             String likes = innerObj.optString("likes");
                                             String views = innerObj.optString("views");
                                             String title = innerObj.optString("title");
@@ -141,8 +132,7 @@ public class NewsPostsByGroupActivity extends ActionBarActivity {
                                             String date = innerObj.optString("date");
                                             String clubphotoUrl = innerObj.optString("clubphotoUrl");
                                             String kind = innerObj.optString("kind");
-
-
+                                            String timeStamp = innerObj.optString("timestamp");
 
                                             ArrayList<String> likesList = new ArrayList<>();
                                             try {
@@ -160,8 +150,8 @@ public class NewsPostsByGroupActivity extends ActionBarActivity {
                                                 ex.printStackTrace();
                                             }
 
-                                      //TOdo venue is missing
-                                      //Creator name
+                                            //TOdo venue is missing
+                                            //Creator name
                                             bean.setDescription(description);
                                             bean.setPid(pid);
                                             bean.setViews(views);
@@ -174,9 +164,8 @@ public class NewsPostsByGroupActivity extends ActionBarActivity {
                                             bean.setKind(kind);
                                             bean.setClubphoto("" + clubphotoUrl);
                                             bean.setLikers("" + likesList.toString());
-                                            bean.setTimeStamp(date+" "+time);
-                                            bean.setClubid(clubname);
-                                          //venue not be set
+                                            bean.setClubname(clubname);
+                                            bean.setTimeStamp(timeStamp);
                                             bean.setVenue(" ");
 
 
@@ -201,7 +190,7 @@ public class NewsPostsByGroupActivity extends ActionBarActivity {
                                             postNewsList.add(bean);
                                         }
 
-                                        NewsPostsByGroupAdapterActivity newsPostsByGroupAdapterActivity = new NewsPostsByGroupAdapterActivity(
+                                        newsPostsByGroupAdapterActivity = new NewsPostsByGroupAdapterActivity(
                                                 postNewsList, NewsPostsByGroupActivity.this);
                                         news_posts_by_group.setAdapter(newsPostsByGroupAdapterActivity);
                                     }

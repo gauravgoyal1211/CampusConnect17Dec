@@ -29,12 +29,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GroupPageActivity extends ActionBarActivity {
-
     RecyclerView group_page;
     String follow;
     DatabaseHandler db;
     private static final String LOG_TAG = "GroupPageActivity";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,35 +45,26 @@ public class GroupPageActivity extends ActionBarActivity {
         group_page.setHasFixedSize(true);
         group_page.setItemAnimator(new DefaultItemAnimator());
         GroupBean bean = (GroupBean) getIntent().getSerializableExtra("BEAN");
-
         try {
             Bundle bundle = getIntent().getExtras();
-
             follow = bundle.getString("follow");
             if (follow == null) {
                 follow = "0";
             }
         } catch (Exception e) {
-
         }
         if (bean != null) {
             String club_id = bean.getClubId();
             WebApiGetGroup(club_id);
-
         }
     }
-
-
     private List<GroupPage_infoActivity> createList_group_page(int size) {
 
         List<GroupPage_infoActivity> result = new ArrayList<GroupPage_infoActivity>();
         for (int i = 1; i <= size; i++) {
             GroupPage_infoActivity ci = new GroupPage_infoActivity();
-
             result.add(ci);
-
-        }
-
+       }
         return result;
     }
 

@@ -66,7 +66,6 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
     public CollegeCampusFeedAdapter(List<CampusFeedBean> CollegeFeedList, Context contect) {
         this.CollegeFeedList = CollegeFeedList;
         this.context = contect;
-
         dataBase = new DatabaseHandler(context);
     }
 
@@ -83,10 +82,9 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
         college_feedViewHolder.event_title.setText(cf.getTitle());
         college_feedViewHolder.timestamp.setText("" + timeAgo(cf.getTimeStamp()));
         college_feedViewHolder.group_name.setText(cf.getClubname());
-
         String url = "http://admin.bookieboost.com/admin/images/2015-02-0116-17-50.jpg";
         try {
-             Picasso.with(context).load(cf.getPhoto()).into(college_feedViewHolder.event_photo);
+            Picasso.with(context).load(cf.getPhoto()).into(college_feedViewHolder.event_photo);
         } catch (Exception e) {
             Picasso.with(context).load(R.mipmap.spark_session).into(college_feedViewHolder.event_photo);
         }
@@ -95,7 +93,6 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
         } catch (Exception e) {
             Picasso.with(context).load(R.mipmap.spark_session).into(college_feedViewHolder.group_icon);
         }
-
         String title = cf.getTitle();
         //news
         if (cf.getAttendees() == null || cf.getAttendees().size() == 0) {
@@ -105,7 +102,7 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
             college_feedViewHolder.news_icon.setVisibility(View.VISIBLE);
             //flag_news[i]=true;
             flag_news.add(i, true);
-            if (dataBase.getFeedIsLike(cf.getPid())){
+            if (dataBase.getFeedIsLike(cf.getPid())) {
                 flag_attending_clicked.set(i, true);
                 college_feedViewHolder.going.setImageResource(R.mipmap.heart_selected);
             } else {
@@ -132,9 +129,9 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
                 SimpleDateFormat monthFormat = new SimpleDateFormat("MMM");
                 String month = monthFormat.format(date);
                 Log.e("month", month);
-            //    SimpleDateFormat dateformate = new SimpleDateFormat("dd");
-             //   String dayFormate = monthFormat.format(date);
-               // Log.e("day", "" + calendar.get(Calendar.DAY_OF_MONTH));
+                //    SimpleDateFormat dateformate = new SimpleDateFormat("dd");
+                //   String dayFormate = monthFormat.format(date);
+                // Log.e("day", "" + calendar.get(Calendar.DAY_OF_MONTH));
                 if (goal.length() > 3) {
                     goal = goal.substring(0, 3);
                 } else {
@@ -149,14 +146,11 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
                 college_feedViewHolder.date_month.setText("" + day + "" + month);
 
 
-
                 SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm:ss");
                 SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
                 Date _24HourDt = _24HourSDF.parse(cf.getStart_time());
-                String time12=   _12HourSDF.format(_24HourDt);
+                String time12 = _12HourSDF.format(_24HourDt);
                 college_feedViewHolder.time.setText("" + time12);
-
-
 
 
             } catch (ParseException e) {
@@ -165,7 +159,7 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
             // college_feedViewHolder.date_month.setText(Date_Month[i]);
             //college_feedViewHolder.time.setText(Time_[i]);
             college_feedViewHolder.news_icon.setVisibility(View.GONE);
-            if (dataBase.getFeedIsLike(cf.getPid())){
+            if (dataBase.getFeedIsLike(cf.getPid())) {
                 flag_attending_clicked.set(i, true);
                 college_feedViewHolder.going.setImageResource(R.mipmap.going_selected);
             } else {
@@ -293,7 +287,7 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
                     int pos_for_share = getAdapterPosition();
                     Intent i = new Intent(android.content.Intent.ACTION_SEND);
                     i.setType("text/plain");
-                    String shareBody = "Title : "+CollegeFeedList.get(pos_for_share).getTitle() + "\n" + "Description : "+CollegeFeedList.get(pos_for_share).getDescription()+" for more info visit http://campusconnect.cc/";
+                    String shareBody = "Title : " + CollegeFeedList.get(pos_for_share).getTitle() + "\n" + "Description : " + CollegeFeedList.get(pos_for_share).getDescription() + " for more info visit http://campusconnect.cc/";
                     //String shareBody = CollegeFeedList.get(pos_for_share).getTitle() + "/n" + CollegeFeedList.get(posi).getDescription();
                     i.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
                     v.getContext().startActivity(Intent.createChooser(i, "Share via"));

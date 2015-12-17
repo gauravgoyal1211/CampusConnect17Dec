@@ -30,6 +30,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     FragmentTransaction fragmentTransaction;
     LinearLayout searchLine, calLine, notificationLine, profileLine, homeLine;
 
+    public static boolean isLaunch = true;
 
     public MainActivity() {
     }
@@ -39,7 +40,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        isLaunch = true;
         search = (ImageButton) findViewById(R.id.ib_search);
         calender = (ImageButton) findViewById(R.id.ib_calendar);
         home = (ImageButton) findViewById(R.id.ib_home);

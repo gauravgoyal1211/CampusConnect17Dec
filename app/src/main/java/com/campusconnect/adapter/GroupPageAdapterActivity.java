@@ -92,15 +92,11 @@ public class GroupPageAdapterActivity extends
     @Override
     public int getItemCount() {
         return GroupPageList.size();
-
     }
 
     @Override
     public void onBindViewHolder(GroupPageHolder groupViewHolder, int i) {
         if (getItemViewType(i) == 0) {
-
-
-
 
             holder1 = (GroupInfoViewHolder) groupViewHolder;
             holder1.group_name.setText(g_name);
@@ -111,7 +107,7 @@ public class GroupPageAdapterActivity extends
             }
             holder1.members_count.setText(m_count.toString());
             holder1.followers_count.setText(f_count.toString());
-            if (follow_click_count == 1) {
+            if (follow_click_count % 2 == 1) {
                 holder1.tbtn_follow.setBackgroundResource(R.mipmap.going_selected);
             } else {
                 holder1.tbtn_follow.setBackgroundResource(R.mipmap.going);
@@ -135,7 +131,7 @@ public class GroupPageAdapterActivity extends
             viewType = 0;
         else
             viewType = 1;
-       return viewType;
+        return viewType;
     }
 
     @Override
@@ -319,10 +315,10 @@ public class GroupPageAdapterActivity extends
             switch (v.getId()) {
                 case R.id.btn_yes: {
                     if (member_click_count == 1) {
-                        member_click_count=0;
+                        member_click_count = 0;
                         holder1.iv_member.setBackgroundResource(R.drawable.group_member);
                     } else {
-                        member_click_count=1;
+                        member_click_count = 1;
                         holder1.iv_member.setBackgroundResource(R.drawable.group_member_selected);
                     }
                     yes_dialog_box_click_count++;
@@ -382,9 +378,9 @@ public class GroupPageAdapterActivity extends
                 }
             } else if (response_code == 204) {
                 if (call_web_api == 1) {
-                    if(member_click_count==1) {
+                    if (member_click_count == 1) {
                         Toast.makeText(context, "Your request to join group has been sent to admin for approval", Toast.LENGTH_LONG).show();
-                    }else{
+                    } else {
                         Toast.makeText(context, "Your request to leave group has been sent to admin for approval", Toast.LENGTH_LONG).show();
                     }
                 }

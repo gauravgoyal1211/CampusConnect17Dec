@@ -8,6 +8,7 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableStringBuilder;
 import android.text.style.TypefaceSpan;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -55,7 +56,7 @@ public class InEventActivity extends AppCompatActivity {
     CircularImageView g_icon;
     static int attending = 1;
     static int liking = 1;
-
+     CampusFeedBean bean;
     private DatabaseHandler dataBase;
 
     @Override
@@ -111,7 +112,7 @@ public class InEventActivity extends AppCompatActivity {
             going.setImageResource(R.mipmap.going);
         }
 
-        final CampusFeedBean bean = (CampusFeedBean) getIntent().getSerializableExtra("BEAN");
+        bean = (CampusFeedBean) getIntent().getSerializableExtra("BEAN");
         if (bean != null) {
             bean.getClubid();
             bean.getCollegeId();
@@ -120,6 +121,7 @@ public class InEventActivity extends AppCompatActivity {
             g_name.setText("" + bean.getClubname());
             e_name.setText("" + bean.getTitle());
             e_description.setText("" + bean.getDescription());
+            Linkify.addLinks(e_description,Linkify.ALL);
             v_name.setText("" + bean.getVenue());
 
             if (bean.getAttendees() == null || bean.getAttendees().size() == 0) {
@@ -303,6 +305,18 @@ public class InEventActivity extends AppCompatActivity {
             }
         });
 
+
+
+        event_photo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent tmp_Intent= new Intent(InEventActivity.this,ZoomPictureActivity.class);
+                tmp_Intent.putExtra("PICTURE",bean.getPhoto());
+                startActivity(tmp_Intent);
+
+            }
+        });
 
     }
 

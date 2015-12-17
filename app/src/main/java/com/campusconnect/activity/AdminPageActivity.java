@@ -13,7 +13,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.campusconnect.R;
 
-
 /**
  * Created by RK on 23-09-2015. 
  */
@@ -47,37 +46,30 @@ public class AdminPageActivity extends AppCompatActivity {
 
                 Intent intent_temp = new Intent(v.getContext(),RequestsPage_InAdminActivity.class);
                 startActivity(intent_temp);
-
             }
         });
-
         members.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 Intent intent_temp = new Intent(v.getContext(),GroupMembersPage_InAdminActivity.class);
                 startActivity(intent_temp);
-
             }
         });
 
         close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 finish();
-
             }
         });
 
         admin_group.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 final CharSequence[] items = {
                         "Football Team","Rotaract Club"
                 };
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(AdminPageActivity.this);
                 builder.setTitle("Group:");
                 builder.setItems(items, new DialogInterface.OnClickListener() {

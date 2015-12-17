@@ -41,7 +41,13 @@ public class UpcomingEventsActivity extends ActionBarActivity {
     Typeface r_med;
     TextView upcoming_events_text;
     ArrayList<CampusFeedBean> eventList= new ArrayList<CampusFeedBean>();
-
+    UpcomingEventsAdapterActivity upcomingEventsAdapterActivity;
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(upcomingEventsAdapterActivity!=null)
+        upcomingEventsAdapterActivity.notifyDataSetChanged();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +55,6 @@ public class UpcomingEventsActivity extends ActionBarActivity {
         setContentView(R.layout.activity_upcoming_events);
         String clubId= getIntent().getStringExtra("clubId");
         WebApiGetUpComingEvent(clubId);
-
-
 
         r_med = Typeface.createFromAsset(getAssets(), "font/Roboto_Medium.ttf");
 
@@ -211,7 +215,7 @@ public class UpcomingEventsActivity extends ActionBarActivity {
 
                                             eventList.add(bean);
                                         }
-                                        UpcomingEventsAdapterActivity upcomingEventsAdapterActivity = new UpcomingEventsAdapterActivity(
+                                     upcomingEventsAdapterActivity = new UpcomingEventsAdapterActivity(
                                                 eventList,UpcomingEventsActivity.this);
                                         upcoming_events.setAdapter(upcomingEventsAdapterActivity);
                                     }
