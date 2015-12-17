@@ -1,17 +1,23 @@
 package com.campusconnect.fragment;
 
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.campusconnect.R;
-import com.campusconnect.slidingtab.SlidingTabLayout_Calendar;
 import com.campusconnect.bean.NotificationBean;
+import com.campusconnect.slidingtab.SlidingTabLayout_Calendar;
+import com.campusconnect.utility.StickyHeaderRecyclerDecor;
+import com.campusconnect.utility.StickyRecyclerHeadersAdapter;
 import com.campusconnect.viewpager.ViewPagerAdapter_Calendar;
 
 import java.util.ArrayList;
@@ -19,15 +25,13 @@ import java.util.List;
 
 public class CalenderFragment extends Fragment {
 
-    ImageButton noti,profile,home,calendar,search;
-
     ViewPager pager;
     ViewPagerAdapter_Calendar adapter;
     SlidingTabLayout_Calendar tabs;
     CharSequence Titles[]={"Mon 5","Tue 6","Wed 7","Thu 8","Fri 9","Sat 10","Sun 11"};
     int Numboftabs = 7;
 
-
+    RecyclerView calendar;
     View  mRootView;
 
     @Override
@@ -39,95 +43,44 @@ public class CalenderFragment extends Fragment {
                 parent.removeView(mRootView);
         }
         try {
-            mRootView = inflater.inflate(R.layout.activity_calendar_to_be_deleted, container, false);
+            mRootView = inflater.inflate(R.layout.activity_calendar_design_two, container, false);
+
+            calendar = (RecyclerView) mRootView.findViewById(R.id.rv_calendar);
+
+            // Set adapter populated with example dummy data
+            CalendarAdapter adapter = new CalendarAdapter(
+                    createList_cal(7));
+            calendar.setAdapter(adapter);
+
+
+            LinearLayoutManager llm = new LinearLayoutManager(getActivity());
+            calendar.setLayoutManager(llm);
+
+            // Add the sticky headers decoration
+            final StickyHeaderRecyclerDecor headersDecor = new StickyHeaderRecyclerDecor(adapter);
+            calendar.addItemDecoration(headersDecor);
+
+
+            adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+                @Override
+                public void onChanged() {
+                    headersDecor.invalidateHeaders();
+                }
+            });
+
+
 
         } catch (InflateException e) {
             e.printStackTrace();
         }
+
+
+
         return mRootView;
     }
-   /*
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_calendar_to_be_deleted);
-        overridePendingTransition(R.anim.righttocenter, R.anim.pushback);
-
-        home = (ImageButton) findViewById(R.id.ib_home);
-        noti = (ImageButton) findViewById(R.id.ib_notification);
-        profile = (ImageButton) findViewById(R.id.ib_profile);
-        calendar = (ImageButton) findViewById(R.id.ib_calendar);
-        search = (ImageButton) findViewById(R.id.ib_search);
-*//*
-        pager = (ViewPager) findViewById(R.id.pager);
-        tabs = (SlidingTabLayout_Calendar) findViewById(R.id.tabs_calendar);
-        adapter =  new ViewPagerAdapter_Calendar(getSupportFragmentManager(),Titles,Numboftabs,CalenderFragment.this);
-
-        pager.setAdapter(adapter);
-
-        tabs.setDistributeEvenly(true);
-        tabs.setViewPager(pager);   *//*
 
 
-        home.setOnClickListener(this);
-        noti.setOnClickListener(this);
-        profile.setOnClickListener(this);
-        search.setOnClickListener(this);
-    }
-*/
-
-    /*//TODO  changes in the listner
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.ib_profile:
-                Intent intent_profile = new Intent(v.getContext(), ProfilePageFragment.class);
-                startActivity(intent_profile);
-                finish();
-                break;
-            case R.id.ib_home:
-                Intent intent_home = new Intent(v.getContext(), HomeFragment.class);
-                startActivity(intent_home);
-                overridePendingTransition(R.anim.pushfront, R.anim.centertoright);
-                finish();
-                break;
-            case R.id.ib_notification:
-                Intent intent_noti = new Intent(v.getContext(), NotificationFragment.class);
-                startActivity(intent_noti);
-                finish();
-                break;
-            case R.id.ib_search:
-                Intent intent_cal = new Intent(v.getContext(), SearchFragment.class);
-                startActivity(intent_cal);
-                finish();
-                break;
-        }
-    }*/
-
-
-  /*  @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-*/
-    private List<NotificationBean> createList_nl(int size) {
+    private List<NotificationBean> createList_cal(int size) {
         List<NotificationBean> result = new ArrayList<NotificationBean>();
         for (int i = 1; i <= size; i++) {
             NotificationBean ci = new NotificationBean();
@@ -137,5 +90,65 @@ public class CalenderFragment extends Fragment {
         return result;
     }
 
+    public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.CalendarViewHolder> implements StickyRecyclerHeadersAdapter<RecyclerView.ViewHolder>{
+
+
+        //Get the day from the server for each card and feed it to the getHeaderId(int position) function below.
+        int dates[] = {17,18,18,27,27,29,29};
+
+        public CalendarAdapter(List<NotificationBean> list_cal) {
+        }
+
+        @Override
+        public CalendarViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.activity_card_layout_college_feed, parent, false);
+            return new CalendarViewHolder(view) {
+            };
+        }
+
+        @Override
+        public void onBindViewHolder(CalendarViewHolder holder, int position) {
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return 7;
+        }
+
+        @Override
+        public long getHeaderId(int position) {
+            char ch;
+            ch  = (char)(dates[position]+64);
+                return ch;
+        }
+
+        @Override
+        public RecyclerView.ViewHolder onCreateHeaderViewHolder(ViewGroup parent) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.view_header, parent, false);
+            return new RecyclerView.ViewHolder(view) {
+            };
+        }
+
+        @Override
+        public void onBindHeaderViewHolder(RecyclerView.ViewHolder holder, int position) {
+            TextView textView = (TextView) holder.itemView;
+            textView.setText(dates[position]+"");
+            Typeface r_med = Typeface.createFromAsset(holder.itemView.getContext().getAssets(), "font/Roboto_Light.ttf");
+            textView.setTypeface(r_med);
+            holder.itemView.setBackgroundColor(Color.rgb(56,56,56));
+        }
+
+        public class CalendarViewHolder extends RecyclerView.ViewHolder {
+
+            public CalendarViewHolder(View v) {
+                super(v);
+            }
+        }
+
+
+    }
 
 }
