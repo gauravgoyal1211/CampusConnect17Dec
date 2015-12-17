@@ -207,7 +207,7 @@ public class GetProfileDetailsActivity extends AppCompatActivity implements View
                                 String collegeid = profileObj.getString("collegeId");
                                 Log.v("GetProfileDEtails", pid + " " + collegeid);
                                 SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).putString(AppConstants.COLLEGE_ID, collegeid);
-                                SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).putString(AppConstants.PERSON_PID, pid);
+                                 SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).putString(AppConstants.PERSON_PID, pid);
                                 SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).putString(AppConstants.PERSON_PID, pid);
                             } catch (JSONException e) {
                                 e.printStackTrace();
