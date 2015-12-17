@@ -209,7 +209,8 @@ public class GetProfileDetailsActivity extends AppCompatActivity implements View
                                 SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).putString(AppConstants.COLLEGE_ID, collegeid);
                                  SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).putString(AppConstants.PERSON_PID, pid);
                                 SharedpreferenceUtility.getInstance(GetProfileDetailsActivity.this).putString(AppConstants.PERSON_PID, pid);
-                            } catch (JSONException e) {
+
+                              } catch (JSONException e) {
                                 e.printStackTrace();
                             }
 //                            try {
