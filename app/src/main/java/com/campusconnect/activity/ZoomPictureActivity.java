@@ -28,7 +28,7 @@ public class ZoomPictureActivity extends AppCompatActivity {
             Picasso.with(ZoomPictureActivity.this).load(url).into(p_image);
         }
         else{
-            Picasso.with(ZoomPictureActivity.this).load(R.mipmap.spark_session).into(p_image);
+            Picasso.with(ZoomPictureActivity.this).load(R.mipmap.default_image).into(p_image);
         }
 
     }

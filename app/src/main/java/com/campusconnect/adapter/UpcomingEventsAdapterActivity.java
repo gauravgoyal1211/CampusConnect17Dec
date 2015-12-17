@@ -93,19 +93,19 @@ public class UpcomingEventsAdapterActivity extends
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        upcoming_eventsViewHolder.group_icon.setImageResource(R.mipmap.spark_session);
+        upcoming_eventsViewHolder.group_icon.setImageResource(R.mipmap.default_image);
         String url = "http://admin.bookieboost.com/admin/images/2015-02-0116-17-50.jpg";
         try {
             Picasso.with(context).load(ci.getPhoto()).into(upcoming_eventsViewHolder.event_photo);
 
         } catch (Exception e) {
-            Picasso.with(context).load(R.mipmap.spark_session).into(upcoming_eventsViewHolder.event_photo);
+            Picasso.with(context).load(R.mipmap.default_image).into(upcoming_eventsViewHolder.event_photo);
         }
         try {
             Picasso.with(context).load(ci.getClubphoto()).into(upcoming_eventsViewHolder.group_icon);
 
         } catch (Exception e) {
-            Picasso.with(context).load(R.mipmap.spark_session).into(upcoming_eventsViewHolder.event_photo);
+            Picasso.with(context).load(R.mipmap.default_image).into(upcoming_eventsViewHolder.event_photo);
         }
 
 

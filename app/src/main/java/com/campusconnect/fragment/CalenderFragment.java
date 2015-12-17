@@ -18,7 +18,6 @@ import com.campusconnect.bean.NotificationBean;
 import com.campusconnect.slidingtab.SlidingTabLayout_Calendar;
 import com.campusconnect.utility.StickyHeaderRecyclerDecor;
 import com.campusconnect.utility.StickyRecyclerHeadersAdapter;
-import com.campusconnect.viewpager.ViewPagerAdapter_Calendar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +25,6 @@ import java.util.List;
 public class CalenderFragment extends Fragment {
 
     ViewPager pager;
-    ViewPagerAdapter_Calendar adapter;
     SlidingTabLayout_Calendar tabs;
     CharSequence Titles[] = {"Mon 5", "Tue 6", "Wed 7", "Thu 8", "Fri 9", "Sat 10", "Sun 11"};
     int Numboftabs = 7;

@@ -11,7 +11,9 @@ import android.text.style.TypefaceSpan;
 import android.text.util.Linkify;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,7 +47,6 @@ public class InEventActivity extends AppCompatActivity {
 
     Typeface r_lig, r_reg, r_med;
     TypefaceSpan robotoRegularSpan_for_attendees;
-
 
     SpannableStringBuilder attendees_text;
     int no_of_attendees;
@@ -150,7 +151,7 @@ public class InEventActivity extends AppCompatActivity {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                Picasso.with(InEventActivity.this).load(R.mipmap.spark_session).into(event_photo);
+                Picasso.with(InEventActivity.this).load(R.mipmap.default_image).into(event_photo);
             }
 
             try {
@@ -158,7 +159,7 @@ public class InEventActivity extends AppCompatActivity {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                Picasso.with(InEventActivity.this).load(R.mipmap.spark_session).into(event_photo);
+                Picasso.with(InEventActivity.this).load(R.mipmap.default_image).into(event_photo);
             }
 
             SimpleDateFormat inFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -311,12 +312,12 @@ public class InEventActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Intent tmp_Intent= new Intent(InEventActivity.this,ZoomPictureActivity.class);
-                tmp_Intent.putExtra("PICTURE",bean.getPhoto());
-                startActivity(tmp_Intent);
-
+                Intent intent_temp = new Intent(v.getContext(), EventPhotoFullScreenActivity.class);
+                intent_temp.putExtra("PICTURE",bean.getPhoto());
+                startActivity(intent_temp);
             }
         });
+
 
     }
 

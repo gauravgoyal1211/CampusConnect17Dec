@@ -114,13 +114,13 @@ public class campusFeedAdapter extends BaseAdapter {
             String urll = cf.getClubphoto();
             Log.e("url campusfeed", "" + urll);
             if (cf.getClubphoto().equalsIgnoreCase("None")) {
-                Picasso.with(context).load(R.mipmap.spark_session).into(holder.event_photo);
+                Picasso.with(context).load(R.mipmap.default_image).into(holder.event_photo);
             } else {
                 Picasso.with(context).load(cf.getClubphoto()).into(holder.event_photo);
             }
         } catch (Exception e) {
 
-            Picasso.with(context).load(R.mipmap.spark_session).into(holder.event_photo);
+            Picasso.with(context).load(R.mipmap.default_image).into(holder.event_photo);
         }
         Picasso.with(context).load(url).into(holder.group_icon);
 

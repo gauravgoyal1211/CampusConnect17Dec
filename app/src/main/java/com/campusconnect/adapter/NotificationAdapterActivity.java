@@ -137,7 +137,7 @@ public class NotificationAdapterActivity extends
             Picasso.with(context).load(ci.getPhotoUrl()).into(holder.group_icon_notification);
         } catch (Exception e) {
 
-            Picasso.with(context).load(R.mipmap.spark_session).into(holder.group_icon_notification);
+            Picasso.with(context).load(R.mipmap.default_image).into(holder.group_icon_notification);
         }
 
     }

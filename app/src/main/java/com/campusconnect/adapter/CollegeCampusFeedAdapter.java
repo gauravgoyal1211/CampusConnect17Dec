@@ -86,12 +86,12 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
         try {
             Picasso.with(context).load(cf.getPhoto()).into(college_feedViewHolder.event_photo);
         } catch (Exception e) {
-            Picasso.with(context).load(R.mipmap.spark_session).into(college_feedViewHolder.event_photo);
+            Picasso.with(context).load(R.mipmap.default_image).into(college_feedViewHolder.event_photo);
         }
         try {
             Picasso.with(context).load(cf.getClubphoto()).into(college_feedViewHolder.group_icon);
         } catch (Exception e) {
-            Picasso.with(context).load(R.mipmap.spark_session).into(college_feedViewHolder.group_icon);
+            Picasso.with(context).load(R.mipmap.default_image).into(college_feedViewHolder.group_icon);
         }
         String title = cf.getTitle();
         //news

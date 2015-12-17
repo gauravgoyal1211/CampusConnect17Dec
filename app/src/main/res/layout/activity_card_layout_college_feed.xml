@@ -159,7 +159,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
                 android:scaleType="centerCrop"
-                android:src="@mipmap/coder"
+                android:src="@mipmap/default_image"
                 app:border_width="0dp" />
 
             <TextView

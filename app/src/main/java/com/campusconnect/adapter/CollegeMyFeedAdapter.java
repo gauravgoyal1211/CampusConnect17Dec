@@ -88,7 +88,7 @@ public class CollegeMyFeedAdapter extends
                 Picasso.with(context).load(cf.getPhoto()).into(college_feedViewHolder.event_photo);
             } catch (Exception e) {
                 e.printStackTrace();
-                Picasso.with(context).load(R.mipmap.spark_session).into(college_feedViewHolder.event_photo);
+                Picasso.with(context).load(R.mipmap.default_image).into(college_feedViewHolder.event_photo);
             }
             try {
                 String urll = cf.getClubphoto();
@@ -96,7 +96,7 @@ public class CollegeMyFeedAdapter extends
                 Picasso.with(context).load(cf.getClubphoto()).into(college_feedViewHolder.group_icon);
             } catch (Exception e) {
                 e.printStackTrace();
-                Picasso.with(context).load(R.mipmap.spark_session).into(college_feedViewHolder.group_icon);
+                Picasso.with(context).load(R.mipmap.default_image).into(college_feedViewHolder.group_icon);
             }
 
             //news

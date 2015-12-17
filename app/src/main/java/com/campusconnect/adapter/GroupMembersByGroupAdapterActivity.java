@@ -47,7 +47,7 @@ public class GroupMembersByGroupAdapterActivity extends
             Picasso.with(context).load(ci.getPhotoUrl()).into(group_membersbygroupViewHolder.member_icon);
 
         } catch (Exception e) {
-            Picasso.with(context).load(R.mipmap.spark_session).into(group_membersbygroupViewHolder.member_icon);
+            Picasso.with(context).load(R.mipmap.default_image).into(group_membersbygroupViewHolder.member_icon);
         }
     }
 

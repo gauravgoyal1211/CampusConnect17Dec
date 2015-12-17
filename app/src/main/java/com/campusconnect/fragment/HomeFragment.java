@@ -546,7 +546,7 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
             //    WebApiGetGroups();
             mPubSubHelper = new PubSubHelper(getActivity());
             gcm_token = sharedPreferences.getString("gcm_token", null);
-
+/*
             admin.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -561,6 +561,7 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
                     startActivity(intent_temp);
                 }
             });
+ */
             add_post.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -1297,11 +1298,6 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
             return null;
         }*/
 
-        private int[] ICONS = new int[]{
-                R.drawable.selector_news,
-                R.drawable.selector_events,
-                R.drawable.selector_group
-        };
 
         @Override
         public CharSequence getPageTitle(int position) {
@@ -1316,9 +1312,6 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
             return NumbOfTabs;
         }
 
-        public int getDrawableId(int position) {
-            return ICONS[position];
-        }
 
        /* @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
@@ -1350,12 +1343,7 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
         private List<GroupBean> GroupList;
         private List<String> itemsName;
         int posi = 0;
-        private int[] GroupLogo = new int[]{
-                R.mipmap.cell_logo,
-                R.mipmap.football_logo,
-                R.mipmap.ie_logo,
-                R.mipmap.roto_logo
-        };
+
         private int[] followers_count = new int[]{2, 3, 4, 2};
         private int[] members_count = new int[]{1, 2, 1, 2};
         public String dbFollow = "1";

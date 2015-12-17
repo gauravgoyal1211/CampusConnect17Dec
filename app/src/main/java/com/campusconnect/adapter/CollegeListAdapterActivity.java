@@ -59,6 +59,7 @@ public class CollegeListAdapterActivity extends
                 group_listViewHolder.college_name.setGravity(Gravity.CENTER);
                 group_listViewHolder.i_divider.setVisibility(View.GONE);
                 group_listViewHolder.t_divider.setVisibility(View.VISIBLE);
+                group_listViewHolder.college_list.setClickable(false);
             } else {
                 group_listViewHolder.college_name.setTypeface(null, Typeface.NORMAL);
                 group_listViewHolder.college_name.setGravity(Gravity.LEFT);

@@ -103,7 +103,7 @@ public class GroupPageAdapterActivity extends
             try {
                 Picasso.with(context).load(Imageurl).into(holder1.group_icon);
             } catch (Exception e) {
-                Picasso.with(context).load(R.mipmap.spark_session).into(holder1.group_icon);
+                Picasso.with(context).load(R.mipmap.default_image).into(holder1.group_icon);
             }
             holder1.members_count.setText(m_count.toString());
             holder1.followers_count.setText(f_count.toString());

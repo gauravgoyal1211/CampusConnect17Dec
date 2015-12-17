@@ -66,12 +66,12 @@ public class NewsPostsByGroupAdapterActivity extends
             Picasso.with(context).load(ci.getPhoto()).into(news_posts_by_groupViewHolder.event_photo);
 
         } catch (Exception e) {
-            Picasso.with(context).load(R.mipmap.spark_session).into(news_posts_by_groupViewHolder.event_photo);
+            Picasso.with(context).load(R.mipmap.default_image).into(news_posts_by_groupViewHolder.event_photo);
         }
         try {
             Picasso.with(context).load(ci.getClubphoto()).into(news_posts_by_groupViewHolder.group_icon);
         } catch (Exception e) {
-            Picasso.with(context).load(R.mipmap.spark_session).into(news_posts_by_groupViewHolder.group_icon);
+            Picasso.with(context).load(R.mipmap.default_image).into(news_posts_by_groupViewHolder.group_icon);
         }
         if (dataBase.getFeedIsLike(ci.getPid())) {
             flag_attending_clicked.set(i, true);

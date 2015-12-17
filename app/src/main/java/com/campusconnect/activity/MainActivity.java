@@ -32,6 +32,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     public static boolean isLaunch = true;
 
+    int fragment;
+    public static String frag_loc="";
+
     public MainActivity() {
     }
 
@@ -53,18 +56,39 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         profileLine = (LinearLayout) findViewById(R.id.lnr_profile_line);
         homeLine = (LinearLayout) findViewById(R.id.lnr_home_line);
 
-        if (savedInstanceState == null) {
+        Bundle bundle = getIntent().getExtras();
+        if(bundle!=null)
+            fragment=bundle.getInt("FRAGMENT");
+        else if (savedInstanceState == null) {
             fragmentManager = getSupportFragmentManager();
             fragmentTransaction = fragmentManager.beginTransaction();
             HomeFragment fragment = new HomeFragment();
             fragmentTransaction.replace(R.id.frame_container, fragment);
+            frag_loc="home";
             fragmentTransaction.commit();
         }
+
         search.setOnClickListener(this);
         calender.setOnClickListener(this);
         home.setOnClickListener(this);
         profile.setOnClickListener(this);
         notification.setOnClickListener(this);
+
+        if(fragment==1) {
+            search.performClick();
+        }
+        else if(fragment==2) {
+            calender.performClick();
+        }
+        else if(fragment==3) {
+            home.performClick();
+        }
+        else if(fragment==4) {
+            notification.performClick();
+        }
+        else if(fragment==5) {
+            profile.performClick();
+        }
     }
 
     //TODO  changes in the listner
@@ -142,6 +166,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     }
 
     public void UpdateUi(String str) {
+
+        if(fragment!=1 || fragment!=2 || fragment!=3 || fragment!=4 || fragment!=5)
+            frag_loc = str;
 
         if (str.equals("home")) {
             search.setImageResource(R.mipmap.search);
