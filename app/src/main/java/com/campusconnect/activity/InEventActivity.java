@@ -11,9 +11,7 @@ import android.text.style.TypefaceSpan;
 import android.text.util.Linkify;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,7 +45,6 @@ public class InEventActivity extends AppCompatActivity {
 
     Typeface r_lig, r_reg, r_med;
     TypefaceSpan robotoRegularSpan_for_attendees;
-
     SpannableStringBuilder attendees_text;
     int no_of_attendees;
     Boolean flag_news, flag_selected_share, flag_selected_attend_like;
@@ -57,8 +54,11 @@ public class InEventActivity extends AppCompatActivity {
     CircularImageView g_icon;
     static int attending = 1;
     static int liking = 1;
-     CampusFeedBean bean;
+    CampusFeedBean bean;
     private DatabaseHandler dataBase;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,50 +118,44 @@ public class InEventActivity extends AppCompatActivity {
             bean.getClubid();
             bean.getCollegeId();
             bean.getViews();
-
-            g_name.setText("" + bean.getClubname());
+            g_name.setText("" + bean.getClubAbbreviation());
             e_name.setText("" + bean.getTitle());
             e_description.setText("" + bean.getDescription());
-            Linkify.addLinks(e_description,Linkify.ALL);
-            v_name.setText("" + bean.getVenue());
+            Linkify.addLinks(e_description, Linkify.ALL);
 
-            if (bean.getAttendees() == null || bean.getAttendees().size() == 0) {
+            if (bean.getStart_date() == null || bean.getStart_date().isEmpty()) {
                 attendees_count.setVisibility(View.INVISIBLE);
                 e_time.setVisibility(View.INVISIBLE);
                 tv_header.setText("News");
+                v_name.setVisibility(View.INVISIBLE);
             } else {
+
+                v_name.setText("" + bean.getVenue());
                 int attendies = bean.getAttendees().size();
                 attendees_count.setText("+" + attendies + " attending");
                 try {
                     SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm:ss");
                     SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
                     Date _24HourDt = null;
-
                     _24HourDt = _24HourSDF.parse(bean.getStart_time());
                     String time12 = _12HourSDF.format(_24HourDt);
                     e_time.setText("" + time12);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-
-
             }
             try {
                 Picasso.with(InEventActivity.this).load(bean.getPhoto()).into(event_photo);
-
             } catch (Exception e) {
                 e.printStackTrace();
                 Picasso.with(InEventActivity.this).load(R.mipmap.default_image).into(event_photo);
             }
-
             try {
                 Picasso.with(InEventActivity.this).load(bean.getClubphoto()).into(g_icon);
-
             } catch (Exception e) {
                 e.printStackTrace();
                 Picasso.with(InEventActivity.this).load(R.mipmap.default_image).into(event_photo);
             }
-
             SimpleDateFormat inFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date date = null;
             try {
@@ -307,13 +301,12 @@ public class InEventActivity extends AppCompatActivity {
         });
 
 
-
         event_photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 Intent intent_temp = new Intent(v.getContext(), EventPhotoFullScreenActivity.class);
-                intent_temp.putExtra("PICTURE",bean.getPhoto());
+                intent_temp.putExtra("PICTURE", bean.getPhoto());
                 startActivity(intent_temp);
             }
         });

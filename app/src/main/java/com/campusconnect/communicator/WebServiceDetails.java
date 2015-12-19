@@ -42,6 +42,7 @@ public class WebServiceDetails {
 	public static final int PID_GET_CLUB_MEMBER=18;
 	public static final int PID_GET_Events=19;
 	public static final int  PID_GET_CLUB=20;
+	public static final int  PID_GET_CALENDER=21;
 
 
 

@@ -169,6 +169,7 @@ public class CreatePostActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
     private boolean isSignedIn() {
         if (!Strings.isNullOrEmpty(mEmailAccount)) {
             return true;
@@ -176,6 +177,7 @@ public class CreatePostActivity extends AppCompatActivity {
             return false;
         }
     }
+
     public void webApiCreatePost(JSONObject jsonObject) {
         try {
             List<NameValuePair> param = new ArrayList<NameValuePair>();
@@ -342,7 +344,6 @@ public class CreatePostActivity extends AppCompatActivity {
         Button post;
         EditText et_title, et_description, et_tags;
         GroupBean gpBean = new GroupBean();
-        //  ModelsPostMiniForm pmf = new ModelsPostMiniForm();
         int position;
         String encodedImageStr = "";
         String Clubid = "";
@@ -403,7 +404,7 @@ public class CreatePostActivity extends AppCompatActivity {
                         AlertDialog alert = builder.create();
                         alert.show();
                     }
-               }
+                }
             });
 
             iv_upload.setOnClickListener(new View.OnClickListener() {
@@ -443,12 +444,12 @@ public class CreatePostActivity extends AppCompatActivity {
                         pmf.setPhoto(encodedImageStr);
                         pmf.setFromPid(sharedPreferences.getString(AppConstants.PERSON_PID, null));
                         pmf.getClubId();*/
-                        if (title.isEmpty() || et_description.getText().toString().isEmpty()||Clubid.isEmpty()) {
+                        if (title.isEmpty() || et_description.getText().toString().isEmpty() || Clubid.isEmpty()) {
 
 
                             Toast.makeText(getActivity(), "Please Fill all data", Toast.LENGTH_SHORT).show();
                             return;
-                        }else   if (imageUrlForUpload.isEmpty()) {
+                        } else if (imageUrlForUpload.isEmpty()) {
                             Toast.makeText(getActivity(), "Please Select image again and Upload it", Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -463,7 +464,6 @@ public class CreatePostActivity extends AppCompatActivity {
                             jsonObject.put("photoUrl", "" + imageUrlForUpload);
                             jsonObject.put("from_pid", pid);
                             jsonObject.put("club_id", Clubid);
-
 
 
                             webApiCreatePost(jsonObject);
@@ -661,7 +661,7 @@ public class CreatePostActivity extends AppCompatActivity {
         }
     }
 
-    public class  FragmentPostEvent extends Fragment {
+    public class FragmentPostEvent extends Fragment {
 
         RelativeLayout group_name_post;
         TextView group_selected_text_post;
@@ -875,14 +875,14 @@ public class CreatePostActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     // TODO Auto-generated method stub
-                    if(!s_date.getText().toString().trim().isEmpty()){
+                    if (!s_date.getText().toString().trim().isEmpty()) {
 
-                    DatePickerDialog end_date_picker = new DatePickerDialog(context, end_date, myCalendar_e_date
-                            .get(Calendar.YEAR), myCalendar_e_date.get(Calendar.MONTH),
-                            myCalendar_e_date.get(Calendar.DAY_OF_MONTH));
+                        DatePickerDialog end_date_picker = new DatePickerDialog(context, end_date, myCalendar_e_date
+                                .get(Calendar.YEAR), myCalendar_e_date.get(Calendar.MONTH),
+                                myCalendar_e_date.get(Calendar.DAY_OF_MONTH));
 //                    end_date_picker.getDatePicker().setMinDate(System.currentTimeMillis() - 2000);
-                    end_date_picker.show();
-                    }else{
+                        end_date_picker.show();
+                    } else {
                         Toast.makeText(getActivity(), "Please enter start date", Toast.LENGTH_SHORT).show();
 
                     }
@@ -912,7 +912,7 @@ public class CreatePostActivity extends AppCompatActivity {
                             SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
                             s_time.setText("" + selectedHour + ":" + selectedMinute + ":00");
-                           if (selectedHour > hour)
+                            if (selectedHour > hour)
                                 s_time.setText("" + selectedHour + ":" + selectedMinute + ":00");
                                 //  s_time.setText(dateFormat.format(calendar.getTime()));
                             else if (selectedHour == hour) {
@@ -952,7 +952,6 @@ public class CreatePostActivity extends AppCompatActivity {
                             calendar.set(Calendar.SECOND, 0);
 
 
-
                             if (s_time.getText().toString().trim().isEmpty()) {
                                 Toast.makeText(getActivity(), "Please enter start time", Toast.LENGTH_SHORT).show();
                                 return;
@@ -982,7 +981,7 @@ public class CreatePostActivity extends AppCompatActivity {
                                     try {
                                         SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
-                                      //  e_time.setText("" + selectedHour + ":" + selectedMinute + ":00");
+                                        //  e_time.setText("" + selectedHour + ":" + selectedMinute + ":00");
 
                                         if (selectedHour > start_hour)
                                             e_time.setText("" + selectedHour + ":" + selectedMinute + ":00");

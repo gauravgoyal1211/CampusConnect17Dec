@@ -74,7 +74,7 @@ public class UpcomingEventsAdapterActivity extends
         flag_attending_clicked.add(i, false);
         try {
             upcoming_eventsViewHolder.event_title.setText(ci.getTitle());
-            upcoming_eventsViewHolder.group_name.setText(ci.getClubname());
+            upcoming_eventsViewHolder.group_name.setText(ci.getClubAbbreviation());
             upcoming_eventsViewHolder.timestamp.setText(timeAgo(ci.getTimeStamp()));
             if (dataBase.getFeedIsLike(ci.getPid())) {
                 flag_attending_clicked.set(i, true);

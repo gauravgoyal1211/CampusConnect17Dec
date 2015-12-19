@@ -33,6 +33,18 @@ public class MyFeedBean implements Serializable {
     String likers;
     String clubphoto;
 
+    String ClubAbbreviation;
+
+
+    Boolean isLike;
+
+    public String getClubAbbreviation() {
+        return ClubAbbreviation;
+    }
+
+    public void setClubAbbreviation(String clubAbbreviation) {
+        ClubAbbreviation = clubAbbreviation;
+    }
 
 
 

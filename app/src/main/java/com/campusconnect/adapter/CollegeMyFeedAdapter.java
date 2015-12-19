@@ -100,7 +100,7 @@ public class CollegeMyFeedAdapter extends
             }
 
             //news
-            if (cf.getAttendees() == null || cf.getAttendees().size() == 0) {
+            if (cf.getStart_time() == null || cf.getStart_time().isEmpty()) {
                 college_feedViewHolder.day.setVisibility(View.GONE);
                 college_feedViewHolder.date_month.setVisibility(View.GONE);
                 college_feedViewHolder.time.setVisibility(View.GONE);
@@ -311,11 +311,9 @@ public class CollegeMyFeedAdapter extends
                     if (flag_share_clicked.get(pos_for_share)) {
                         share.setAlpha((float) 0.5);
                         flag_share_clicked.set(pos_for_share, false);
-//                        flag_share_clicked[pos_for_share] = false;
                     } else {
                         share.setAlpha((float) 1);
                         flag_share_clicked.set(pos_for_share, true);
-//                        flag_share_clicked[pos_for_share] = true;
                     }
                 }
             });

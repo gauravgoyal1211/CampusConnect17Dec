@@ -171,6 +171,7 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
                                             String collegeId = innerObj.optString("collegeId");
                                             String kind = innerObj.optString("kind");
                                             String clubname = innerObj.optString("club_name");
+                                            String abbreviation=innerObj.optString("clubabbreviation");
 
                                             bean.setEventCreator(eventCreator);
                                             bean.setDescription(description);
@@ -184,6 +185,7 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
                                             bean.setCollegeId(collegeId);
                                             bean.setKind(kind);
                                             bean.setClubname(clubname);
+                                            bean.setClubAbbreviation(abbreviation);
 
                                             ArrayList<String> attendList = new ArrayList<>();
                                             if (innerObj.has("attendees")) {
@@ -312,6 +314,7 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
                                             String collegeId = innerObj.optString("collegeId");
                                             String kind = innerObj.optString("kind");
                                             String clubname = innerObj.optString("club_name");
+                                            String clubAbbreviation=innerObj.optString("clubabbreviation");
 
                                             bean.setEventCreator(eventCreator);
                                             bean.setDescription(description);
@@ -325,6 +328,7 @@ public class HomeFragment extends Fragment implements GoogleApiClient.Connection
                                             bean.setCollegeId(collegeId);
                                             bean.setKind(kind);
                                             bean.setClubname(clubname);
+                                            bean.setClubAbbreviation(clubAbbreviation);
 
                                             ArrayList<String> attendList = new ArrayList<>();
                                             if (innerObj.has("attendees")) {

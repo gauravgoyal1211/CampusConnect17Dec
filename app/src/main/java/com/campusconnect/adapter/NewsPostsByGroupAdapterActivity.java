@@ -61,7 +61,7 @@ public class NewsPostsByGroupAdapterActivity extends
         flag_share_clicked.add(i, false);
         news_posts_by_groupViewHolder.timestamp.setText(timeAgo(ci.getTimeStamp()));
         news_posts_by_groupViewHolder.event_title.setText(ci.getTitle());
-        news_posts_by_groupViewHolder.group_name.setText(ci.getClubname());
+        news_posts_by_groupViewHolder.group_name.setText(ci.getClubAbbreviation()) ;
         try {
             Picasso.with(context).load(ci.getPhoto()).into(news_posts_by_groupViewHolder.event_photo);
 

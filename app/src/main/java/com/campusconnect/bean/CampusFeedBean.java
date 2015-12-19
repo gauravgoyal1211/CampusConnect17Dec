@@ -60,8 +60,18 @@ public class CampusFeedBean implements Serializable {
     String date;
     String likes;
 
+    String ClubAbbreviation;
+
 
     Boolean isLike;
+
+    public String getClubAbbreviation() {
+        return ClubAbbreviation;
+    }
+
+    public void setClubAbbreviation(String clubAbbreviation) {
+        ClubAbbreviation = clubAbbreviation;
+    }
 
     public boolean isLike() {
         return isLike;

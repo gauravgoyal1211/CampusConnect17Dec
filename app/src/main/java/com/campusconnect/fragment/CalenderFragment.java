@@ -1,36 +1,62 @@
 package com.campusconnect.fragment;
 
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.campusconnect.R;
-import com.campusconnect.bean.NotificationBean;
+import com.campusconnect.adapter.CalendarAdapter;
+import com.campusconnect.bean.CampusFeedBean;
+import com.campusconnect.communicator.WebRequestTask;
+import com.campusconnect.communicator.WebServiceDetails;
+import com.campusconnect.constant.AppConstants;
 import com.campusconnect.slidingtab.SlidingTabLayout_Calendar;
+import com.campusconnect.utility.SharedpreferenceUtility;
 import com.campusconnect.utility.StickyHeaderRecyclerDecor;
-import com.campusconnect.utility.StickyRecyclerHeadersAdapter;
 
+import org.apache.http.NameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class CalenderFragment extends Fragment {
-
+    public static Typeface r_med, r_reg;
+    static ArrayList<CampusFeedBean> calenderList = new ArrayList<CampusFeedBean>();
+    CalendarAdapter adapter;
     ViewPager pager;
     SlidingTabLayout_Calendar tabs;
     CharSequence Titles[] = {"Mon 5", "Tue 6", "Wed 7", "Thu 8", "Fri 9", "Sat 10", "Sun 11"};
     int Numboftabs = 7;
-
     RecyclerView calendar;
     View mRootView;
+    StickyHeaderRecyclerDecor headersDecor;
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(adapter!=null){
+            adapter.notifyDataSetChanged();
+        }
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -42,103 +68,193 @@ public class CalenderFragment extends Fragment {
         }
         try {
             mRootView = inflater.inflate(R.layout.activity_calendar_design_two, container, false);
-
             calendar = (RecyclerView) mRootView.findViewById(R.id.rv_calendar);
 
+            //getting data for sending to server
+            Date cDate = new Date();
+            String date = new SimpleDateFormat("yyyy-MM-dd").format(cDate);
+            //calling api to get data from server
+            webApiCalender(date);
             // Set adapter populated with example dummy data
-            CalendarAdapter adapter = new CalendarAdapter(
-                    createList_cal(7));
+            //initalize adapter other wise it will skips
+            adapter = new CalendarAdapter(createList_cal(1), getActivity());
             calendar.setAdapter(adapter);
-
-
+            calenderList.clear();
             LinearLayoutManager llm = new LinearLayoutManager(getActivity());
             calendar.setLayoutManager(llm);
-
             // Add the sticky headers decoration
-            final StickyHeaderRecyclerDecor headersDecor = new StickyHeaderRecyclerDecor(adapter);
+            headersDecor = new StickyHeaderRecyclerDecor(adapter);
             calendar.addItemDecoration(headersDecor);
+            //  adapter.registerAdapterDataObserver(dataObserver);
 
 
-            adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-                @Override
-                public void onChanged() {
-                    headersDecor.invalidateHeaders();
-                }
-            });
         } catch (InflateException e) {
             e.printStackTrace();
         }
         return mRootView;
     }
 
-
-    private List<NotificationBean> createList_cal(int size) {
-        List<NotificationBean> result = new ArrayList<NotificationBean>();
+    private ArrayList<CampusFeedBean> createList_cal(int size) {
+        calenderList = new ArrayList<CampusFeedBean>();
         for (int i = 1; i <= size; i++) {
-            NotificationBean ci = new NotificationBean();
-            result.add(ci);
-        }
+            CampusFeedBean ci = new CampusFeedBean();
+            if (i == 0)
+                ci.setStart_date("2014-12-11");
 
-        return result;
+            calenderList.add(ci);
+        }
+        return calenderList;
     }
 
-    public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.CalendarViewHolder> implements StickyRecyclerHeadersAdapter<RecyclerView.ViewHolder> {
 
-
-        //Get the day from the server for each card and feed it to the getHeaderId(int position) function below.
-        int dates[] = {1, 18, 18, 27, 27, 29, 29};
-
-        public CalendarAdapter(List<NotificationBean> list_cal) {
-        }
-
+    RecyclerView.AdapterDataObserver dataObserver = new RecyclerView.AdapterDataObserver() {
         @Override
-        public CalendarViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.activity_card_layout_college_feed, parent, false);
-            return new CalendarViewHolder(view) {
-            };
+        public void onChanged() {
+            headersDecor.invalidateHeaders();
         }
-        @Override
-        public void onBindViewHolder(CalendarViewHolder holder, int position) {
+    };
+
+
+    public void webApiCalender(String date) {
+
+        String collegeId = SharedpreferenceUtility.getInstance(getActivity()).getString(AppConstants.COLLEGE_ID);
+        try {
+            JSONObject jsonObject = new JSONObject();
+            List<NameValuePair> param = new ArrayList<NameValuePair>();
+            String url = WebServiceDetails.DEFAULT_BASE_URL + "getEvents?collegeId=" + collegeId + "&future_date=" + date;
+            new WebRequestTask(getActivity(), param, _handler, WebRequestTask.GET, jsonObject, WebServiceDetails.PID_GET_CALENDER,
+                    true, url).execute();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
 
         }
-        @Override
-        public int getItemCount() {
-            return 7;
-        }
 
-        @Override
-        public long getHeaderId(int position) {
-            char ch;
-            ch = (char) (dates[position] + 64);
-            return ch;
-        }
+    }
 
-        @Override
-        public RecyclerView.ViewHolder onCreateHeaderViewHolder(ViewGroup parent) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.view_header, parent, false);
-            return new RecyclerView.ViewHolder(view) {
-            };
-        }
 
-        @Override
-        public void onBindHeaderViewHolder(RecyclerView.ViewHolder holder, int position) {
-            TextView textView = (TextView) holder.itemView;
-            textView.setText(dates[position] + "");
-            Typeface r_med = Typeface.createFromAsset(holder.itemView.getContext().getAssets(), "font/Roboto_Light.ttf");
-            textView.setTypeface(r_med);
-            holder.itemView.setBackgroundColor(Color.rgb(56, 56, 56));
-        }
+    private final Handler _handler = new Handler() {
+        public void handleMessage(Message msg) {
+            int response_code = msg.what;
+            if (response_code != 0 && response_code != 204) {
+                String strResponse = (String) msg.obj;
+                Log.v("Response", strResponse);
+                if (strResponse != null && strResponse.length() > 0) {
+                    switch (response_code) {
+                        case WebServiceDetails.PID_GET_CALENDER: {
+                            try {
+                                calenderList.clear();
+                                JSONObject jsonObject = new JSONObject(strResponse);
+                                if (jsonObject.has("items")) {
 
-        public class CalendarViewHolder extends RecyclerView.ViewHolder {
+                                    JSONArray array = jsonObject.getJSONArray("items");
+                                    if (array.length() > 0) {
+                                        for (int i = 0; i < array.length(); i++) {
 
-            public CalendarViewHolder(View v) {
-                super(v);
+                                            JSONObject innerObj = array.getJSONObject(i);
+                                            CampusFeedBean bean = new CampusFeedBean();
+
+                                            String eventCreator = innerObj.optString("event_creator");
+                                            String description = innerObj.optString("description");
+                                            String views = innerObj.optString("views");
+                                            String photo = innerObj.optString("photoUrl");
+                                            String clubid = innerObj.optString("club_id");
+                                            String pid = innerObj.optString("eventId");
+                                            String timeStamp = innerObj.optString("timestamp");
+                                            String title = innerObj.optString("title");
+                                            String collegeId = innerObj.optString("collegeId");
+                                            String kind = innerObj.optString("kind");
+                                            String clubname = innerObj.optString("club_name");
+                                            String clubAbbreviation = innerObj.optString("clubabbreviation");
+
+                                            bean.setEventCreator(eventCreator);
+                                            bean.setDescription(description);
+                                            bean.setViews(views);
+                                            bean.setClubid(clubid);
+                                            bean.setPid(pid);
+
+                                            bean.setPhoto(photo);
+                                            bean.setTimeStamp(timeStamp);
+                                            bean.setTitle(title);
+                                            bean.setCollegeId(collegeId);
+                                            bean.setKind(kind);
+                                            bean.setClubname(clubname);
+                                            bean.setClubAbbreviation(clubAbbreviation);
+                                            ArrayList<String> attendList=null;
+                                            try {
+                                                attendList = new ArrayList<>();
+                                                if (innerObj.has("attendees")) {
+                                                    JSONArray attArray = innerObj.getJSONArray("attendees");
+                                                    if (attArray.length() > 0) {
+                                                        for (int j = 0; j < attArray.length(); j++) {
+                                                            String attendStr = attArray.getString(j);
+                                                            attendList.add(attendStr);
+                                                        }
+                                                    }
+
+                                                }
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+                                            bean.setAttendees(attendList);
+                                            String endDate = innerObj.optString("end_date");
+                                            String startDate = innerObj.optString("start_date");
+                                            String startTime = innerObj.optString("start_time");
+                                            String endTime = innerObj.optString("end_time");
+                                            String venue = innerObj.optString("venue");
+                                            String clubphoto = innerObj.optString("clubphotoUrl");
+                                            String liker = innerObj.optString("");
+                                            String complete = innerObj.optString("completed");
+
+
+                                            bean.setEnd_date("" + endDate);
+                                            bean.setStart_date("" + startDate);
+                                            bean.setStart_time("" + startTime);
+                                            bean.setEnd_time("" + endTime);
+                                            bean.setVenue("" + venue);
+
+                                            bean.setClubphoto("" + clubphoto);
+                                            bean.setLikers("" + liker);
+                                            bean.setCompleted("" + complete);
+                                            ArrayList<String> tagList = new ArrayList<>();
+                                            try {
+                                                if (innerObj.has("tags")) {
+                                                    JSONArray tagArray = innerObj.getJSONArray("tags");
+                                                    if (tagArray.length() > 0) {
+                                                        for (int l = 0; l < tagArray.length(); l++) {
+                                                            String tag = tagArray.getString(l);
+                                                            tagList.add(tag);
+                                                        }
+                                                    }
+                                                }
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                            bean.setTag(tagList);
+                                            calenderList.add(bean);
+
+                                        }
+                                        adapter.notifyDataSetChanged();
+                                    }
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                        break;
+
+                        default:
+                            break;
+                    }
+                } else {
+                    Toast.makeText(getActivity(), "SERVER_ERROR", Toast.LENGTH_LONG).show();
+                }
+            } else {
+                Toast.makeText(getActivity(), "SERVER_ERROR", Toast.LENGTH_LONG).show();
             }
         }
+    };
 
-
-    }
 
 }

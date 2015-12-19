@@ -223,6 +223,7 @@ public class NewsPostsByGroupActivity extends ActionBarActivity {
                                             String clubphotoUrl = innerObj.optString("clubphotoUrl");
                                             String kind = innerObj.optString("kind");
                                             String timeStamp = innerObj.optString("timestamp");
+                                            String abbreviation=innerObj.optString("clubabbreviation");
 
                                             ArrayList<String> likesList = new ArrayList<>();
                                             try {
@@ -257,7 +258,7 @@ public class NewsPostsByGroupActivity extends ActionBarActivity {
                                             bean.setClubname(clubname);
                                             bean.setTimeStamp(timeStamp);
                                             bean.setVenue(" ");
-
+                                            bean.setClubAbbreviation(abbreviation);
 
                                          /*   ArrayList<String> tagList = new ArrayList<>();
                                             try {

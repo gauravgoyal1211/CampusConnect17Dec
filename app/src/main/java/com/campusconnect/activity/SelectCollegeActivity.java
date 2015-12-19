@@ -1,6 +1,6 @@
 package com.campusconnect.activity;
 
-import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -38,7 +38,7 @@ public class SelectCollegeActivity extends AppCompatActivity {
     private static final String LOG_TAG = "SelectCollegeActivity";
 
   //  private String mEmailAccount = "";
-
+   static Context context;
     RecyclerView college_list;
     TextView tv_not_found;
 

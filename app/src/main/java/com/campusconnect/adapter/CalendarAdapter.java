@@ -1,8 +1,8 @@
-
 package com.campusconnect.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,6 +26,7 @@ import com.campusconnect.constant.AppConstants;
 import com.campusconnect.database.DatabaseHandler;
 import com.campusconnect.utility.CircularImageView;
 import com.campusconnect.utility.SharedpreferenceUtility;
+import com.campusconnect.utility.StickyRecyclerHeadersAdapter;
 import com.squareup.picasso.Picasso;
 
 import org.apache.http.NameValuePair;
@@ -40,79 +41,75 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-/**
- * Created by canopus on 30/11/15.
- */
-public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampusFeedAdapter.CollegeCampusFeedViewHolder> {
-
+public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.CalendarViewHolder> implements StickyRecyclerHeadersAdapter<RecyclerView.ViewHolder> {
     public static Typeface r_med, r_reg;
-    private List<CampusFeedBean> CollegeFeedList;
+    ArrayList<CampusFeedBean> calList;
     List<Boolean> flag_news = new ArrayList<Boolean>();
     List<Boolean> flag_attending_clicked = new ArrayList<Boolean>();
     List<Boolean> flag_share_clicked = new ArrayList<Boolean>();
-    public static int attending = 1;
-    public static int liking = 1;
-    //boolean[] flag_news = new boolean[5];
-    //boolean[] flag_attending_clicked = new boolean[5];
-    //boolean[] flag_share_clicked = new boolean[5];
-
-    int posi = 0;
-    int going_click_count = 0;
-    int share_click_count = 0;
-    Context context;
-
     private DatabaseHandler dataBase;
+    public int attending = 1;
+    int posi = 0;
+    Context context;
+    //Get the day from the server for each card and feed it to the getHeaderId(int position) function below.
+    //int dates[] = {1, 18, 27, 27, 29, 18, 29};
 
-    public CollegeCampusFeedAdapter(List<CampusFeedBean> CollegeFeedList, Context contect) {
-        this.CollegeFeedList = CollegeFeedList;
-        this.context = contect;
+    public CalendarAdapter(ArrayList<CampusFeedBean> list_cal, Context context) {
+        this.calList = list_cal;
+        this.context = context;
         dataBase = new DatabaseHandler(context);
+
     }
 
     @Override
-    public int getItemCount() {
-        return CollegeFeedList.size();
+    public CalendarViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.activity_card_layout_college_feed, parent, false);
+        return new CalendarViewHolder(view) {
+        };
     }
 
     @Override
-    public void onBindViewHolder(CollegeCampusFeedViewHolder college_feedViewHolder, int i) {
-        CampusFeedBean cf = CollegeFeedList.get(i);
+    public void onBindViewHolder(CalendarViewHolder holder, int i) {
+
+        CampusFeedBean cf = calList.get(i);
         flag_attending_clicked.add(i, false);
         flag_share_clicked.add(i, false);
-        college_feedViewHolder.event_title.setText(cf.getTitle());
-        college_feedViewHolder.timestamp.setText("" + timeAgo(cf.getTimeStamp()));
-        college_feedViewHolder.group_name.setText(cf.getClubname());
+        holder.event_title.setText("" + cf.getTitle());
+        holder.timestamp.setText("" + timeAgo(cf.getTimeStamp()));
+        holder.group_name.setText("" + cf.getClubname());
         String url = "http://admin.bookieboost.com/admin/images/2015-02-0116-17-50.jpg";
         try {
-            Picasso.with(context).load(cf.getPhoto()).into(college_feedViewHolder.event_photo);
+            Picasso.with(context).load(cf.getPhoto()).into(holder.event_photo);
         } catch (Exception e) {
-            Picasso.with(context).load(R.mipmap.default_image).into(college_feedViewHolder.event_photo);
+            Picasso.with(context).load(R.mipmap.default_image).into(holder.event_photo);
         }
         try {
-            Picasso.with(context).load(cf.getClubphoto()).into(college_feedViewHolder.group_icon);
+            Picasso.with(context).load(cf.getClubphoto()).into(holder.group_icon);
         } catch (Exception e) {
-            Picasso.with(context).load(R.mipmap.default_image).into(college_feedViewHolder.group_icon);
+            Picasso.with(context).load(R.mipmap.default_image).into(holder.group_icon);
         }
         String title = cf.getTitle();
         //news
         if (cf.getStart_time() == null || cf.getStart_time().isEmpty()) {
-            college_feedViewHolder.day.setVisibility(View.GONE);
-            college_feedViewHolder.date_month.setVisibility(View.GONE);
-            college_feedViewHolder.time.setVisibility(View.GONE);
-            college_feedViewHolder.news_icon.setVisibility(View.VISIBLE);
+          /*  holder.day.setVisibility(View.GONE);
+            holder.date_month.setVisibility(View.GONE);
+            holder.time.setVisibility(View.GONE);
+            holder.news_icon.setVisibility(View.VISIBLE);*/
             //flag_news[i]=true;
-            flag_news.add(i, true);
+          /*  flag_news.add(i, false);
             if (dataBase.getFeedIsLike(cf.getPid())) {
                 flag_attending_clicked.set(i, true);
-                college_feedViewHolder.going.setImageResource(R.mipmap.heart_selected);
+                holder.going.setImageResource(R.mipmap.heart_selected);
             } else {
                 flag_attending_clicked.set(i, false);
-                college_feedViewHolder.going.setImageResource(R.mipmap.heart);
+                holder.going.setImageResource(R.mipmap.heart);
             }
+*/
         } else {
-            college_feedViewHolder.day.setVisibility(View.VISIBLE);
-            college_feedViewHolder.date_month.setVisibility(View.VISIBLE);
-            college_feedViewHolder.time.setVisibility(View.VISIBLE);
+            holder.day.setVisibility(View.VISIBLE);
+            holder.date_month.setVisibility(View.VISIBLE);
+            holder.time.setVisibility(View.VISIBLE);
             flag_news.add(i, false);
             SimpleDateFormat inFormat = new SimpleDateFormat("yyyy-MM-dd");
             Date date = null;
@@ -135,56 +132,114 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
                     goal = goal.substring(0, 3);
                 } else {
                 }
-                college_feedViewHolder.day.setText("" + goal.toUpperCase());
+                holder.day.setText("" + goal.toUpperCase());
                 String day = "" + calendar.get(Calendar.DAY_OF_MONTH);
                 if (month.length() > 0) {
                     month = month.substring(0, 3);
                 } else {
                 }
                 Log.e(cf.getTitle(), day + "" + month);
-                college_feedViewHolder.date_month.setText("" + day + "" + month);
+                holder.date_month.setText("" + day + "" + month);
 
 
                 SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm:ss");
                 SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
                 Date _24HourDt = _24HourSDF.parse(cf.getStart_time());
                 String time12 = _12HourSDF.format(_24HourDt);
-                college_feedViewHolder.time.setText("" + time12);
-
-
+                holder.time.setText("" + time12);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            // college_feedViewHolder.date_month.setText(Date_Month[i]);
-            //college_feedViewHolder.time.setText(Time_[i]);
-            college_feedViewHolder.news_icon.setVisibility(View.GONE);
+            // holder.date_month.setText(Date_Month[i]);
+            //holder.time.setText(Time_[i]);
+            holder.news_icon.setVisibility(View.GONE);
             if (dataBase.getFeedIsLike(cf.getPid())) {
                 flag_attending_clicked.set(i, true);
-                college_feedViewHolder.going.setImageResource(R.mipmap.going_selected);
+                holder.going.setImageResource(R.mipmap.going_selected);
             } else {
                 flag_attending_clicked.set(i, false);
-                college_feedViewHolder.going.setImageResource(R.mipmap.going);
+                holder.going.setImageResource(R.mipmap.going);
             }
         }
+
     }
 
     @Override
-    public CollegeCampusFeedViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(
-                R.layout.activity_card_layout_college_feed, viewGroup, false);
-        return new CollegeCampusFeedViewHolder(itemView);
+    public int getItemCount() {
+        return calList.size();
     }
 
-    public class CollegeCampusFeedViewHolder extends RecyclerView.ViewHolder {
+    @Override
+    public long getHeaderId(int position) {
+        char ch;
+        String datestr = calList.get(position).getStart_date();
+        SimpleDateFormat formate = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = null;
+        Calendar calendar = null;
+        char ch1 = 0;
+        try {
+            date = formate.parse(datestr);
+            calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            Log.e("postion", "" + position);
+            int dayStr = calendar.get(Calendar.DAY_OF_MONTH);
+            ch1 = (char) ((char) dayStr + 64);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ch1;
+    }
+
+    @Override
+    public RecyclerView.ViewHolder onCreateHeaderViewHolder(ViewGroup parent) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.view_header, parent, false);
+        return new RecyclerView.ViewHolder(view) {
+        };
+    }
+
+    @Override
+    public void onBindHeaderViewHolder(RecyclerView.ViewHolder holder, int position) {
+        if (calList.size() > position) {
+            try {
+                TextView textView = (TextView) holder.itemView;
+
+                SimpleDateFormat formate = new SimpleDateFormat("yyyy-MM-dd");
+                Date date = null;
+                Calendar calendar = Calendar.getInstance();
+                date = formate.parse(calList.get(position).getStart_date());
+                calendar.setTime(date);
+                SimpleDateFormat outFormat = new SimpleDateFormat("yyyy");
+                String year = outFormat.format(date);
+                Log.e("year", year);
+                SimpleDateFormat monthFormat = new SimpleDateFormat("MMM");
+                String month = monthFormat.format(date);
+                Log.e("month", month);
+
+                SimpleDateFormat dateformate = new SimpleDateFormat("dd");
+                String dayFormate = dateformate.format(date);
+                Log.e("day", "" + calendar.get(Calendar.DAY_OF_MONTH));
+
+                textView.setText(dayFormate + " " + month + " " + year);
+                Typeface r_med = Typeface.createFromAsset(holder.itemView.getContext().getAssets(), "font/Roboto_Light.ttf");
+                textView.setTypeface(r_med);
+                holder.itemView.setBackgroundColor(Color.rgb(56, 56, 56));
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+}
+
+    public class CalendarViewHolder extends RecyclerView.ViewHolder {
 
         CardView college_feed;
         TextView event_title, group_name, timestamp, day, date_month, time;
         ImageView event_photo, news_icon, going, share;
         CircularImageView group_icon;
 
-
-        public CollegeCampusFeedViewHolder(View v) {
+        public CalendarViewHolder(View v) {
             super(v);
+
 
             r_med = Typeface.createFromAsset(v.getContext().getAssets(), "font/Roboto_Medium.ttf");
             r_reg = Typeface.createFromAsset(v.getContext().getAssets(), "font/Roboto_Regular.ttf");
@@ -213,7 +268,7 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
                     posi = getAdapterPosition();
                     Intent intent_temp = new Intent(v.getContext(), InEventActivity.class);
                     Bundle bundle = new Bundle();
-                    CampusFeedBean bean = CollegeFeedList.get(posi);
+                    CampusFeedBean bean = calList.get(posi);
                     bundle.putSerializable("BEAN", bean);
                     bundle.putBoolean("FLAG_NEWS", flag_news.get(posi));
                     bundle.putBoolean("FLAG_SELECTED_SHARE", flag_share_clicked.get(posi));
@@ -234,15 +289,14 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
                             going.setImageResource(R.mipmap.heart);
                             Toast.makeText(context, "coming soon", Toast.LENGTH_SHORT).show();
 
-                            dataBase.saveFeedInfo(CollegeFeedList.get(pos_for_going).getPid(), "0");
+                            dataBase.saveFeedInfo(calList.get(pos_for_going).getPid(), "0");
                         } else {
-                            dataBase.saveFeedInfo(CollegeFeedList.get(pos_for_going).getPid(), "0");
+                            dataBase.saveFeedInfo(calList.get(pos_for_going).getPid(), "0");
 
                             going.setImageResource(R.mipmap.going);
-
                             try {
                                 String persoPid = SharedpreferenceUtility.getInstance(context).getString(AppConstants.PERSON_PID);
-                                String pid = CollegeFeedList.get(posi).getPid();
+                                String pid = calList.get(posi).getPid();
                                 JSONObject jsonObject = new JSONObject();
                                 jsonObject.put("eventId", pid);
                                 jsonObject.put("from_pid", persoPid);
@@ -258,15 +312,15 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
                             going.setImageResource(R.mipmap.heart_selected);
                             Toast.makeText(context, "coming soon", Toast.LENGTH_SHORT).show();
 
-                            dataBase.saveFeedInfo(CollegeFeedList.get(pos_for_going).getPid(), "1");
+                            dataBase.saveFeedInfo(calList.get(pos_for_going).getPid(), "1");
                         } else {
-                            dataBase.saveFeedInfo(CollegeFeedList.get(pos_for_going).getPid(), "1");
+                            dataBase.saveFeedInfo(calList.get(pos_for_going).getPid(), "1");
 
                             going.setImageResource(R.mipmap.going_selected);
 
                             try {
                                 String persoPid = SharedpreferenceUtility.getInstance(context).getString(AppConstants.PERSON_PID);
-                                String pid = CollegeFeedList.get(posi).getPid();
+                                String pid = calList.get(posi).getPid();
                                 JSONObject jsonObject = new JSONObject();
                                 jsonObject.put("eventId", pid);
                                 jsonObject.put("from_pid", persoPid);
@@ -286,31 +340,31 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
                     int pos_for_share = getAdapterPosition();
                     Intent i = new Intent(android.content.Intent.ACTION_SEND);
                     i.setType("text/plain");
-                    String shareBody = "Title : " + CollegeFeedList.get(pos_for_share).getTitle() + "\n" + "Description : " + CollegeFeedList.get(pos_for_share).getDescription() + " for more info visit http://campusconnect.cc/";
-                    //String shareBody = CollegeFeedList.get(pos_for_share).getTitle() + "/n" + CollegeFeedList.get(posi).getDescription();
+                    String shareBody = "Title : " + calList.get(pos_for_share).getTitle() + "/n" + "Description : " + calList.get(pos_for_share).getDescription() + " for more info visit http://campusconnect.cc/";
+//                    String shareBody = myFeedList.get(pos_for_share).getTitle() + "/n" + myFeedList.get(posi).getDescription();
                     i.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
                     v.getContext().startActivity(Intent.createChooser(i, "Share via"));
 
                     if (flag_share_clicked.get(pos_for_share)) {
                         share.setAlpha((float) 0.5);
-                        flag_share_clicked.add(pos_for_share, false);
+                        flag_share_clicked.set(pos_for_share, false);
                     } else {
                         share.setAlpha((float) 1);
-                        flag_share_clicked.add(pos_for_share, true);
+                        flag_share_clicked.set(pos_for_share, true);
                     }
                 }
             });
         }
+    }
 
-        public void WebApiAttending(JSONObject jsonObject) {
+    public void WebApiAttending(JSONObject jsonObject) {
 
-            List<NameValuePair> param = new ArrayList<NameValuePair>();
-            String url = WebServiceDetails.DEFAULT_BASE_URL + "attendEvent";
-            Log.e("", jsonObject.toString());
-            Log.e("", url);
-            new WebRequestTask(context, param, _handler, WebRequestTask.POST, jsonObject, WebServiceDetails.PID_ATTENDING,
-                    true, url).execute();
-        }
+        List<NameValuePair> param = new ArrayList<NameValuePair>();
+        String url = WebServiceDetails.DEFAULT_BASE_URL + "attendEvent";
+        Log.e("", jsonObject.toString());
+        Log.e("", url);
+        new WebRequestTask(context, param, _handler, WebRequestTask.POST, jsonObject, WebServiceDetails.PID_ATTENDING,
+                true, url).execute();
     }
 
     public String timeAgo(String createTimeStr) {
@@ -403,4 +457,3 @@ public class CollegeCampusFeedAdapter extends RecyclerView.Adapter<CollegeCampus
     };
 
 }
-

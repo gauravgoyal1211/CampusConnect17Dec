@@ -241,6 +241,7 @@ public class UpcomingEventsActivity extends ActionBarActivity {
 
                                             String alumni=innerObj.optString("isAlumni");
                                             String clubName=innerObj.optString("club_name");
+                                            String abbreviation=innerObj.optString("clubabbreviation");
                                             ArrayList<String> attendList = new ArrayList<>();
                                            try {
 
@@ -282,6 +283,7 @@ public class UpcomingEventsActivity extends ActionBarActivity {
                                             bean.setCompleted("" + complete);
                                             bean.setClubname(clubName);
                                             bean.setClubid(clubName);
+                                            bean.setClubAbbreviation(abbreviation);
                                             ArrayList<String> tagList = new ArrayList<>();
                                             try {
 

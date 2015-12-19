@@ -1,5 +1,6 @@
 package com.campusconnect.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -29,7 +30,7 @@ public class CollegeListAdapterActivity extends
 
     private static List<CollegeListInfoBean> CollegeList;
     static int pos;
-    Context context;
+  static  Context context;
 
     public CollegeListAdapterActivity(List<CollegeListInfoBean> CollegeList,Context context) {
         this.CollegeList = CollegeList;
@@ -97,7 +98,6 @@ public class CollegeListAdapterActivity extends
                 @Override
                 public void onClick(View v) {
                     pos = getAdapterPosition();
-
                     SharedpreferenceUtility.getInstance(v.getContext()).putString(AppConstants.COLLEGE_NAME, CollegeList.get(pos).getName());
                     SharedpreferenceUtility.getInstance(v.getContext()).putString(AppConstants.COLLEGE_LOCATION, CollegeList.get(pos).getLocation());
                     SharedpreferenceUtility.getInstance(v.getContext()).putString(AppConstants.COLLEGE_ID, CollegeList.get(pos).getCollegeId());
@@ -110,7 +110,8 @@ public class CollegeListAdapterActivity extends
 
                     Intent intent_temp = new Intent(v.getContext(), Signup_2Activity.class);
                     v.getContext().startActivity(intent_temp);
-                    //v.getActivity().finish();
+                    ((Activity)context).finish();
+
                 }
             });
 
